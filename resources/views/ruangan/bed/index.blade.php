@@ -102,11 +102,10 @@
                                 <h5 class="card-title">Data BED</h5>
                             </div>
                             <div class="card-toolbar">
-                                @canany(['dokter', 'perawat'])
+                               
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#tambah-bed">
                                         Tambah Data BED
                                     </button>
-                                @endcanany
                             </div>
                         </div>
                         <!--begin::Body-->
