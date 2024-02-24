@@ -25,6 +25,7 @@ class PoliklinikController extends Controller
                     'dokter.kode_dpjp',
                     'rawat_bayar.bayar',
                     'rawat_status.status',
+                    'rawat_jenis.jenis',
                     // 'rekap_medis.dokter',
                     // 'rekap_medis.perawat',
                     // 'rekap_medis.bpjs',
@@ -34,6 +35,7 @@ class PoliklinikController extends Controller
                 ->join('rawat_bayar', 'rawat_bayar.id', '=', 'rawat.idbayar')
                 ->join('rawat_status', 'rawat_status.id', '=', 'rawat.status')
                 ->Leftjoin('dokter', 'dokter.id', '=', 'rawat.iddokter')
+                ->Leftjoin('rawat_jenis', 'rawat_jenis.id', '=', 'rawat.idjenisrawat')
                 // ->Leftjoin('demo_rekap_medis as rekap_medis', 'rekap_medis.idrawat', '=', 'rawat.id')  
                 ->whereIn('rawat.status',[1,2,3,4,8])            
                 ->whereDate('rawat.tglmasuk', date('Y-m-d'))
@@ -114,6 +116,7 @@ class PoliklinikController extends Controller
                     'dokter.kode_dpjp',
                     'rawat_bayar.bayar',
                     'rawat_status.status',
+                    'rawat_jenis.jenis',
                     // 'rekap_medis.dokter',
                     // 'rekap_medis.perawat',
                     // 'rekap_medis.bpjs',
@@ -123,6 +126,7 @@ class PoliklinikController extends Controller
                 ->join('rawat_bayar', 'rawat_bayar.id', '=', 'rawat.idbayar')
                 ->join('rawat_status', 'rawat_status.id', '=', 'rawat.status')
                 ->Leftjoin('dokter', 'dokter.id', '=', 'rawat.iddokter')
+                ->Leftjoin('rawat_jenis', 'rawat_jenis.id', '=', 'rawat.idjenisrawat')
                 // ->Leftjoin('demo_rekap_medis as rekap_medis', 'rekap_medis.idrawat', '=', 'rawat.id')
                 ->whereIn('rawat.status',[1,2,3,4,8])
                 ->groupBy('rawat.id')
