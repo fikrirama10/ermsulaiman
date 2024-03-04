@@ -260,7 +260,7 @@
                     </table>
                 </div>
                 <div style="width: 100%; float:left">
-                    <p>Surakarta, {{ \Carbon\Carbon::now()->formatLocalized('%A, %d %B %Y') }}</p>
+                    <p>Bandung, {{ \Carbon\Carbon::now()->formatLocalized('%A, %d %B %Y') }}</p>
                     <p>DPJP</p>
                     <img width="50%" src="data:image/png;base64, {!! base64_encode($qr) !!} ">
                     <p>{{ $rawat->dokter->nama_dokter }}</p>
