@@ -14,7 +14,7 @@
                     <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents("https://new-simrs.rsausulaiman.com//frontend/images/setting/RSAU%20dr.Norman%20T%20LubisLOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png")) !!} ">
                     <br>
                     RSAU LANUD SULAIMAN<br>
-                    JL TENTARA PELAJAR NO 1, MALANGJIWAN, COLOMADU 0271779112
+                    Jl. Terusan Kopo-Soreang No.461, Sulaiman, Kec. Margahayu, Kabupaten Bandung, Jawa Barat 40229
 
                     {{-- <p>RSAU DR SISWANTO</p> --}}
                 </td>
