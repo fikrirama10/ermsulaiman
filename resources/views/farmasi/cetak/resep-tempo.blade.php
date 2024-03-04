@@ -27,7 +27,7 @@
             <div style="width: 70%; float:left;">
                 <table>
                     <tr>
-                        <td rowspan="3"><img width="40" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} "></td>
+                        <td rowspan="3"><img width="40" src="data:image/png;base64, {!! base64_encode("https://new-simrs.rsausulaiman.com//frontend/images/setting/RSAU%20dr.Norman%20T%20LubisLOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png")) !!} "></td>
                         <td>FARMASI RSAU LANUD SULAIMAN</td>
                     </tr>
                     <tr>
