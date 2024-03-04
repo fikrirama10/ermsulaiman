@@ -367,7 +367,7 @@
                                                                             @foreach ($obat as $val)
                                                                                 <option value="{{ $val->id }}">
                                                                                     {{ $val->nama_obat }} -
-                                                                                    {{ $val->satuan->satuan }}
+                                                                                    {{ $val->satuan?->satuan }}
                                                                                 </option>
                                                                             @endforeach
                                                                         </select>

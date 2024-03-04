@@ -11,9 +11,9 @@
             <tr class="border">
                 <td class="w-50" style="border: 1px solid black; text-align:center;">
                     <br>
-                    <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} ">
+                    <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents("https://new-simrs.rsausulaiman.com//frontend/images/setting/RSAU%20dr.Norman%20T%20LubisLOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png")) !!} ">
                     <br>
-                    RSAU DR SISWANTO <br>
+                    RSAU LANUD SULAIMAN<br>
                     JL TENTARA PELAJAR NO 1, MALANGJIWAN, COLOMADU 0271779112
 
                     {{-- <p>RSAU DR SISWANTO</p> --}}

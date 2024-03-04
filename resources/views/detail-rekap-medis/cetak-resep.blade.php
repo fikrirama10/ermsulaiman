@@ -13,7 +13,7 @@
                     <br>
                     <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} ">
                     <br>
-                    RSAU DR SISWANTO <br>
+                    RSAU LANUD SULAIMAN<br>
                     JL TENTARA PELAJAR NO 1, MALANGJIWAN, COLOMADU 0271779112
                 </td>
                 <td class="w-75" style="border: 1px solid black;">

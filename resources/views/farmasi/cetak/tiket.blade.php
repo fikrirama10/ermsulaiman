@@ -33,7 +33,7 @@
                         <td>
                             <img width="20" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} ">
                         </td>
-                        <td class="text-center"><b>FARMASI RSAU DR SISWANTO SOLO</b></td>
+                        <td class="text-center"><b>FARMASI RSAU LANUD SULAIMANSOLO</b></td>
                     </tr>
                 </table>
             </div>

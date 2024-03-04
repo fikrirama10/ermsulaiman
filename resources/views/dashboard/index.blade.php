@@ -61,7 +61,7 @@
                                 <div class="card-title m-0">
                                     <!--begin::Icon-->
                                     <div class="symbol me-5">
-                                        <i class="fa-solid fa-bed fs-1"></i>
+                                        <i class="fa-solid text-success fa-bed fs-3x"></i>
                                     </div>
                                     <!--end::Icon-->
 
