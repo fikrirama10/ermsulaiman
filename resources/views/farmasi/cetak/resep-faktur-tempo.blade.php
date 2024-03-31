@@ -256,7 +256,11 @@
                             <td>{{ date('Y-m-d') }}</td>
                             <td>Poli/Ruangan</td>
                             <td>:</td>
-                            <td>Poli {{ $rawat->poli?->poli }}</td>
+                            @if($rawat->idjenisrawat == 2)
+                                <td>{{ $rawat->ruangan?->nama_ruangan }}</td>
+                            @else
+                                <td>Poli {{ $rawat->poli?->poli }}</td>
+                            @endif
                         </tr>
                     </table>
                 </div>
@@ -292,7 +296,7 @@
                                                 <td style="border: 1px solid black;" class="text-center">
                                                     {{ $val->kronis }}</td>
                                                 <td style="border: 1px solid black;" class="text-end">
-                                                    {{ number_format(App\Helpers\VclaimHelper::get_harga_obat($val->obat, $rawat->idbayar) * $val->kronis) }}
+                                                    {{ App\Helpers\VclaimHelper::IndoCurr(App\Helpers\VclaimHelper::get_harga_obat($val->obat, $rawat->idbayar) * $val->kronis) }}
                                                 </td>
                                             </tr>
                                         @endif
@@ -317,7 +321,7 @@
                                                     <td style="border: 1px solid black;" class="text-center">
                                                         {{ $obat->kronis }}</td>
                                                     <td style="border: 1px solid black;" class="text-end">
-                                                        {{ number_format(App\Helpers\VclaimHelper::get_harga_obat($obat->obat, $rawat->idbayar) * $obat->kronis) }}
+                                                        {{ App\Helpers\VclaimHelper::IndoCurr(App\Helpers\VclaimHelper::get_harga_obat($obat->obat, $rawat->idbayar) * $obat->kronis) }}
                                                     </td>
                                                 </tr>
                                             @endif

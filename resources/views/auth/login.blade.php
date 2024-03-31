@@ -19,7 +19,7 @@
 	<!--begin::Body-->
 	<body id="kt_body" class="app-blank bgi-size-cover bgi-attachment-fixed bgi-position-center bgi-no-repeat">
 		<!--begin::Root-->
-		<style>body { background-image: url({{ asset('assets/media/auth/bg10.jpeg') }}); } [data-theme="dark"] body { background-image: url('assets/media/auth/bg10-dark.jpeg'); }</style>
+		<style>body { background-image: url('assets/media/auth/bg10.jpeg'); } [data-theme="dark"] body { background-image: url('assets/media/auth/bg10-dark.jpeg'); }</style>
 		<div class="d-flex flex-column flex-root" id="kt_app_root">
 			<!--begin::Authentication - Sign-in -->
 			<div class="d-flex flex-column flex-lg-row flex-column-fluid">
@@ -71,7 +71,7 @@
 								<!--end::Wrapper-->
 								<!--begin::Submit button-->
 								<div class="d-grid mb-10">
-									<button type="submit" id="kt_sign_in_submit" class="btn btn-success">
+									<button type="submit" id="kt_sign_in_submit" class="btn btn-warning">
 										<!--begin::Indicator label-->
 										<span class="indicator-label">Masuk</span>
 										<!--end::Indicator label-->
@@ -98,23 +98,23 @@
 				</div>
 				<!--end::Body-->
 				<!--begin::Aside-->
-				<div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" style="background-image: url({{ asset('assets/media/auth/74d776a0-16a7-4171-8302-34158b051e83.png') }})">
+				<div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" style="background-image: url({{ asset('image/rsaubackground.jpg') }})">
 					<!--begin::Content-->
 					<div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
 						<!--begin::Logo-->
 						<a href="" class="mb-0 mb-lg-12">
-							<img alt="Logo" src="https://rsausulaiman.com/config/img/logors.png" class="h-80px h-lg-300px" />
+							<img alt="Logo" src="https://live.simrs.rsaudrsiswanto.co.id//frontend/images/logosiswanto.png" class="h-80px h-lg-300px" />
 						</a>
 						<!--end::Logo-->
 						<!--begin::Image-->
 						<!-- <img class="d-none d-lg-block mx-auto w-275px w-md-50 w-xl-500px mb-10 mb-lg-20" src="assets/media/misc/auth-screens.png" alt="" /> -->
 						<!--end::Image-->
 						<!--begin::Title-->
-						<h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7 shadow">Rekam Medis Elektronik</h1>
+						<h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7">Rekam Medis Elektronik</h1>
 						<!--end::Title-->
 						<!--begin::Text-->
-						<div class="d-none d-lg-block text-white fs-base text-center">Sistem Informasi Rumah Sakit RSAU dr Norman T Lubis</div>
-						<div class="d-none d-lg-block text-white fs-base text-center"></div>
+						<div class="d-none d-lg-block text-white fs-base text-center">Sistem Informasi Rumah Sakit RSAU dr Siswanto</div>
+						<div class="d-none d-lg-block text-white fs-base text-center">Jl. Tentara Pelajar - Colomadu, Karanganyar</div>
 						<!--end::Text-->
 					</div>
 					<!--end::Content-->

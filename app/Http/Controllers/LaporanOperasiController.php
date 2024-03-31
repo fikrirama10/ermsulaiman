@@ -55,6 +55,9 @@ class LaporanOperasiController extends Controller
     public function store(Request $request)
     {
         $operasi = new LaporanOperasi;
+        if(isset($request->id_raber)){
+         $operasi->id_raber = $request->id_raber;   
+        }
         $operasi->idrawat = $request->idrawat;
         $operasi->tgl_operasi = $request->tgl_operasi;
         $operasi->diagnosis_prabedah = $request->diagnosis_prabedah;
@@ -69,72 +72,175 @@ class LaporanOperasiController extends Controller
 
         return view('operasi.show', compact('data'));
     }
+    public function delete_tindakan_ok($id){
+        DB::beginTransaction();
+        try {
+            $data = DB::table('operasi_tindakan')->where('id',$id)->first();
+            $transaksi = DB::table('transaksi')->where('id',$data->idtrx)->first();
+            $transaksi_detail = DB::table('transaksi_detail_rinci')->where('idtransaksi',$transaksi->id)->where('idtarif',$data->idtindakan)->where('idrawat',$data->idrawat)->delete();
+            $delete = DB::table('operasi_tindakan')->where('id',$id)->delete();
+            DB::commit();
+            return redirect()->back()->with('berhasil','Data Berhasil Dihapus!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('gagal','Data Gagal Disimpan! '.$e->getMessage());
+        }
+        
+    }
     public function post_tindakan_ok(Request $request,$id){
         // return $request->all();
         $rawat = Rawat::find($id);
         $rawat_kunjungan = DB::table('rawat_kunjungan')->where('idkunjungan',$rawat?->idkunjungan)->first();
         $transaksi = DB::table('transaksi')->where('idkunjungan',$rawat_kunjungan?->id)->first();
-        foreach($request->asisten as $tindakan){
-            $tarif = DB::table('tarif')->where('id',$tindakan['tindakan_bedah'])->first();
-            $data = [
-                'idrawat'=>$id,
-                'no_rm'=>$rawat->no_rm,
-                'tgl'=>date('Y-m-d'),
-                'idtindakan'=>$tindakan['tindakan_bedah'],
-                'iddokter'=>$tindakan['dokter_tindakan'],
-                'idtrx'=>$transaksi->id,
-                'idbayar'=>$rawat->idbayar,
-                'keterangan_tindakan'=>$tindakan['keterangan'],
-                'harga_tindakan'=>$tarif->tarif,
-            ];
-            DB::table('operasi_tindakan')->insert($data);
+        DB::beginTransaction();
+        try {
+            foreach($request->asisten as $tindakan){
+                $tarif = DB::table('tarif')->where('id',$tindakan['tindakan_bedah'])->first();
+                $data = [
+                    'idrawat'=>$id,
+                    'no_rm'=>$rawat->no_rm,
+                    'tgl'=>date('Y-m-d'),
+                    'idtindakan'=>$tindakan['tindakan_bedah'],
+                    'iddokter'=>$tindakan['dokter_tindakan'],
+                    'idtrx'=>$transaksi->id,
+                    'idbayar'=>$rawat->idbayar,
+                    'keterangan_tindakan'=>$tindakan['keterangan'],
+                    'harga_tindakan'=>$tarif->tarif,
+                ];
+                DB::table('operasi_tindakan')->insert($data);
+                $transaksi_detail = DB::table('transaksi_detail_rinci')->insert([
+                    'idtransaksi'=>$transaksi->id,
+                    'idtarif'=>$tindakan['tindakan_bedah'],
+                    'idrawat'=>$id,
+                    'tarif'=>$tarif->tarif,
+                    'iddokter'=>$tindakan['dokter_tindakan'],
+                    'idbayar'=>$rawat->idbayar,
+                    'jumlah'=>1,
+                    'idpaket'=>0,
+                    'tgl'=>date('Y-m-d')
+                ]);
+            }
+            DB::commit();
+            return redirect()->back()->with('berhasil','Data Berhasil Disimpan!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('gagal','Data Gagal Disimpan! '.$e->getMessage());
         }
-        return redirect()->back()->with('berhasil','Data Berhasil Disimpan!');
+       
     }
-    public function bhp($id){
+    public function bhp($id,$operasi){
+        $data = LaporanOperasi::with('rawat','rawat.pasien')->where('id', $operasi)->first();
         $operasi_tindakan = DB::table('operasi_tindakan')->where('id',$id)->first();
         $rawat = Rawat::find($operasi_tindakan->idrawat);
         // $bhp = DB::table('operasi_tindakan_bhp')->where('idoperasi',$operasi_tindakan->id)->get();
         // $list_bhp = DB::table('demo_template_bhp')->get();
         $implan = Bhp::where('jenis','Implan')->get();
         $bhp = Bhp::where('jenis','BHP')->get();
+        $total_bhp = DB::table('operasi_tindakan_bhp')->where('idoperasi',$operasi_tindakan->id)->where('idtindakan',$operasi_tindakan->idtindakan)->sum('harga');
         // dd($bhp);
-        return view('operasi.bhp',compact('operasi_tindakan','rawat','implan','bhp'));
+        return view('operasi.bhp',compact('operasi_tindakan','rawat','implan','bhp','total_bhp','data'));
     }
 
     #create fungsi simpan bhp
     public function post_bhp_ok(Request $request,$id){
-        return $request->all();
-        $total_bhp = 0;
-        foreach ($request->bhp as  $item) {
-            $total_bhp .= $item;
-        }
+        DB::beginTransaction();
 
-        return "Total jumlah 'bhp' adalah: " . $total_bhp;
-        $operasi_tindakan = DB::table('operasi_tindakan')->where('id',$id)->first();
-        // return $request->all();
-        foreach($request->bhp as $bhp){
-            $list_bhp = DB::table('demo_template_bhp')->where('id',$bhp['nama_obat'])->first();
+        try {
+            $bhp = $request->bhp;
+            $implan = $request->implan;
+            // return $request->all();
+            $operasi_tindakan = DB::table('operasi_tindakan')->where('id',$id)->first();
+            
+            
+            if($bhp){
+                foreach ($bhp as $b) {
+                  
 
-            $data = [
-                'idoperasi'=>$operasi_tindakan->id,
-                'idtindakan'=>$operasi_tindakan->idtindakan,
-                'iddokter'=>$operasi_tindakan->iddokter,
-                'nama_obat'=>$list_bhp->nama_barang,
-                'jumlah'=>$bhp['jumlah'],
-                'satuan'=>$bhp['satuan_obat'],
-                'harga'=>$list_bhp->harga,
-                'status'=>1,
-                'tgl'=>date('Y-m-d')
+                    if($b['jumlah'] != null){
+                        $cek_bhp = DB::table('operasi_tindakan_bhp')->where('nama_obat',$b['nama'])->where('idoperasi',$operasi_tindakan->id)->where('idtindakan',$operasi_tindakan->idtindakan)->first();
+                        if($cek_bhp){
+                            #update
+                            $data = [
+                                'jumlah'=>$b['jumlah'],
+                                'satuan'=>$b['satuan'],
+                                'harga'=>$b['harga'] * $b['jumlah'],
+                                'nama_obat'=>$b['nama'],
+                            ];
+                            DB::table('operasi_tindakan_bhp')->where('id',$cek_bhp->id)->update($data);
+                        }else{
+                            #insert
+                            $data = [
+                                'idoperasi'=>$operasi_tindakan->id,
+                                'idtindakan'=>$operasi_tindakan->idtindakan,
+                                'iddokter'=>$operasi_tindakan->iddokter,
+                                'nama_obat'=>$b['nama'],
+                                'jumlah'=>$b['jumlah'],
+                                'satuan'=>$b['satuan'],
+                                'harga'=>$b['harga'] * $b['jumlah'],
+                                'status'=>1,
+                                'tgl'=>date('Y-m-d')
+                            ];
+                            DB::table('operasi_tindakan_bhp')->insert($data);
+                        }
+                    }
+                }
+            }
+            if($implan){
+                foreach ($implan as $b) {
+                    
+
+                    if($b['jumlah'] != null){
+                        $cek_bhp = DB::table('operasi_tindakan_bhp')->where('nama_obat',$b['nama'])->where('idoperasi',$operasi_tindakan->id)->where('idtindakan',$operasi_tindakan->idtindakan)->first();
+                        if($cek_bhp){
+                            #update
+                            $data = [
+                                'jumlah'=>$b['jumlah'],
+                                'satuan'=>$b['satuan'],
+                                'harga'=>$b['harga'] * $b['jumlah'],
+                                'nama_obat'=>$b['nama'],
+                            ];
+                            DB::table('operasi_tindakan_bhp')->where('id',$cek_bhp->id)->update($data);
+                        }else{
+                            #insert
+                            $data = [
+                                'idoperasi'=>$operasi_tindakan->id,
+                                'idtindakan'=>$operasi_tindakan->idtindakan,
+                                'iddokter'=>$operasi_tindakan->iddokter,
+                                'nama_obat'=>$b['nama'],
+                                'jumlah'=>$b['jumlah'] ,
+                                'satuan'=>$b['satuan'],
+                                'harga'=>$b['harga']* $b['jumlah'],
+                                'status'=>1,
+                                'tgl'=>date('Y-m-d')
+                            ];
+                            DB::table('operasi_tindakan_bhp')->insert($data);
+                        }
+                    }
+                }
+            }
+
+            #total_bhp
+            $total_bhp = DB::table('operasi_tindakan_bhp')->where('idoperasi',$operasi_tindakan->id)->where('idtindakan',$operasi_tindakan->idtindakan)->sum('harga');
+            $update_operasi = [
+                'harga_bhp'=>$total_bhp,
+                'harga_total'=>$operasi_tindakan->harga_tindakan + $total_bhp,
             ];
-            DB::table('operasi_tindakan_bhp')->insert($data);
+            DB::table('operasi_tindakan')->where('id',$operasi_tindakan->id)->update($update_operasi);
+            $transaksi_detail = DB::table('transaksi_detail_rinci')->where('idtransaksi',$operasi_tindakan->idtrx)->where('idtarif',$operasi_tindakan->idtindakan)->where('idrawat',$operasi_tindakan->idrawat)->update([
+                'tarif'=>$operasi_tindakan->harga_tindakan + $total_bhp
+            ]);
+            DB::commit();
+            return redirect()->back()->with('berhasil','Data Berhasil Disimpan! Total BHP : '.number_format($total_bhp,0,',','.'));
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('gagal','Data Gagal Disimpan! '.$e->getMessage());
         }
-        return redirect()->back()->with('berhasil','Data Berhasil Disimpan!');
     }
 
     public function edit($id)
     {
         $data = LaporanOperasi::with('rawat','rawat.pasien')->where('id', $id)->first();
+        
         $dokter = Dokter::get();
         $tarif = Tarif::get();
         $tindakan = DB::table('operasi_tindakan')
@@ -163,11 +269,22 @@ class LaporanOperasiController extends Controller
 
     public function update(Request $request, $id)
     {
+        // return $request->all();
         $jaringan = new Collection([
             'jaringan_kultur' => $request->jaringan_kultur,
             'macam_jaringan' => ($request->jaringan_kultur == 1) ? $request->macam_jaringan : ''
         ]);
-
+        $time_out  = $request->time_out;
+        $sign_in = $request->sign_in;
+        $sign_out = $request->sign_out;
+        
+        $checklist = new Collection([
+            'time_out' => $time_out,
+            'sign_in' => $sign_in,
+            'sign_out' => $sign_out
+        ]);
+        // return $checklist;
+        // return $request->all();
         $data = LaporanOperasi::find($id);
         $data->tgl_operasi = $request->tgl_operasi;
         $data->mulai_jam = $request->mulai_jam;
@@ -196,6 +313,7 @@ class LaporanOperasiController extends Controller
         $data->jaringan = $jaringan;
         $data->komplikasi = $request->komplikasi;
         $data->desinfektan_kulit = $request->desinfektan_kulit;
+        $data->checklist = $checklist;
         $data->save();
 
         if($request->nama_template){

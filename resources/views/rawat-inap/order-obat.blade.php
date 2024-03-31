@@ -350,7 +350,7 @@
                                                     <th rowspan="2">Nama Obat</th>
                                                     <th rowspan="2" width=100>Dosis</th>
                                                     <th rowspan="2" width=100>Jumlah</th>
-                                                    <th rowspan="2" width=50>Diberikan</th>
+                                                    <th rowspan="2" width=50>Signa</th>
                                                     <th rowspan="2" width=200>Sediaan</th>
                                                     <th width=50 colspan="4">Aturan Pakai</th>
                                                     <th rowspan="2" width=100>Diminum</th>
@@ -589,6 +589,7 @@
                                     <input type="hidden" name="idresep" value="{{ $resep_antrian->id }}">
                                     <input type="hidden" name="idrawat" value="{{ $rawat->id }}">
                                     <button class="btn btn-success btn-sm">Selesai</button>
+                                    <a href="{{ route('farmasi.batalkan-resep',$resep_antrian->id) }}" class="btn btn-danger btn-sm">Batalkan</a>
                                 </form>
                                 {{-- @endif --}}
                                 

@@ -2,12 +2,15 @@
 
 namespace App\Helpers;
 
+use App\Models\User;
 use App\Models\Rawat;
 use App\Models\Dokter;
 use App\Models\Obat\Obat;
+use App\Models\UserDetail;
 use LZCompressor\LZString;
 use App\Helpers\VclaimHelper;
 use App\Models\Pasien\Pasien;
+use App\Models\Gizi\AsuhanGizi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
@@ -46,6 +49,18 @@ class VclaimHelper
         }
     }
 
+    public static function cek_dxgizi($iddx,$dx){
+        $gizi = AsuhanGizi::where('idrawat', $iddx)->first();
+        if($gizi == 'null' || $gizi == null || $gizi == ''){
+            return false;
+        }else{
+            if(in_array($dx,json_decode($gizi->diagnosa_gizi))){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
     public static function cek_signa($resep,$signa){
         // $array = ["P","S","SO","M"];
         if($resep == 'null' || $resep == null || $resep == ''){
@@ -581,5 +596,49 @@ class VclaimHelper
                 'error' => $e->getMessage(),
             ];
         }
+    }
+    public static function IndoCurr($number){
+        $ratusan = substr($number, -2);
+        if($ratusan > 100){
+            $akhir = $number - $ratusan;
+        }
+        else{
+           if($ratusan < 1){
+               $akhir = $number;
+           }else{
+                $akhir = $number + (100 - $ratusan);
+           }       
+        }
+
+        return number_format($akhir, 2, ',', '.');
+    }
+    public static function getKota($id){
+        $kota = DB::table('kabupaten')->where('id_kab',$id)->first();
+        return $kota?->nama;
+    }
+
+    public static function getDataUser($id){
+        $user = User::find($id);
+        if(!$user){
+            return $id;
+        }else{
+            $user_detail = UserDetail::where('kode_user',$user->kode_user)->first();
+            return $user_detail?->nama;
+        }
+    }
+
+    public static function cek_list_ok($id,$type,$data_value){
+        #demo_laporan_operasi
+        $data = DB::table('demo_laporan_operasi')->where('id',$id)->first();
+        if($data->checklist != null){
+            $data_d =  json_decode($data->checklist)->$type;
+            foreach ($data_d as $key => $value) {
+                if($value == $data_value){
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
     }
 }

@@ -164,7 +164,8 @@
                                         <a href="{{ route('farmasi.singkron-resep', $rawat->id) }}"
                                             class="btn btn btn-light-info">Singkronkan Resep</a>
                                     @else
-                                        <a href="{{ route('farmasi.tambah-resep',$rawat->id) }}" onclick="return confirm('Tambah Resep?')" class="btn btn-info ">Tambah Resep</a>
+                                        <a href="{{ route('farmasi.tambah-resep', $rawat->id) }}"
+                                            onclick="return confirm('Tambah Resep?')" class="btn btn-info ">Tambah Resep</a>
                                     @endif
                                 </div>
                             </div>
@@ -227,7 +228,9 @@
                                                                                             data-id='{{ $val->idresep }}'
                                                                                             data-value='{{ $ob_racikan->obat }}'class="btn btn-light-success btn-sm btn-edit-racikan">{!! App\Helpers\VclaimHelper::get_data_obat($ob_racikan->obat) !!}</button>
                                                                                     </td>
-                                                                                    <td>{!! App\Helpers\VclaimHelper::get_harga_obat($ob_racikan->obat, $rawat->idbayar) !!}</td>
+                                                                                    <td>{!! App\Helpers\VclaimHelper::IndoCurr(
+                                                                                        App\Helpers\VclaimHelper::get_harga_obat($ob_racikan->obat, $rawat->idbayar),
+                                                                                    ) !!}</td>
                                                                                     <td class="text-center">
                                                                                         {{ $ob_racikan->jumlah_obat }}</td>
                                                                                     <td>
@@ -252,7 +255,11 @@
                                                                 <td class="align-middle text-center">{{ $val->dosis }}
                                                                     {{ $val->takaran }} ( {{ $val->signa }} )
                                                                     {{ $val->diminum . ' makan' }}
+                                                                    @if(isset($val->dtd))
                                                                     <b>{!! $val->dtd == 1 ? '<b> - (DTD)</b>' : '' !!}</b>
+                                                                    @endif
+                                                                    <br>
+                                                                    <pre>{{ $val->catatan  }}</pre>
                                                                 </td>
                                                                 <td class="align-middle text-center">
                                                                     <select name="jenis_obat[{{ $val->idresep }}]"
@@ -277,7 +284,8 @@
                                                                     </select>
                                                                 </td>
                                                                 <td class="align-middle text-center">
-                                                                    <a class="btn btn-danger btn-sm" href="{{ route('farmasi.delete-resep',$val->idresep) }}">Hapus</a>
+                                                                    <a class="btn btn-danger btn-sm"
+                                                                        href="{{ route('farmasi.delete-resep', $val->idresep) }}">Hapus</a>
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -300,7 +308,7 @@
                                                     <th rowspan="2">Jumlah</th>
                                                     <th rowspan="2" width=100>Pemberian</th>
                                                     <th rowspan="2" width=100>Kronis</th>
-                                                    <th rowspan="2">Dosis / Takaran Obat</th>
+                                                    <th rowspan="2">Dosis / Takaran Obat / Catatan</th>
                                                     <th rowspan="2">Jenis Obat</th>
                                                 </tr>
 
@@ -338,9 +346,11 @@
                                                                             {!! App\Helpers\VclaimHelper::get_data_obat($val->obat) !!}
                                                                         </button>
                                                                     @endif
-
+                                                                   
                                                                 </td>
-                                                                <td>{!! App\Helpers\VclaimHelper::get_harga_obat($val->obat, $rawat->idbayar) !!}</td>
+                                                                <td>
+                                                                    {!! App\Helpers\VclaimHelper::IndoCurr(App\Helpers\VclaimHelper::get_harga_obat($val->obat, $rawat->idbayar)) !!}
+                                                                </td>
                                                                 <td class="text-center">
                                                                     {{ $val->jumlah }}</td>
                                                                 <td>
@@ -359,6 +369,8 @@
                                                                     {{ $val->dosis }}
                                                                     {{ $val->takaran }} ( {{ $val->signa }} )
                                                                     {{ $val->diminum . ' makan' }}
+                                                                    <br>
+                                                                    <pre>{{ $val->catatan  }}</pre>
                                                                 </td>
                                                                 <td class="align-middle text-center">
                                                                     <select
@@ -385,7 +397,6 @@
                                                                 </td>
                                                             </tr>
                                                         @endforeach
-                                                       
                                                     @endif
                                                     <tr>
                                                         <td colspan=7>
@@ -400,7 +411,8 @@
                                                                         dahulu untuk dapat menambah obat</h4>
                                                                 </div>
                                                             </div>
-                                                            <button type="button" data-id="{{ $antrian->id }}" id="modal_tambah_non"class="btn btn-primary btn-sm">Tambah</button>
+                                                            <button type="button" data-id="{{ $antrian->id }}"
+                                                                id="modal_tambah_non"class="btn btn-primary btn-sm">Tambah</button>
                                                         </td>
                                                     </tr>
                                                 @endif
@@ -441,7 +453,9 @@
                                                 <button class="btn btn-success mt-10">Simpan Resep</button>
                                             </form>
                                             <br>
-                                            <a onclick="return confirm('Batalkan Resep?')" href="{{ route('farmasi.batalkan-resep',$antrian->id) }}" class="btn btn-danger"> Batalkan Resep </a>
+                                            <a onclick="return confirm('Batalkan Resep?')"
+                                                href="{{ route('farmasi.batalkan-resep', $antrian->id) }}"
+                                                class="btn btn-danger"> Batalkan Resep </a>
 
                                         </div>
                                     </div>
@@ -481,12 +495,15 @@
                                                         @endforeach
                                                     </ol>
                                                 </td>
-                                                <td>{{ number_format($r->total_harga + $r->jasa_racik) }}</td>
+                                                <td>{{ App\Helpers\VclaimHelper::IndoCurr($r->total_harga + $r->jasa_racik) }}
+                                                </td>
                                                 <td>
                                                     <a href="{{ route('farmasi.cetak-faktur', $r->id) }}"
                                                         class="btn btn-warning btn-sm" target="_blank">Print</a>
-                                                    {{-- <a href="{{ route('farmasi.cetak-resep', $r->id) }}"
-                                                        class="btn btn-success btn-sm" target="_blank">Print Resep</a> --}}
+                                                    @if ($r->idresep != null)
+                                                        <a href="{{ route('farmasi.cetak-resep-tempo', $r->idresep) }}"
+                                                            class="btn btn-success btn-sm" target="_blank">Print Resep</a>
+                                                    @endif
                                                     <a href="{{ route('farmasi.cetak-tiket', $r->id) }}"
                                                         class="btn btn-info btn-sm" target="_blank">Print Tiket</a>
                                                 </td>
@@ -529,19 +546,19 @@
 
                             <form id='updNonracikan' action="{{ route('farmasi.tambah-obat') }}" method="POST">
                                 @csrf
-                                {{-- <label for="">aaa</label> --}}
+                                {{-- <label >aaa</label> --}}
                                 <input type="hidden" name="idtambah" id="id_tambah">
                                 <input type="hidden" name="idrawat" id="id_rawat" value="{{ $rawat->id }}">
                                 <div class="row mb-5">
                                     <div class="col-md-12">
-                                        <label for="">Obat</label>
+                                        <label class="form-label" >Obat</label>
                                         <select name="obat_non" id='nama_obat_non' class="form-select form-select-sm"
                                             data-control="select2" data-placeholder="-Pilih-" required>
                                             <option value=""></option>
                                             @foreach ($obat as $val)
                                                 <option value="{{ $val->id }}">
                                                     {{ $val->nama_obat }} -
-                                                    {{ $val->satuan?->satuan }}
+                                                    {{ $val->satuan->satuan }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -601,13 +618,13 @@
                                                 <div class="form-check form-check-inline mb-2">
                                                     <input class="form-check-input" type="radio" name="takaran"
                                                         id="kapsul" value="sebelum">
-                                                    <label class="form-check-label" for="tablet">Sebelum</label>
+                                                    <label class="form-check-label" >Sebelum</label>
                                                 </div>
 
                                                 <div class="form-check form-check-inline">
                                                     <input class="form-check-input" type="radio" name="takaran"
                                                         id="kapsul" value="sesudah">
-                                                    <label class="form-check-label" for="kapsul">Sesudah</label>
+                                                    <label class="form-check-label" >Sesudah</label>
                                                 </div>
                                             </td>
 
@@ -663,7 +680,7 @@
                                 <th rowspan="2">Nama Obat</th>
                                 <th rowspan="2" width=100>Dosis</th>
                                 <th rowspan="2" width=100>Jumlah</th>
-                                <th rowspan="2" width=50>Diberikan</th>
+                                <th rowspan="2" width=50>Signa</th>
                                 <th rowspan="2" width=200>Sediaan</th>
                                 <th width=50 colspan="4">Aturan Pakai</th>
                                 <th rowspan="2" width=100>Diminum</th>
@@ -695,7 +712,7 @@
                                                 @foreach ($obat as $val)
                                                     <option value="{{ $val->id }}">
                                                         {{ $val->nama_obat }} -
-                                                        {{ $val->satuan?->satuan }}
+                                                        {{ $val->satuan->satuan }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -756,13 +773,13 @@
                                         <div class="form-check form-check-inline mb-2">
                                             <input class="form-check-input" type="radio" name="takaran" id="kapsul"
                                                 value="sebelum">
-                                            <label class="form-check-label" for="tablet">Sebelum</label>
+                                            <label class="form-check-label" >Sebelum</label>
                                         </div>
 
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="takaran" id="kapsul"
                                                 value="sesudah">
-                                            <label class="form-check-label" for="kapsul">Sesudah</label>
+                                            <label class="form-check-label" >Sesudah</label>
                                         </div>
                                     </td>
                                     <td class="text-center" width='10'>
@@ -1061,7 +1078,5 @@
                 }
             });
         @endif
-
-       
     </script>
 @endsection

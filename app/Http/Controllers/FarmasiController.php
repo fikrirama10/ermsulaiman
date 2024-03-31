@@ -6,6 +6,7 @@ use PDF;
 use App\Models\Rawat;
 use App\Models\Obat\Obat;
 use Illuminate\Http\Request;
+use App\Helpers\VclaimHelper;
 use App\Models\ObatTransaksi;
 use App\Models\Pasien\Pasien;
 use App\Models\AntrianFarmasi;
@@ -24,12 +25,12 @@ class FarmasiController extends Controller
     public function antrian_resep()
     {
         //     $resep_rajal_umum = AntrianFarmasi::with('pasien','rawat')->where('jenis_rawat',1)->where('idbayar',1)->where('status_antrian','Antrian')->get();
-        $resep_rajal = AntrianFarmasi::with('pasien', 'rawat')->whereDate('created_at', date('Y-m-d'))->where('jenis_rawat', 1)->where('status_antrian', 'Antrian')->orderby('id', 'desc')->get();
+        $resep_rajal = AntrianFarmasi::with('pasien', 'rawat')->whereDate('created_at', date('Y-m-d'))->where('jenis_rawat', 1)->where('status_antrian', 'Antrian')->whereNotNull('obat')->orderby('id', 'desc')->get();
 
-        $resep_ugd = AntrianFarmasi::with('pasien', 'rawat')->whereDate('created_at', date('Y-m-d'))->where('jenis_rawat', 3)->where('status_antrian', 'Antrian')->orderby('id', 'desc')->get();
+        $resep_ugd = AntrianFarmasi::with('pasien', 'rawat')->whereDate('created_at', date('Y-m-d'))->where('jenis_rawat', 3)->where('status_antrian', 'Antrian')->whereNotNull('obat')->orderby('id', 'desc')->get();
         // $resep_ugd_bpjs = AntrianFarmasi::with('pasien','rawat')->where('jenis_rawat',3)->where('idbayar',2)->where('status_antrian','Antrian')->get();
 
-        $resep_ranap = AntrianFarmasi::with('pasien', 'rawat')->whereDate('created_at', date('Y-m-d'))->where('jenis_rawat', 2)->where('status_antrian', 'Antrian')->orderby('id', 'desc')->get();
+        $resep_ranap = AntrianFarmasi::with('pasien', 'rawat')->where('jenis_rawat', 2)->where('status_antrian', 'Antrian')->whereNotNull('obat')->orderby('id', 'desc')->get();
         // $resep_ranap_bpjs = AntrianFarmasi::with('pasien','rawat')->where('jenis_rawat',2)->where('idbayar',2)->where('status_antrian','Antrian')->get();
 
         // $total_antrian = count($resep_rajal) + count($resep_ugd) + count($resep_ranap);
@@ -189,6 +190,7 @@ class FarmasiController extends Controller
                     'signa'=>$rd->signa,
                     'diminum'=>$rd->diminum,
                     'catatan'=>$rd->catatan,
+                    'dtd'=>$rd->dtd,
                     'idresep'=>$rd->id,
                     'jenis'=>$request->jenis_obat_non_racikan[$rd->id],
                     'tambahan_farmasi'=>$rd->tambahan_farmasi
@@ -246,7 +248,7 @@ class FarmasiController extends Controller
 
         return response()->json([
             'status' => 'true',
-            'total' => $total_obat_racikan + $total_obat,
+            'total' =>  VclaimHelper::IndoCurr($total_obat_racikan + $total_obat),
             'kronis' => $total_kronis
         ]);
     }
@@ -464,7 +466,7 @@ class FarmasiController extends Controller
         $antrian = AntrianFarmasi::where('idrawat', $id)->where('status_antrian','Antrian')->first();
         $rekap_medis = RekapMedis::where('idrawat', $id)->first();
         // return $antrian->obat;
-        $obat = Obat::get();
+        $obat = Obat::where('nama_obat','!=','')->orderBy('nama_obat', 'asc')->get();
         $transaksi_bayar = DB::table('transaksi_bayar')->where('status',1)->orderBy('urutan', 'asc')->get();
         $takaran = ['-','tablet','kapsul','bungkus','tetes','ml','sendok takar 5ml','sendok takar 15ml','oles'];
         $resep = ObatTransaksi::where('idrawat', $id)->get();
@@ -476,7 +478,8 @@ class FarmasiController extends Controller
         $pasien = Pasien::where('no_rm', $rawat->no_rm)->first();
         $antrian = AntrianFarmasi::where('idrawat', $id)->where('status_antrian', 'Antrian')->first();
 
-        $obat = Obat::get();
+        $obat = Obat::where('nama_obat','!=','')->get();
+        // return $obat;
         $transaksi_bayar = DB::table('transaksi_bayar')->orderBy('urutan', 'asc')->get();
         $pemberian_obat = DB::table('demo_pemberian_obat_inap')->where('idrawat', $id)->get();
         $pemberian_obat_injeksi = DB::table('demo_pemberian_obat_inap')->where('idrawat', $id)->where('jenis', 'Injeksi')->get();
@@ -1018,13 +1021,13 @@ class FarmasiController extends Controller
         $no_antrian = DB::table('demo_antrian_resep')->whereDate('created_at', Carbon::today())->where('jenis_rawat', $rawat->idjenisrawat)->count();
         $antrian = DB::table('demo_antrian_resep')->insert([
             'idrawat' => $rekap_medis->idrawat,
-            'racikan' => 'null',
+            'racikan' => [],
             'idbayar' => $rekap_medis->rawat->idbayar,
             'status_antrian' => 'Antrian',
             'no_rm' => $rekap_medis->rawat->no_rm,
             'idrekap' => $rekap_medis->id,
             'no_antrian' => $no_antrian + 1,
-            'obat' => null,
+            'obat' => [],
             'jenis_rawat' => $rekap_medis->rawat->idjenisrawat,
             'created_at' => now(),
             'updated_at' => now(),
@@ -1042,7 +1045,8 @@ class FarmasiController extends Controller
         $antrian = AntrianFarmasi::find($id);
         $antrian->status_antrian = 'Batal';
         $antrian->save();
-        return redirect(route('farmasi.status-rajal', $antrian->idrawat))->with('berhasil', 'Resep Berhasil Di Batalkan');
+        return redirect()->back()->with('berhasil', 'Resep Berhasil Di Batalkan');
+        // return redirect(route('farmasi.status-rajal', $antrian->idrawat))->with('berhasil', 'Resep Berhasil Di Batalkan');
     }
     public function post_resep_racikan(Request $request,$id){
         $rawat = Rawat::find($id);

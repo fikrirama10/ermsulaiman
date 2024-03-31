@@ -27,11 +27,11 @@
             <div style="width: 70%; float:left;">
                 <table>
                     <tr>
-                        <td rowspan="3"><img width="40" src="data:image/png;base64, {!! base64_encode("https://new-simrs.rsausulaiman.com//frontend/images/setting/RSAU%20dr.Norman%20T%20LubisLOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png")) !!} "></td>
-                        <td>FARMASI RSAU LANUD SULAIMAN</td>
+                        <td rowspan="3"><img width="40" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} "></td>
+                        <td>FARMASI RSAU dr.SISWANTO</td>
                     </tr>
                     <tr>
-                        <td><i></i></td>
+                        <td><i>JL Tentara Pelajar No 1, Malangjiwan, Colomadu</i></td>
                     </tr>
                     <tr>
                         <td><i>Telepon 0271779112</i></td>
@@ -102,7 +102,11 @@
                         <td>{{ date('Y/m/d',strtotime($resep->created_at)) }}</td>
                         <td>Poli/Ruangan</td>
                         <td>:</td>
-                        <td>Poli {{ $rawat->poli?->poli }}</td>
+                        @if($rawat->idjenisrawat == 2)
+                            <td>{{ $rawat->ruangan?->nama_ruangan }}</td>
+                        @else
+                            <td>Poli {{ $rawat->poli?->poli }}</td>
+                        @endif
                     </tr>
                     <tr>
                         <td>Alamat Pasien</td>
@@ -260,7 +264,7 @@
                     </table>
                 </div>
                 <div style="width: 100%; float:left">
-                    <p>Bandung, {{ \Carbon\Carbon::now()->formatLocalized('%A, %d %B %Y') }}</p>
+                    <p>Surakarta, {{ \Carbon\Carbon::now()->formatLocalized('%A, %d %B %Y') }}</p>
                     <p>DPJP</p>
                     <img width="50%" src="data:image/png;base64, {!! base64_encode($qr) !!} ">
                     <p>{{ $rawat->dokter->nama_dokter }}</p>

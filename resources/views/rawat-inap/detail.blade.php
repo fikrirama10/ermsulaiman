@@ -53,6 +53,19 @@
             <!--begin::Content container-->
             <div id="kt_app_content_container" class="app-container container-fluid">
                 <!--begin::FAQ card-->
+                @if (count($order_obat_null) > 0)
+                    <div class="alert alert-danger d-flex align-items-center p-5 mb-10">
+                        <i class="ki-duotone ki-shield-tick fs-2hx text-danger me-4"><span class="path1"></span><span
+                                class="path2"></span></i>
+                        <div class="d-flex flex-column">
+                            <h4 class="mb-1 text-danger">Selesaikan order Resep</h4>
+                            <span>Terdapat Resep yang belum diselesaikan</span>
+                            <span>
+                                <a href="{{ route('view.rawat-inap-order', $rawat->id) }}">Klik Untuk menyelesaikan</a>
+                            </span>
+                        </div>
+                    </div>
+                @endif
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
@@ -64,10 +77,11 @@
                             @if ($rawat->status == 2)
                                 <button data-bs-toggle="modal" data-bs-target="#modal_pulang"
                                     class="btn btn-sm btn-success me-3">Pulang</button>
-                                <button data-bs-toggle="modal" data-bs-target="#modal_pindah"
-                                    class="btn btn-sm btn-primary me-3">Pindah Ruangan</button>
+                                {{-- <button data-bs-toggle="modal" data-bs-target="#modal_pindah"
+                                    class="btn btn-sm btn-primary me-3">Pindah Ruangan</button> --}}
                             @elseif($rawat->status == 4)
-                                <a class="btn  me-3 btn-light-primary btn-sm" href="">Ringkasan Pulang</a>
+                                <a href="{{ route('index.rawat-inap-cetak-ringkasan-pulang', $rawat->id) }}"
+                                    class="btn  me-3 btn-light-primary btn-sm" href="">Ringkasan Pulang</a>
                                 <a class="btn btn-light-success btn-sm" href="">Surat Kontrol</a>
                             @endif
 
@@ -103,6 +117,16 @@
                                     <div class="col-lg-8">
                                         <span class="fw-bold fs-4">{{ $pasien->nama_pasien }}</span>
                                     </div>
+                                </div>
+                                <div class="row mb-5">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-3 fw-semibold text-muted">NO RM</label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8">
+                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->no_rm }}</span>
+                                    </div>
+                                    <!--end::Col-->
                                 </div>
                                 <div class="row mb-5">
                                     <!--begin::Label-->
@@ -196,11 +220,12 @@
                         </div>
                         <div class="separator separator-dashed border-secondary mb-5"></div>
                         <div class="rounded border p-5">
-                            <div class="mb-5 hover-scroll-x">
+                            <div class="mb-5 hover-scroll-x font-weight-bold">
                                 <div class="d-grid">
-                                    <ul class="nav nav-tabs flex-nowrap text-nowrap" role="tablist">
+                                    <ul class="nav nav-tabs text-nowrap font-weight-bold" role="tablist"
+                                        style="font-weight: bold">
                                         <li class="nav-item" role="presentation">
-                                            <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0 active"
+                                            <a class="nav-link btn btn-active-light @if (!$ringakasan_pasien_masuk) text-danger @elseif(!$anamnesa_pemeriksaan_fisik) text-danger @endif btn-color-gray-600 btn-active-color-primary rounded-bottom-0 active"
                                                 data-bs-toggle="tab" href="#kt_tab_pane_1" aria-selected="true"
                                                 role="tab">Asesmen Awal</a>
                                         </li>
@@ -256,6 +281,11 @@
                                                 data-bs-toggle="tab" href="#kt_tab_pane_8" aria-selected="false"
                                                 role="tab" tabindex="-1">Diganosa Akhir</a>
                                         </li>
+                                        <li class="nav-item" role="presentation">
+                                            <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0"
+                                                data-bs-toggle="tab" href="#kt_tab_pane_raber" aria-selected="false"
+                                                role="tab" tabindex="-1">Rawat Bersama</a>
+                                        </li>
 
                                         {{-- <li class="nav-item" role="presentation">
                                             <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0"
@@ -268,6 +298,11 @@
                                 </div>
                             </div>
                             <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade" id="kt_tab_pane_raber" role="tabpanel">
+                                    <button class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#model_raber">Tambah Raber</button>
+                                    @include('rawat-inap.menu.raber')
+                                </div>
                                 <div class="tab-pane fade" id="kt_tab_pane_bidan" role="tabpanel">
                                     <a class="btn btn-warning btn-sm mb-5"
                                         href="{{ route('detail.rawat-inap.pengkajian-kebidanan', $rawat->id) }}">Pengkajian</a>
@@ -334,7 +369,7 @@
                                         Pemberian Obat</button>
 
                                     <button class="btn btn-success btn-sm mb-5" data-bs-toggle="modal"
-                                        data-bs-target="#modal_obat" {{ $disable }} {{ $disable_order }}>Order
+                                        data-bs-target="#modal_obat" {{ $disable_order }}>Order
                                         Obat</button>
 
                                     {{-- <button class="btn btn-danger btn-sm mb-5">Retur Obat</button> --}}
@@ -642,7 +677,7 @@
             </div>
         </div>
         <div class="modal fade" tabindex="-1" id="modal_tindakan">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title">Tambah Tindakan</h3>
@@ -799,7 +834,7 @@
                                         <div data-repeater-list="radiologi">
                                             <div data-repeater-item>
                                                 <div class="form-group row mb-5">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-5">
                                                         <label class="form-label">Tindakan Rad</label>
                                                         <select name="tindakan_rad" class="form-select"
                                                             data-kt-repeater="select2radiologi" data-placeholder="-Pilih-"
@@ -811,8 +846,22 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label">Klinis</label>
+                                                        <input type="text" name="klinis" class="form-control"
+                                                            required />
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label">Posisi</label>
+                                                        <select name="posisi" id="posisi" class="form-select">
+                                                            <option value=""></option>
+                                                            <option value="Kanan">Kanan</option>
+                                                            <option value="Kiri">Kiri</option>
+                                                        </select>
+                                                    </div>
 
-                                                    <div class="col-md-4">
+
+                                                    <div class="col-md-1">
                                                         <a href="javascript:;" data-repeater-delete
                                                             class="btn btn-sm btn-light-danger mt-3 mt-md-8">
                                                             <i class="ki-duotone ki-trash fs-5"><span
@@ -820,7 +869,7 @@
                                                                     class="path2"></span><span
                                                                     class="path3"></span><span
                                                                     class="path4"></span><span class="path5"></span></i>
-                                                            Hapus
+
                                                         </a>
                                                     </div>
                                                 </div>
@@ -883,6 +932,55 @@
                                         <a href="javascript:;" data-repeater-create class="btn btn-light-primary">
                                             <i class="ki-duotone ki-plus fs-3"></i>
                                             Tambah Lab
+                                        </a>
+                                    </div>
+                                    <!--end::Form group-->
+                                </div>
+                                <!--end::Repeater-->
+                            </div>
+                            <div class="row mb-5">
+                                <!--begin::Repeater-->
+                                <div id="fisio_repeater">
+                                    <!--begin::Form group-->
+                                    <div class="form-group">
+                                        <div data-repeater-list="fisio">
+                                            <div data-repeater-item>
+                                                <div class="form-group row mb-5">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Tindakan Fisio</label>
+                                                        <select name="tindakan_fisio" class="form-select"
+                                                            data-kt-repeater="select2fisio" data-placeholder="-Pilih-"
+                                                            required>
+                                                            <option></option>
+                                                            @foreach ($fisio_tindakan as $fs)
+                                                                <option value="{{ $fs->id }}">
+                                                                    {{ $fs->nama_tarif }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <a href="javascript:;" data-repeater-delete
+                                                            class="btn btn-sm btn-light-danger mt-3 mt-md-8">
+                                                            <i class="ki-duotone ki-trash fs-5"><span
+                                                                    class="path1"></span><span
+                                                                    class="path2"></span><span
+                                                                    class="path3"></span><span
+                                                                    class="path4"></span><span class="path5"></span></i>
+                                                            Hapus
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end::Form group-->
+
+                                    <!--begin::Form group-->
+                                    <div class="form-group mt-5">
+                                        <a href="javascript:;" data-repeater-create class="btn btn-light-info">
+                                            <i class="ki-duotone ki-plus fs-3"></i>
+                                            Tambah Fisio
                                         </a>
                                     </div>
                                     <!--end::Form group-->
@@ -989,7 +1087,8 @@
 
                             <div class="mb-2">
                                 <label for="" class="form-label">Kelas Rawat</label>
-                                <select onchange="getRuangan()" required name="kelas_rawat" class="form-select" id="kelas_rawat">
+                                <select onchange="getRuangan()" required name="kelas_rawat" class="form-select"
+                                    id="kelas_rawat">
                                     <option value=""></option>
                                     @foreach ($kelas_rawat as $kr)
                                         <option value="{{ $kr->id }}">{{ $kr->kelas }}</option>
@@ -1000,7 +1099,7 @@
                                 <label for="" class="form-label">Nama Ruangan</label>
                                 <select required name="nama_ruangan" class="form-select" id="nama_ruangan">
                                     <option value=""></option>
-                                    
+
                                 </select>
                             </div>
 
@@ -1151,6 +1250,7 @@
                                                             <option value="Sublingual">Sublingual</option>
                                                             <option value="Nasal">Nasal</option>
                                                             <option value="Injeksi">Injeksi</option>
+                                                            <option value="Rectal">Rectal</option>
                                                         </select>
                                                         {{-- <input type="text" name='rute'
                                                             class="form-control form-control-sm mb-2 mb-md-0"
@@ -1202,12 +1302,136 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" tabindex="-1" id="modal_lihat">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div id="modal-hasil">
+
+                    </div>
+                </div>
+            </div>
+        </div>
     @endsection
     @section('js')
         <script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
         <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
         <script>
+            $(".btn-edit-penunjang").on("click", function(event) {
+                event.preventDefault();
+                var id = $(this).data("id");
+                url = "{{ route('detail.get-penunjang', '') }}" + "/" + id;
+                $("#modal-hasil").empty();
+                $.get(url).done(function(data) {
+                    $("#modal-hasil").html(data);
+                    $("#modal_lihat").modal('show');
+                });
+            })
+            $(".btn-hapus-penunjang").on("click", function(event) {
+                event.preventDefault();
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: 'Hapus Data?',
+                    text: "Hapus Data?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        url = "{{ route('detail.hapus-penunjang', '') }}" + "/" + id;
+                        $.get(url).done(function(data) {
+                            location.reload();
+                        });
+                    }
+                });
+            })
+            $(".btn-hapus-cppt").on("click", function(event) {
+                event.preventDefault();
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: 'Hapus Data?',
+                    text: "Hapus Data?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        url = "{{ route('detail.hapus-cppt', '') }}" + "/" + id;
+                        $.get(url).done(function(data) {
+                            location.reload();
+                        });
+                    }
+                });
+            })
+            $(".btn-hapus-implementasi").on("click", function(event) {
+                event.preventDefault();
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: 'Hapus Data?',
+                    text: "Hapus Data?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        url = "{{ route('detail.hapus-implementasi', '') }}" + "/" + id;
+                        $.get(url).done(function(data) {
+                            location.reload();
+                        });
+                    }
+                });
+            })
+            $(".btn-edit-cppt").on("click", function(event) {
+                event.preventDefault();
+                var id = $(this).data("id");
+                url = "{{ route('detail.get-cppt', '') }}" + "/" + id;
+                $("#modal-hasil").empty();
+                $.get(url).done(function(data) {
+                    $("#modal-hasil").html(data);
+                    $("#modal_lihat").modal('show');
+                });
+            });
+            $(".btn-edit-implementasi").on("click", function(event) {
+                event.preventDefault();
+                var id = $(this).data("id");
+                url = "{{ route('detail.get-implementasi', '') }}" + "/" + id;
+                $("#modal-hasil").empty();
+                $.get(url).done(function(data) {
+                    $("#modal-hasil").html(data);
+                    $("#modal_lihat").modal('show');
+                });
+            });
+
+            function modalHasilRad(id) {
+                // alert(id)
+                url = "{{ route('get-hasil-rad', '') }}" + "/" + id;
+                $("#modal-hasil").empty();
+                $.get(url).done(function(data) {
+                    $("#modal-hasil").html(data);
+                    $("#modal_lihat").modal('show');
+                });
+            }
+
+            function modalHasilLab(id) {
+                // alert(id)
+                url = "{{ route('get-hasil-lab', '') }}" + "/" + id;
+                $("#modal-hasil").empty();
+                $.get(url).done(function(data) {
+                    $("#modal-hasil").html(data);
+                    $("#modal_lihat").modal('show');
+                });
+            }
+
             function getRuangan() {
                 d = document.getElementById("kelas_rawat").value;
                 url = "{{ route('get-ruangan', '') }}" + "/" + d;
@@ -1226,6 +1450,7 @@
                 dateFormat: "Y-m-d H:i",
             });
             $(function() {
+
 
 
                 $("#frmPulang").on("submit", function(event) {
@@ -1461,6 +1686,38 @@
                         }
                     });
                 });
+                $("#frmRaber").on("submit", function(event) {
+                    event.preventDefault();
+                    var blockUI = new KTBlockUI(document.querySelector("#kt_app_body"));
+                    Swal.fire({
+                        title: 'Simpan Data?',
+                        text: "Simpan Data?",
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Tidak'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.blockUI({
+                                css: {
+                                    border: 'none',
+                                    padding: '15px',
+                                    backgroundColor: '#000',
+                                    '-webkit-border-radius': '10px',
+                                    '-moz-border-radius': '10px',
+                                    opacity: .5,
+                                    color: '#fff',
+                                    fontSize: '16px'
+                                },
+                                message: "<img src='{{ asset('assets/img/loading.gif') }}' width='10%' height='auto'> Tunggu . . .",
+                                baseZ: 9000,
+                            });
+                            this.submit();
+                        }
+                    });
+                });
                 $("#frmTindakan").on("submit", function(event) {
                     event.preventDefault();
                     var blockUI = new KTBlockUI(document.querySelector("#kt_app_body"));
@@ -1594,7 +1851,7 @@
                     event.preventDefault();
                     var blockUI = new KTBlockUI(document.querySelector("#kt_app_body"));
                     Swal.fire({
-                        title: 'Order Obat',
+                        title: 'Order Penunjang',
                         text: "Apakah Anda yakin akan order pemeriksaan penunjang ?",
                         icon: 'info',
                         showCancelButton: true,
@@ -1677,7 +1934,10 @@
                     show: function() {
                         $(this).slideDown();
 
-                        $(this).find('[data-kt-repeater="select2radiologi"]').select2();
+                        $(this).find('[data-kt-repeater="select2radiologi"]').select2({
+                            allowClear: true,
+                            dropdownParent: $('#modal_penunjang')
+                        });
                     },
 
                     hide: function(deleteElement) {
@@ -1685,7 +1945,33 @@
                     },
 
                     ready: function() {
-                        $('[data-kt-repeater="select2radiologi"]').select2();
+                        $('[data-kt-repeater="select2radiologi"]').select2({
+                            allowClear: true,
+                            dropdownParent: $('#modal_penunjang')
+                        });
+                    }
+                });
+                $('#fisio_repeater').repeater({
+                    initEmpty: true,
+
+                    show: function() {
+                        $(this).slideDown();
+
+                        $(this).find('[data-kt-repeater="select2fisio"]').select2({
+                            allowClear: true,
+                            dropdownParent: $('#modal_penunjang')
+                        });
+                    },
+
+                    hide: function(deleteElement) {
+                        $(this).slideUp(deleteElement);
+                    },
+
+                    ready: function() {
+                        $('[data-kt-repeater="select2fisio"]').select2({
+                            allowClear: true,
+                            dropdownParent: $('#modal_penunjang')
+                        });
                     }
                 });
 
@@ -1695,7 +1981,10 @@
                     show: function() {
                         $(this).slideDown();
 
-                        $(this).find('[data-kt-repeater="select2lab"]').select2();
+                        $(this).find('[data-kt-repeater="select2lab"]').select2({
+                            allowClear: true,
+                            dropdownParent: $('#modal_penunjang')
+                        });
                     },
 
                     hide: function(deleteElement) {
@@ -1703,7 +1992,10 @@
                     },
 
                     ready: function() {
-                        $('[data-kt-repeater="select2lab"]').select2();
+                        $('[data-kt-repeater="select2lab"]').select2({
+                            allowClear: true,
+                            dropdownParent: $('#modal_penunjang')
+                        });
                     }
                 });
 

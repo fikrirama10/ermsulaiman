@@ -19,21 +19,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--end::Global Stylesheets Bundle-->
     @yield('css')
-    <style>
-        .dataTables_scrollBody::-webkit-scrollbar-track {
-            background-color: #f7f7f7;
-        }
-
-        .dataTables_scrollBody::-webkit-scrollbar {
-            width: 20px;
-            height: 15px;
-            background-color: #F5F5F5;
-        }
-
-        .dataTables_scrollBody::-webkit-scrollbar-thumb {
-            background-color: #b4b4b4;
-        }
-    </style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->

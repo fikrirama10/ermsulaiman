@@ -13,6 +13,15 @@ use PDF;
 
 class PenunjangController extends Controller
 {
+    public function selesai_pemeriksaan(Request $request){
+        // return $request->all();
+        $penunjang = PermintaanPenunjang::where('idrawat',$request->id)->where('jenis_penunjang',$request->jenis)->where('status_pemeriksaan', 'Pemeriksaan')->first();
+        if($penunjang){
+            $penunjang->status_pemeriksaan = 'Selesai';
+            $penunjang->save();
+        }
+        return response()->json(['status' => 200, 'message' => 'Berhasil Menyelesaikan Pemeriksaan']);
+    }
     public function antrian($jenis)
     {
 
@@ -36,7 +45,7 @@ class PenunjangController extends Controller
     public function detail_penunjang($id, $jenis)
     {
         $rawat = Rawat::with('pasien')->where('id', $id)->first();
-        $penunjang = PermintaanPenunjang::with('pasien', 'rawat')->where('idrawat', $id)->where('status_pemeriksaan', 'Antrian')->where('jenis_penunjang', $jenis)->first();
+        $penunjang = PermintaanPenunjang::with('pasien', 'rawat')->where('idrawat', $id)->where('status_pemeriksaan', 'Antrian')->where('jenis_penunjang', $jenis)->where('pemeriksaan_penunjang','!=','null')->first();
         $list_penunjang = PermintaanPenunjang::with('pasien', 'rawat')->where('idrawat', $id)->where('status_pemeriksaan', 'Selesai')->where('jenis_penunjang', $jenis)->get();
         if ($jenis == 'Lab') {
             $dokter = Dokter::where('idspesialis', 8)->get();

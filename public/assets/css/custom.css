@@ -5,15 +5,15 @@ td {
 /* Color button main menu */
 .app-sidebar-menu-primary.menu>.menu-item>.menu-link.active {
     transition: color .2s ease;
-    background-color: #0061b0 !important;
+    background-color: #627581 !important;
     color: white !important;
-    border-right: 5px solid #FFA672;
+    border-right: 5px solid #FF342A;
 }
 
 /* Color button sub menu */
 .app-sidebar-menu-primary.menu>.menu-item .menu-item .menu-link.active {
     transition: color .2s ease;
-    background-color: #0061b0 !important;
+    background-color: #627581 !important;
     color: white !important;
 }
 
