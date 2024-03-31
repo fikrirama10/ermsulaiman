@@ -103,7 +103,7 @@
 					<div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
 						<!--begin::Logo-->
 						<a href="" class="mb-0 mb-lg-12">
-							<img alt="Logo" src="https://rsausulaiman.com/config/img/logors.png" class="h-80px h-lg-300px" />
+							<img alt="Logo" src="{{ asset('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png') }}" class="h-80px h-lg-300px" />
 						</a>
 						<!--end::Logo-->
 						<!--begin::Image-->
