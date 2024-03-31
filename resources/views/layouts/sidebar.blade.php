@@ -5,10 +5,10 @@
         <!--begin::Logo-->
         <div class=" d-flex flex-stack d-lg-flex bg-white rounded p-5">
             <a href="index.html" class="app-sidebar-logo">
-                <img alt="Logo" src="https://live.simrs.rsaudrsiswanto.co.id//frontend/images/logosiswanto.png" class="h-40px d-none d-sm-inline app-sidebar-logo-default theme-light-show me-1" />
-                {{-- <img alt="Logo" src="https://live.simrs.rsaudrsiswanto.co.id//frontend/images/logosiswanto.png" class="h-20px h-lg-25px theme-dark-show" /> --}}
+                <img alt="Logo" src="https://rsausulaiman.com/config/img/logors.png" class="h-40px d-none d-sm-inline app-sidebar-logo-default theme-light-show me-1" />
+                <img alt="Logo" src="{{ asset("assets/media/logos/demo38-dark.svg") }}" class="h-20px h-lg-25px theme-dark-show" />
 
-                <span class="fw-bold fs-7" style="color:#262e6a;">E-REKAM MEDIS</span>
+                <span class="fw-bold fs-7 text-success ">E-REKAM MEDIS</span>
             </a>
             <!--end::Logo-->
             <!--begin::Sidebar toggle-->
