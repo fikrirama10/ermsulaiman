@@ -3,18 +3,24 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+        <style>
+            .page_break { page-break-after: always; }
+            .page_break:last-child {
+                page-break-after: avoid;
+            }
+        </style>
 </head>
 
 <body>
     <div class="row">
         <table class="table">
             <tr class="border">
-                <td class="w-50" style="border: 1px solid black; text-align:center;">
+                <td class="w-30" style="border: 1px solid black; text-align:center;">
                     <br>
-                    <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} ">
+                    <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png'))) !!} ">
                     <br>
-                    RSAU DR SISWANTO <br>
-                    JL TENTARA PELAJAR NO 1, MALANGJIWAN, COLOMADU 0271779112
+                    RSAU dr. Norman T Lubis <br>
+                    Jl. Terusan Kopo-Soreang No.461, Lanud Sulaiman
 
                     {{-- <p>RSAU DR SISWANTO</p> --}}
                 </td>
@@ -294,6 +300,11 @@
                     <p>{{ $data->terapi }}</p>
                 </td>
             </tr> --}}
+            
+        </table>
+        <div class="page_break">
+        </div>
+        <table style="margin-top:20px;">
             @if ($tindak_lanjut)
                 <tr>
                     <td colspan="2" class="text-center" style="border: 1px solid black;">
@@ -479,13 +490,14 @@
 
                 </td>
                 <td class="p-2" style="border: 1px solid black; font-size:12; text-align:center;">
-                    <p>Surakarta, {{ \Carbon\Carbon::now()->formatLocalized('%A, %d %B %Y') }}</p>
+                    <p>Bandung, {{ \Carbon\Carbon::now()->formatLocalized('%A, %d %B %Y') }}</p>
                     <p>DPJP</p>
-                    <img width="50%" src="data:image/png;base64, {!! base64_encode($qr) !!} ">
+                    <img width="15%" src="data:image/png;base64, {!! base64_encode($qr) !!} ">
                     <p>{{ $rawat->dokter->nama_dokter }}</p>
                 </td>
             </tr>
         </table>
+        
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous">
