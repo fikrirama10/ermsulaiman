@@ -79,7 +79,7 @@ class RawatInapController extends Controller
         //     }
         // }
 
-        $response = Http::get(env('URL_SIMRS_LAMA').'/rest/pulang?pulang='.$pulang.'&rawat='.$rawat->id);
+        // $response = Http::get(env('URL_SIMRS_LAMA').'/rest/pulang?pulang='.$pulang.'&rawat='.$rawat->id);
         // return $response;
         #cek rawat ruangan 
         // $rawat_ruangan = DB::table('rawat_ruangan')->where('idrawat',$rawat->id)->where('status',1)->count();

@@ -11,10 +11,10 @@
             <tr class="border">
                 <td class="w-50" style="border: 1px solid black; text-align:center;">
                     <br>
-                    <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} ">
+                    <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png'))) !!} ">
                     <br>
-                    RSAU DR SISWANTO <br>
-                    JL TENTARA PELAJAR NO 1, MALANGJIWAN, COLOMADU 0271779112
+                   RSAU dr Norman T Lubis <br>
+                   Jl. Terusan Kopo-Soreang No.461, Lanud Sulaiman
                 </td>
                 <td class="w-75" style="border: 1px solid black;">
                     <div class="row p-1">
