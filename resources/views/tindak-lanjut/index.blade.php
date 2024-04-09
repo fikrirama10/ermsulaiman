@@ -160,6 +160,7 @@
                                                 <option value="Meninggal">Meninggal</option>
                                             @endif
                                             <option value="Dirawat">Pasien Dirawat</option>
+                                            <option value="Dirawat">Pasien Pulang</option>
                                         </select>
                                     </div>
                                 </div>

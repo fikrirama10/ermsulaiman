@@ -118,7 +118,7 @@
 
                 </td>
                 <td class="p-2" style="border: 1px solid black; font-size:14; text-align:center;">
-                    <p>Surakarta, {{ \Carbon\Carbon::now()->formatLocalized('%A, %d %B %Y') }}</p>
+                    <p>Bandung, {{ \Carbon\Carbon::now()->formatLocalized('%A, %d %B %Y') }}</p>
                     <p>DPJP</p>
                     <img src="data:image/png;base64, {!! base64_encode($qr) !!} ">
                     <p>{{ $rawat->dokter->nama_dokter }}</p>
