@@ -24,14 +24,16 @@
         <div class="row">
             <table>
                 <tr>
-                    <td rowspan="3"><img width="40" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} "></td>
-                    <td>FARMASI RSAU dr.SISWANTO</td>
+                    <td rowspan="3">
+                        <img width="40" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png'))) !!} ">
+                    </td>
+                    <td>FARMASI RSAU dr. Norman T Lubis</td>
                 </tr>
                 <tr>
-                    <td><i>JL Tentara Pelajar No 1, Malangjiwan, Colomadu</i></td>
+                    <td><i>Jl. Terusan Kopo-Soreang No.461, Lanud Sulaiman</i></td>
                 </tr>
                 <tr>
-                    <td><i>Telepon 0271779112</i></td>
+                    <td><i></i></td>
                 </tr>
             </table>
         </div>
