@@ -316,6 +316,21 @@ class PenunjangController extends Controller
         return view('penunjang.input_hasil_radiologi', compact('pemeriksaan', 'rawat', 'tindakan', 'template_radiologi', 'foto'));
     }
 
+    public function delete_foto_rad($id){
+        $foto = DB::table('radiologi_hasilfoto')->where('id',$id)->first();
+        if($foto){
+            $file_path = public_path('storage/foto-rad/'.$foto->foto); // Tentukan path lengkap ke file yang ingin dihapus
+
+            if (file_exists($file_path)) {
+                unlink($file_path);
+                DB::table('radiologi_hasilfoto')->where('id',$id)->delete();
+                return redirect()->back()->with('berhasil', 'Berhasil Delete Foto');
+            }else{
+                return redirect()->back()->with('berhasil', 'Berhasil Delete Foto');
+            } 
+        }
+        return redirect()->back()->with('berhasil', 'Berhasil Delete Foto');
+    }
     public function post_foto_rad(Request $request, $id)
     {
         // return $request->all();

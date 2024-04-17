@@ -235,7 +235,7 @@
                                                                     <td>{{ $f->nofoto }}</td>
                                                                     <td>
                                                                         <button data-bs-toggle="modal" data-bs-target="#modal_{{ $f->id }}" class="btn btn-sm btn-primary">View</button>
-                                                                        <a href="" class="btn btn-sm btn-danger">Delete</a>
+                                                                        <a href="{{ route('delete-foto-rad',$f->id) }}" class="btn btn-sm btn-danger">Delete</a>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
