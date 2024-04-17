@@ -124,16 +124,14 @@
         <div style="width:28%; float:left;">
             <div class="col-md-12 text-center">
                 <span class="">
-                    {{-- <p>Colomadu, {{ date('Y-m-d') }}</p> --}}
                     <br>
                     <p class="">Dokter Pemeriksan</p>
                     <p></p>
-                    <img width="200" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/ttd_dr_radiologi.jpg'))) !!} ">
+                    <img width="200" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/drdevi.png'))) !!} ">
                     
                     <p>
                         <br>
-                        dr. Muslimin Sp. Rad
-                        3313/57177/DS/01/443.2/59/III/2024
+                        dr Deviasari Sp.Rad
                     </p>
                 </span>
             </div>
