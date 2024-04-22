@@ -96,7 +96,7 @@ class RekapMedisController extends Controller
             $rekap_medis->perawat = 1;
             // return $rawat->idrawat;
             $current_time = round(microtime(true) * 1000); 
-            VclaimHelper::update_task($rawat->idrawat,4,$current_time);
+            // VclaimHelper::update_task($rawat->idrawat,4,$current_time);
         }elseif($request->jenis == 'bpjs'){
             $rekap_medis->bpjs = 1;
         } else {
@@ -104,7 +104,7 @@ class RekapMedisController extends Controller
             $resep_dokter = DB::table('demo_resep_dokter')->where('idrawat', $rawat->id)->get();
             // if($rekap_medis->dokter == null){
                 if (count($resep_dokter) > 0) {   
-                    VclaimHelper::update_task($rawat->idrawat,6,$current_time);             
+                    // VclaimHelper::update_task($rawat->idrawat,6,$current_time);             
                     $non_racik = [];
                     $racikan = [];
                     foreach($resep_dokter as $rd){
@@ -304,8 +304,8 @@ class RekapMedisController extends Controller
             // }
            
 
-            $current_time = round(microtime(true) * 1000); 
-            VclaimHelper::update_task($rawat->idrawat,5,$current_time);
+            // $current_time = round(microtime(true) * 1000); 
+            // VclaimHelper::update_task($rawat->idrawat,5,$current_time);
         }
 
         $rekap_medis->save();
