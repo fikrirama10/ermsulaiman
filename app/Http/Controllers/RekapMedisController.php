@@ -705,7 +705,7 @@ class RekapMedisController extends Controller
        
         $rawat->timestamps = false;
         $rawat->save();
-
+        $current_time = round(microtime(true) * 1000);
         $cek_resume = RekapMedis::where('idrawat', $request->idrawat)->first();
         if (!$cek_resume) {
             $resume = new RekapMedis;

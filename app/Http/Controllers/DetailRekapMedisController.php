@@ -183,7 +183,7 @@ class DetailRekapMedisController extends Controller
     {
         // return $request->all();
 
-
+        $current_time = round(microtime(true) * 1000);
         $rekap = DetailRekapMedis::find($id);
         $rawat = Rawat::find($rekap->idrawat);
         if (auth()->user()->idpriv == 7) {
