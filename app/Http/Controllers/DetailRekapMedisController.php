@@ -187,25 +187,26 @@ class DetailRekapMedisController extends Controller
         $rekap = DetailRekapMedis::find($id);
         $rawat = Rawat::find($rekap->idrawat);
         if (auth()->user()->idpriv == 7) {
+            VclaimHelper::update_task($rawat->idrawat,5,$current_time);
             $rekap->diagnosa = $request->diagnosa;
             $rekap->anamnesa_dokter = $request->anamnesa_dokter;
             $rekap->pemeriksaan_fisik_dokter = $request->pemeriksaan_fisik;
             $rekap->rencana_pemeriksaan = $request->rencana_pemeriksaan;
-            if ($request->terapi_obat) {
-                $rekap->terapi_obat = json_encode($request->terapi_obat);
-            } else {
-                $rekap->terapi_obat = 'null';
-            }
-            if ($request->radiologi) {
-                $rekap->radiologi = json_encode($request->radiologi);
-            } else {
-                $rekap->radiologi = 'null';
-            }
-            if ($request->lab) {
-                $rekap->laborat = json_encode($request->lab);
-            } else {
-                $rekap->laborat = 'null';
-            }
+            // if ($request->terapi_obat) {
+            //     $rekap->terapi_obat = json_encode($request->terapi_obat);
+            // } else {
+            //     $rekap->terapi_obat = 'null';
+            // }
+            // if ($request->radiologi) {
+            //     $rekap->radiologi = json_encode($request->radiologi);
+            // } else {
+            //     $rekap->radiologi = 'null';
+            // }
+            // if ($request->lab) {
+            //     $rekap->laborat = json_encode($request->lab);
+            // } else {
+            //     $rekap->laborat = 'null';
+            // }
             // if ($request->icdx) {
             //     $rekap->icdx = json_encode($request->icdx);
             // } else {

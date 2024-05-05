@@ -96,7 +96,7 @@ class RekapMedisController extends Controller
             $rekap_medis->perawat = 1;
             // return $rawat->idrawat;
             $current_time = round(microtime(true) * 1000); 
-            // VclaimHelper::update_task($rawat->idrawat,4,$current_time);
+            VclaimHelper::update_task($rawat->idrawat,4,$current_time);
         }elseif($request->jenis == 'bpjs'){
             $rekap_medis->bpjs = 1;
         } else {
@@ -713,6 +713,7 @@ class RekapMedisController extends Controller
             $resume->idrawat = $request->idrawat;
             $resume->idpasien = $request->idpasien;
             $resume->save();
+            return VclaimHelper::update_task($rawat->idrawat,4,$current_time);
         } else {
             $resume = RekapMedis::find($cek_resume->id);
         }
@@ -936,3 +937,4 @@ class RekapMedisController extends Controller
         return response()->json(['status'=>'ok']);
     }
 }
+

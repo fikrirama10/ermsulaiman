@@ -451,6 +451,11 @@ class VclaimHelper
             ]);
          }
         }
+
+        // $helper = new VclaimHelper();
+        // $token = $helper->getToken();
+        $response = Http::withOptions(["verify" =>true])->get('https://new-simrs.rsausulaiman.com/dashboard/rest/update-taks?kode_booking='.$rawat->idrawat.'&taks='.$taksid);
+        return $response;
         // return $kode_boking;
         // $helper = new VclaimHelper();
         // $token = $helper->getTokenAntrol();
