@@ -707,14 +707,13 @@ class RekapMedisController extends Controller
         $rawat->save();
         $current_time = round(microtime(true) * 1000);
         $cek_resume = RekapMedis::where('idrawat', $request->idrawat)->first();
-        return VclaimHelper::update_task($rawat->idrawat,4,$current_time);
         if (!$cek_resume) {
             $resume = new RekapMedis;
             $resume->idkategori = $request->idkategori;
             $resume->idrawat = $request->idrawat;
             $resume->idpasien = $request->idpasien;
             $resume->save();
-            
+            VclaimHelper::update_task($rawat->idrawat,4,$current_time);
         } else {
             $resume = RekapMedis::find($cek_resume->id);
         }
