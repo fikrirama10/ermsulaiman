@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Carbon;
-use Yajra\DataTables\Facades\DataTables;
-use App\Models\RekapMedis\RekapMedis;
-use App\Models\RekapMedis\DetailRekapMedis;
-use App\Models\RekapMedis\Kategori;
-use App\Models\Pasien\Pasien;
-use App\Models\Obat\Obat;
-use App\Models\Rawat;
-use App\Models\TindakLanjut;
-use Illuminate\Support\Facades\DB;
 use PDF;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Svg\Tag\Rect;
+use App\Models\Rawat;
+use App\Models\Obat\Obat;
+use App\Models\TindakLanjut;
+use Illuminate\Http\Request;
+use App\Helpers\VclaimHelper;
+use App\Models\Pasien\Pasien;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use App\Models\RekapMedis\Kategori;
+use App\Http\Controllers\Controller;
+use App\Models\RekapMedis\RekapMedis;
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\RekapMedis\DetailRekapMedis;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DetailRekapMedisController extends Controller
 {
