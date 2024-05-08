@@ -45,7 +45,7 @@ class FarmasiController extends Controller
         
     //    return $request->idantrian;
         // return $select_resep;
-        VclaimHelper::update_task($rawat->idrawat,7,$current_time);
+        // VclaimHelper::update_task($rawat->idrawat,7,$current_time);
         $obat_non_racik = 0;
         $obat_racikan = 0;
         $hitung_kronis = 0;
@@ -257,12 +257,14 @@ class FarmasiController extends Controller
     public function post_resep(Request $request, $id)
     {
         // return $request->all();
-        VclaimHelper::update_task($rawat->idrawat,6,$current_time);
+        
         $antrian = AntrianFarmasi::find($id);
         if($antrian->update != 1){
             return back()->with('gagal', 'Pastikan data sudah di update');
         }
         $rawat = Rawat::find($antrian->idrawat);
+        $current_time = round(microtime(true) * 1000);
+        VclaimHelper::update_task($rawat->idrawat,6,$current_time);
         $transaksi = DB::table('transaksi')->where('kode_kunjungan', $rawat->idkunjungan)->first();
         $pasien = Pasien::where('no_rm', $rawat->no_rm)->first();
         #simpan transaksi resep
@@ -463,8 +465,10 @@ class FarmasiController extends Controller
 
     public function status_rajal($id)
     {
-        VclaimHelper::update_task($rawat->idrawat,6,$current_time);
+        
         $rawat = Rawat::find($id);
+        $current_time = round(microtime(true) * 1000);
+        VclaimHelper::update_task($rawat->idrawat,6,$current_time);
         $pasien = Pasien::where('no_rm', $rawat->no_rm)->first();
         $antrian = AntrianFarmasi::where('idrawat', $id)->where('status_antrian','Antrian')->first();
         $rekap_medis = RekapMedis::where('idrawat', $id)->first();
