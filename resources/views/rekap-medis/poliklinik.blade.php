@@ -480,7 +480,7 @@
                                         <div class="tab-pane fade" id="kt_tab_pane_racikan" role="tabpanel">
                                             <div class="table-responsive">
                                                 @if (auth()->user()->idpriv == 7)
-                                                    <table class="table table-bordered fs-9 gs-2 gy-2 gx-2"
+                                                    <!-- <table class="table table-bordered fs-9 gs-2 gy-2 gx-2"
                                                         id="kt_docs_repeater_basic">
                                                         <thead class="text-center align-middle">
                                                             <tr>
@@ -513,9 +513,6 @@
                                                                                 class="form-select form-select-sm"
                                                                                 data-control="select2"
                                                                                 data-placeholder="Obat {{ $i }}">
-                                                                                {{-- <option value="1" selected>1</option>
-                                                                        <option value="2" selected>2</option>
-                                                                        <option value="3" >3</option> --}}
                                                                                 <option value=""></option>
                                                                                 @foreach ($obat as $val)
                                                                                     <option value="{{ $val->id }}">
@@ -640,7 +637,7 @@
 
 
                                                         </tbody>
-                                                    </table>
+                                                    </table> -->
                                                 @endif
                                             </div>
                                         </div>

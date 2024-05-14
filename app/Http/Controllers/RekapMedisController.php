@@ -500,7 +500,7 @@ class RekapMedisController extends Controller
                 ->addIndexColumn()
                 ->make();
         }
-        $obat = Obat::with('satuan')->where('nama_obat','!=','')->orderBy('obat.nama_obat', 'asc')->limit(4)->get();
+        $obat = Obat::with('satuan')->where('nama_obat','!=','')->orderBy('obat.nama_obat', 'asc')->get();
         $tindak_lanjut = TindakLanjut::where('idrawat', $id_rawat)->first();
         $radiologi = DB::table('radiologi_tindakan')->get();
         $lab = DB::table('laboratorium_pemeriksaan')->get();
