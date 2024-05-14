@@ -100,6 +100,7 @@ class RekapMedisController extends Controller
         }elseif($request->jenis == 'bpjs'){
             $rekap_medis->bpjs = 1;
         } else {
+            VclaimHelper::update_task($rawat->idrawat,5,$current_time);
             $rekap_medis->dokter = 1;
             $resep_dokter = DB::table('demo_resep_dokter')->where('idrawat', $rawat->id)->get();
             // if($rekap_medis->dokter == null){
@@ -499,7 +500,7 @@ class RekapMedisController extends Controller
                 ->addIndexColumn()
                 ->make();
         }
-        $obat = Obat::with('satuan')->where('nama_obat','!=','')->orderBy('obat.nama_obat', 'asc')->get();
+        $obat = Obat::with('satuan')->where('nama_obat','!=','')->orderBy('obat.nama_obat', 'asc')->first();
         $tindak_lanjut = TindakLanjut::where('idrawat', $id_rawat)->first();
         $radiologi = DB::table('radiologi_tindakan')->get();
         $lab = DB::table('laboratorium_pemeriksaan')->get();
