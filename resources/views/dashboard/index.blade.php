@@ -54,13 +54,15 @@
                 @foreach ($ruangan as $val)
                     <div class="col-sm-6 col-xl-3">
                         <!--begin::Card-->
-                        <div class="card shadow h-100" style="background-image:url('{{ asset('assets/media/patterns/vektor-2.png') }}');background-size: cover; ">
+                        <div class="card shadow h-100" 
+                        {{-- style="background-image:url('{{ asset('assets/media/patterns/vektor-2.png') }}');background-size: cover;" --}}
+                        >
                             <!--begin::Card header-->
                             <div class="card-header flex-nowrap border-0 pt-9">
                                 <!--begin::Card title-->
                                 <div class="card-title m-0">
                                     <!--begin::Icon-->
-                                    <div class="symbol me-5">
+                                     <div class="symbol me-5">
                                         <i class="fa-solid fa-bed fs-4"></i>
                                     </div>
                                     <!--end::Icon-->
