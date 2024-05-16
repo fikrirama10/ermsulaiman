@@ -62,8 +62,8 @@
     <!--end::Scrolltop-->
     <!--begin::Javascript-->
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
-    <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
-    <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
+    <script src="{{ asset('assets/plugins/global/plugins.bundle.js?v='.rand().'') }}"></script>
+    <script src="{{ asset('assets/js/scripts.bundle.js?v='.rand().'') }}"></script>
     <script>
         $(document).ready(function() {
 			$("#tgl_kontrol").flatpickr();
@@ -72,7 +72,7 @@
     </script>
     <!--end::Global Javascript Bundle-->
     <!--begin::Vendors Javascript(used for this page only)-->
-    <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
+    <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js?v='.rand().'') }}"></script>
     {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
