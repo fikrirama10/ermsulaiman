@@ -365,19 +365,8 @@
                                                                 <tr>
                                                                     <td>
                                                                         <select name="obat_non" id='nama_obat_non'
-                                                                            class="form-select form-select-sm"
-                                                                            data-control="select2"
-                                                                            data-placeholder="-Pilih-" required>
-                                                                            {{-- <option value="1" selected>1</option>
-                                                                    <option value="2" selected>2</option>
-                                                                    <option value="3" >3</option> --}}
-                                                                            <option value=""></option>
-                                                                            @foreach ($obat as $val)
-                                                                                <option value="{{ $val->id }}">
-                                                                                    {{ $val->nama_obat }} -
-                                                                                    {{ $val->satuan?->satuan }}
-                                                                                </option>
-                                                                            @endforeach
+                                                                            class="form-select form-select-sm selectObat"
+                                                                            required>
                                                                         </select>
                                                                     </td>
                                                                     <td>
@@ -480,7 +469,7 @@
                                         <div class="tab-pane fade" id="kt_tab_pane_racikan" role="tabpanel">
                                             <div class="table-responsive">
                                                 @if (auth()->user()->idpriv == 7)
-                                                    <!-- <table class="table table-bordered fs-9 gs-2 gy-2 gx-2"
+                                                    <table class="table table-bordered fs-9 gs-2 gy-2 gx-2"
                                                         id="kt_docs_repeater_basic">
                                                         <thead class="text-center align-middle">
                                                             <tr>
@@ -510,16 +499,16 @@
                                                                         @for ($i = 1; $i <= 8; $i++)
                                                                             <select name="obat[]"
                                                                                 id='nama_obat{{ $i }}'
-                                                                                class="form-select form-select-sm"
-                                                                                data-control="select2"
+                                                                                class="form-select form-select-sm selectObat"
+                                                                                {{-- data-control="select2" --}}
                                                                                 data-placeholder="Obat {{ $i }}">
-                                                                                <option value=""></option>
+                                                                                {{-- <option value=""></option>
                                                                                 @foreach ($obat as $val)
                                                                                     <option value="{{ $val->id }}">
                                                                                         {{ $val->nama_obat }} -
                                                                                         {{ $val->satuan?->satuan }}
                                                                                     </option>
-                                                                                @endforeach
+                                                                                @endforeach --}}
                                                                             </select>
                                                                         @endfor
 
@@ -637,7 +626,7 @@
 
 
                                                         </tbody>
-                                                    </table> -->
+                                                    </table>
                                                 @endif
                                             </div>
                                         </div>
@@ -2724,7 +2713,7 @@
                                 '',
                                 'success'
                             )
-                            
+
                         }
                     }
                 })
@@ -2755,5 +2744,33 @@
                 }
             })
         })
+    </script>
+    <script>
+        $('.selectObat').select2({
+            ajax: {
+                url: 'https://new-simrs.rsausulaiman.com/dashboard/rest/list-obat2',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+
+                    return {
+                        q: params.term, // search term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.result.map(function(user) {
+                            return {
+                                id: user.id,
+                                text: user.nama
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1,
+            placeholder: 'Search for a user...'
+        });
     </script>
 @endsection
