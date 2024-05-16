@@ -264,12 +264,12 @@ Route::get('/obat-tes',function(){
 
 });
 
-Route::get('/faskes', function (HttpRequest $request) {
+Route::get('/faskes', function (Request $request) {
     // $current_time = round(microtime(true) * 1000);
     // echo $current_time;
     return VclaimHelper::getlist_taks($request->kode);
 })->name('list-faskes');
-Route::get('/update-task', function (HttpRequest $request) {
+Route::get('/update-task', function (Request $request) {
     $current_time = round(microtime(true) * 1000);
     // echo $current_time;
     return VclaimHelper::update_task($request->kode,5,$current_time);
