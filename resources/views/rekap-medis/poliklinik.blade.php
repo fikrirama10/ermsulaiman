@@ -1834,6 +1834,7 @@
                                                         <option value=""></option>
                                                         <option value="Kanan">Kanan</option>
                                                         <option value="Kiri">Kiri</option>
+                                                        <option value="Bilateral">Bilateral</option>
                                                     </select>
                                                 </div>
 
