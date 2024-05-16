@@ -8,7 +8,7 @@
             </div>
             <!--begin::Logo image-->
             <a href="#">
-                <img alt="Logo" src="{{ asset('assets/media/logos/demo38-small.svg') }}" class="h-30px" />
+                {{-- <img alt="Logo" src="{{ asset('assets/media/logos/demo38-small.svg') }}" class="h-30px" /> --}}
             </a>
             <!--end::Logo image-->
         </div>
