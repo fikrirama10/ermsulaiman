@@ -92,7 +92,7 @@
 @endsection
 @section('js')
 <script type="text/javascript"
-    src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js">
+    src="{{ asset('assets/js/custom/blokUi.js') }}">
 </script>
 <script>
     $(function(){

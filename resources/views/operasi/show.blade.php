@@ -491,7 +491,7 @@
 @endsection
 @section('js')
 <script src="{{ asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
+<script type="text/javascript" src="{{ asset('assets/js/custom/blokUi.js') }}"></script>
 <script>
     $(function(){
         $("#frm-data").on( "submit", function(event) {
