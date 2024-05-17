@@ -127,7 +127,7 @@
                     <br>
                     <p class="">Dokter Pemeriksan</p>
                     <p></p>
-                    <img width="200" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/drdevi22.png'))) !!} ">
+                    <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/drdevi22.png'))) !!} ">
                     
                     <p>
                         <br>
