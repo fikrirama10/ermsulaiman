@@ -93,7 +93,7 @@
         <div class="row mt-4">
             <div class="col-md-12">
                 <b><u>KETERANGAN KLINIS</u></b>
-                <br><br>
+                <br>
                 <p>
                     <pre>{{ $pemeriksaan->klinis }}</pre>
                     </p>
@@ -102,17 +102,15 @@
         <div class="row mt-3">
             <div class="col-md-12">
                 <b><u>URAIAN HASIL PEMERIKSAAN</u></b>
-                <br><br>
-                <div >
-                  {!! nl2br(stripslashes($pemeriksaan->hasil))!!}
-                </div>
+                <br>
+                    <pre> {!! nl2br(stripslashes($pemeriksaan->hasil))!!}<pre>
                 
             </div>
         </div>
         <div class="row mt-3">
             <div class="col-md-12">
                 <b><u>KESAN / KESIMPULAN</u></b>
-                <br><br>
+                <br>
                 <pre>{!! nl2br(stripslashes($pemeriksaan->kesan)) !!}</pre>
             </div>
         </div>
