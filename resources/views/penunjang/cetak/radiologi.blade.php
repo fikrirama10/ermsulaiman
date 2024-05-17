@@ -111,7 +111,7 @@
             <div class="col-md-12">
                 <b><u>KESAN / KESIMPULAN</u></b>
                 <br>
-                <pre>{!! nl2br(stripslashes($pemeriksaan->kesan)) !!}</pre>
+                {!! nl2br(stripslashes($pemeriksaan->kesan)) !!}
             </div>
         </div>
     </div>
