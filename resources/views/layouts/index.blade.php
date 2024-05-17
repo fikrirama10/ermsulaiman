@@ -14,10 +14,12 @@
     <!--end::Vendor Stylesheets-->
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
     
-    <link href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" rel="stylesheet" type="text/css" />
+    {{-- <link href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" rel="stylesheet" type="text/css" /> --}}
     <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--end::Global Stylesheets Bundle-->
     @yield('css')
@@ -66,7 +68,8 @@
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js?v='.rand().'') }}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js?v='.rand().'') }}"></script>
-    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.min.js"></script>
+    <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
+    {{-- <script src="https://cdn.datatables.net/2.0.7/js/dataTables.min.js"></script> --}}
     <script>
         $(document).ready(function() {
 			$("#tgl_kontrol").flatpickr();
