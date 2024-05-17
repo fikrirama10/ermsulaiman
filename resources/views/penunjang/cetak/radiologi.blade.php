@@ -95,7 +95,7 @@
                 <b><u>KETERANGAN KLINIS</u></b>
                 <br>
                 <p>
-                    <pre>{{ $pemeriksaan->klinis }}</pre>
+                    {{ $pemeriksaan->klinis }}
                     </p>
             </div>
         </div>
@@ -103,7 +103,7 @@
             <div class="col-md-12">
                 <b><u>URAIAN HASIL PEMERIKSAAN</u></b>
                 <br>
-                    <pre> {!! nl2br(stripslashes($pemeriksaan->hasil))!!}<pre>
+                     {!! nl2br(stripslashes($pemeriksaan->hasil))!!}
                 
             </div>
         </div>
