@@ -5,7 +5,7 @@
 
 <head>
     <title>RSAU LANUD SULAIMAN</title>
-    <link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+    {{-- <link rel="canonical" href="https://preview.keenthemes.com/metronic8" /> --}}
     {{-- <link rel="shortcut icon" href="assets/media/logos/favicon.ico" /> --}}
     <!--begin::Fonts(mandatory for all pages)-->
     {{-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" /> --}}
@@ -22,11 +22,11 @@
     <!--begin::Root-->
     <style>
         body {
-            /* background-image: url({{ asset('assets/media/auth/bg10.jpeg') }}); */
+            background-image: url({{ asset('assets/media/auth/bg10.jpeg') }});
         }
 
         [data-theme="dark"] body {
-            /* background-image: url('assets/media/auth/bg10-dark.jpeg'); */
+            background-image: url('assets/media/auth/bg10-dark.jpeg');
         }
     </style>
     <div class="d-flex flex-column flex-root" id="kt_app_root">
@@ -112,13 +112,14 @@
             <!--end::Body-->
             <!--begin::Aside-->
             <div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2"
-                {{-- style="background-image: url({{ asset('assets/media/auth/74d776a0-16a7-4171-8302-34158b051e83.png') }})" --}}
+                style="background-image: url({{ asset('assets/media/auth/74d776a0-16a7-4171-8302-34158b051e83.png') }})"
                 >
                 <!--begin::Content-->
                 <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
                     <!--begin::Logo-->
                     <a href="" class="mb-0 mb-lg-12">
-                        {{-- <img alt="Logo" src="{{ asset('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png') }}"  class="h-80px h-lg-300px" /> --}}
+                        <img alt="Logo" src="{{ asset('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png') }}"
+                            class="h-80px h-lg-300px" />
                     </a>
                     <!--end::Logo-->
                     <!--begin::Image-->
