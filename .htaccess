@@ -1,3 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteCond %{HTTP_HOST} ^new\.erm\.rsausulaiman\.com$ [OR]
+    RewriteCond %{HTTP_HOST} ^www\.new\.erm\.rsausulaiman\.com$
+    RewriteRule ^/?$ "https://new.erm.rsausulaiman.com/public/" [R=301,L]
+</IfModule>
+
 <IfModule mod_expires.c>
     ExpiresActive On
 
