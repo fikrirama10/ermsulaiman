@@ -83,6 +83,8 @@ class RekapMedisController extends Controller
     public function selesai_poli(Request $request, $id)
     {
         $rekap_medis = RekapMedis::where('id', $id)->first();
+        // dd($rekap_medis);
+        // return $rekap_medis->tindakan;
         $rawat = Rawat::find($rekap_medis->idrawat);
         $transaksi = DB::table('transaksi')->where('kode_kunjungan', $rawat->idkunjungan)->first();
         // return $rawat->idkunjungan;
@@ -319,10 +321,12 @@ class RekapMedisController extends Controller
                 }
                 
                 $rawat->save();
-               
-                if ($rekap_medis->tindakan != NULL || $rekap_medis->tindakan != 'null') {
+                
+                // if ($rekap_medis->tindakan != 'null' || $rekap_medis->tindakan != null || $rekap_medis->tindakan != '') {
+                if (!empty($rekap_medis->tindakan)) {
                     $jumlah = 0;
                     // return $rekap_medis->tindakan;
+                    // if(count(json_decode($rekap_medis->tindakan)) > 0){
                     foreach (json_decode($rekap_medis->tindakan) as $tindakan) {
                         // $jumlah += 2;
                         // $cek_tindakan = DB::table('transaksi_detail_rinci')->where('idrawat', $rawat->id)->where('idtarif', $tindakan->tindakan)->first();
@@ -344,6 +348,7 @@ class RekapMedisController extends Controller
                             // }   
                         }
                         
+                    // }
                     }
                     // return $jumlah;
                 }
@@ -938,4 +943,3 @@ class RekapMedisController extends Controller
         return response()->json(['status'=>'ok']);
     }
 }
-
