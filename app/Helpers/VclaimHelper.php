@@ -455,7 +455,12 @@ class VclaimHelper
 
         // $helper = new VclaimHelper();
         // $token = $helper->getToken();
-        $response = Http::withOptions(["verify" =>true])->get('https://new-simrs.rsausulaiman.com/dashboard/rest/update-takss?kode_booking='.$rawat->idrawat.'&taks='.$taksid);
+        if(env('APP_ENV') == 'local'){
+            $response = Http::withOptions(["verify" =>false])->get('https://new-simrs.rsausulaiman.com/dashboard/rest/update-takss?kode_booking='.$rawat->idrawat.'&taks='.$taksid);
+        }else{
+            $response = Http::withOptions(["verify" =>true])->get('https://new-simrs.rsausulaiman.com/dashboard/rest/update-takss?kode_booking='.$rawat->idrawat.'&taks='.$taksid);
+        }
+        
         return $response;
         // return $kode_boking;
         // $helper = new VclaimHelper();
