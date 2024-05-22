@@ -329,11 +329,11 @@
                                                                 data-bs-target="#print_hasil{{ $pl->id }}" class="btn btn-warning btn-sm">
                                                                     <i class="fas fa-print"></i>
                                                                 </button>
-                                                                <button type="button" data-bs-toggle="modal"
+                                                                {{-- <button type="button" data-bs-toggle="modal"
                                                                 data-bs-target="#print_kwitasi{{ $pl->id }}"  class="btn btn-primary btn-sm">Kwitansi</button>
                                                                 <button type="button" data-bs-toggle="modal"
                                                                 data-bs-target="#print_kwitasi_kecil{{ $pl->id }}"  class="btn btn-info btn-sm">Kwitansi
-                                                                    Kecil</button>
+                                                                    Kecil</button> --}}
                                                                 <button type="button" data-bs-toggle="modal"
                                                                     data-bs-target="#modal_tambah_layanan_lab{{ $pl->id }}"
                                                                     class="btn btn-secondary btn-sm">Tambah Layanan</button>
