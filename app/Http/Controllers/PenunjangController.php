@@ -334,7 +334,9 @@ class PenunjangController extends Controller
     public function post_foto_rad(Request $request, $id)
     {
         // return $request->all();
-        $pemeriksaan = DB::table('radiologi_hasildetail')->where('id', $id)->first();
+        $pemeriksaan = DB::table('radiologi_hasildetail')
+        
+        ->where('id', $id)->first();
         $foto = $request->file('foto_radiologi');
         $fileName = time() . 'Rad_' . $pemeriksaan->idhasil . '.' . $foto->extension();
 
@@ -356,7 +358,14 @@ class PenunjangController extends Controller
 
     public function cetakRadiologi($id)
     {
-        $pemeriksaan = DB::table('radiologi_hasildetail')->where('id', $id)->first();
+        $pemeriksaan = DB::table('radiologi_hasildetail')
+        ->
+        select([
+            'radiologi_hasildetail.*',
+            'radiologi_tindakan.nama_tindakan'
+        ])
+        ->leftjoin('radiologi_tindakan','radiologi_hasildetail.idtindakan','=','radiologi_tindakan.id')
+        ->where('radiologi_hasildetail.id', $id)->first();
         $rawat = Rawat::find($pemeriksaan->idrawat);
 
         $pdf = PDF::loadview('penunjang.cetak.radiologi', compact('pemeriksaan', 'rawat'));

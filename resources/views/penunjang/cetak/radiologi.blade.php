@@ -55,9 +55,9 @@
                 <div class="table-responsive">
                     <table class="table">
                         <tr>
-                            <td>Nama Pasien</td>
+                            <td width=100>Nama Pasien</td>
                             <td>:</td>
-                            <td>{{ $rawat->pasien->nama_pasien }}</td>
+                            <td width=180>{{ $rawat->pasien->nama_pasien }}</td>
                             <td>Alamat Pasien</td>
                             <td>:</td>
                             <td>{{ $rawat->pasien->alamat_penanggunjawab }}</td>
@@ -86,6 +86,11 @@
                             <td>:</td>
                             <td>{{ date('Y-m-d') }}</td>
                         </tr>
+                        <tr>
+                            <td>Expertise</td>
+                            <td>:</td>
+                            <td>{{ $pemeriksaan?->nama_tindakan }}</td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -94,9 +99,7 @@
             <div class="col-md-12">
                 <b><u>KETERANGAN KLINIS</u></b>
                 <br>
-                <p>
                     {{ $pemeriksaan->klinis }}
-                    </p>
             </div>
         </div>
         <div class="row mt-3">
