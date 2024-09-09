@@ -82,12 +82,17 @@
                             <td>Jenis Kelamin</td>
                             <td>:</td>
                             <td>{{ $rawat->pasien->jenis_kelamin }}</td>
-                            <td>Tgl Permintaan</td>
+                            <td>Tgl Pemeriksaan</td>
                             <td>:</td>
                             <td>{{ date('Y-m-d') }}</td>
                         </tr>
+                         <tr>
+                            <td>Jenis Bayar</td>
+                            <td>:</td>
+                            <td>{{ $rawat->bayar->bayar }}</td>
+                        </tr>
                         <tr>
-                            <td>Expertise</td>
+                            <td>Jenis Pemeriksaan</td>
                             <td>:</td>
                             <td>{{ $pemeriksaan?->nama_tindakan }}</td>
                         </tr>
