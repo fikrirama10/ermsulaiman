@@ -237,29 +237,30 @@ class PenunjangController extends Controller
     public function post_data_hasil_lab(Request $request, $id)
     {
         // return $request->all();
-        $pemeriksaan = DB::table('laboratorium_hasildetail')->where('id', $id)->first();
-        $data_pemeriksaan = LabHasil::find($pemeriksaan->idhasil);
-        $rawat = Rawat::find($data_pemeriksaan->idrawat);
-        $transaksi = DB::table('transaksi')->where('kode_kunjungan', $rawat->idkunjungan)->first();
-        if ($request->lab) {
+        DB::beginTransaction();
+        try {
+            $pemeriksaan = DB::table('laboratorium_hasildetail')->where('id', $id)->first();
+            $data_pemeriksaan = LabHasil::find($pemeriksaan->idhasil);
+            $rawat = Rawat::find($data_pemeriksaan->idrawat);
+            $transaksi = DB::table('transaksi')->where('kode_kunjungan', $rawat->idkunjungan)->first();
+            if ($request->lab) {
             foreach ($request->lab as $lab) {
-                // $lab2 = DB::table('laboratorium_pemeriksaan')->where('id',$lab['tindakan_lab'])->first();
                 $data = [
-                    'iditem' => $lab['id_item'],
-                    'item' => $lab['item'],
-                    'hasil' => $lab['hasil'],
-                    'nilai_rujukan' => $lab['nilai_normal'],
-                    'satuan' => $lab['satuan'],
-                    'idpemeriksaan' => $pemeriksaan->idpemeriksaan,
-                    'idlayanan' => $pemeriksaan->id,
-                    'idhasil' => $pemeriksaan->idhasil,
+                'iditem' => $lab['id_item'],
+                'item' => $lab['item'],
+                'hasil' => $lab['hasil'],
+                'nilai_rujukan' => $lab['nilai_normal'],
+                'satuan' => $lab['satuan'],
+                'idpemeriksaan' => $pemeriksaan->idpemeriksaan,
+                'idlayanan' => $pemeriksaan->id,
+                'idhasil' => $pemeriksaan->idhasil,
                 ];
                 DB::table('lab_hasil')->insert($data);
             }
-            $periksa = DB::table('laboratorium_pemeriksaan')->where('id',$pemeriksaan->idpemeriksaan)->first();
-            // dd($periksa);
-            $tarif = DB::table('tarif')->where('id',$periksa->idtarif)->first();
-            DB::table('transaksi_detail_rinci')->insert([
+            $periksa = DB::table('laboratorium_pemeriksaan')->where('id', $pemeriksaan->idpemeriksaan)->first();
+            $tarif = DB::table('tarif')->where('id', $periksa->idtarif)->first();
+            if ($tarif) {
+                DB::table('transaksi_detail_rinci')->insert([
                 'idbayar' => $rawat->idbayar,
                 'iddokter' => $data_pemeriksaan->iddokter,
                 'idpaket' => 0,
@@ -270,14 +271,19 @@ class PenunjangController extends Controller
                 'tarif' => $tarif->tarif,
                 'idtindakan' => $tarif->kat_tindakan,
                 'tgl' => now(),
+                ]);
+            }
+            }
+            DB::table('laboratorium_hasildetail')->where('id', $id)->update([
+            'status' => '2'
             ]);
 
+            DB::commit();
+            return redirect()->route('penunjang.detail', ['id' => $rawat->id, 'jenis' => 'Lab'])->with('berhasil', 'Berhasil Membuat Hasil Pemeriksaan');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-        DB::table('laboratorium_hasildetail')->where('id', $id)->update([
-            'status' => '2'
-        ]);
-
-        return redirect()->route('penunjang.detail', ['id' => $rawat->id, 'jenis' => 'Lab'])->with('berhasil', 'Berhasil Membuat Hasil Pemeriksaan');
     }
     public function lihat_hasil_lab($id, $idpemeriksaan)
     {

@@ -321,7 +321,7 @@
                                 <tr>
                                     <td>DPJP</td>
                                     <td>:</td>
-                                    <td>{{ $tindak_lanjut->dokter->nama_dokter }}</td>
+                                    <td>{{ $tindak_lanjut->dokter?->nama_dokter }}</td>
                                 </tr>
                                 <tr>
                                     <td>No SPRI</td>
@@ -364,7 +364,7 @@
                                 <tr>
                                     <td>Poli Rujukan</td>
                                     <td>:</td>
-                                    <td>{{ $tindak_lanjut->poli->poli }} ({{ $tindak_lanjut->poli_rujuk }})</td>
+                                    <td>{{ $tindak_lanjut->poli?->poli }} ({{ $tindak_lanjut->poli_rujuk }})</td>
                                 </tr>
                                 <tr>
                                     <td>No Rujukan</td>
