@@ -111,7 +111,7 @@
                 { data: 'poli', name: 'poli.poli' },
                 { data: 'bayar', name: 'rawat_bayar.bayar' },
                 { data: 'nama_ruangan', name: 'ruangan.nama_ruangan' },
-                { data: 'jenis', name: 'rawat.jenis' },
+                { data: 'jenis', name: 'rawat_jenis.jenis' },
                 { data: 'opsi', name: 'opsi', orderable: false, searcheable: false },
             ]
         });

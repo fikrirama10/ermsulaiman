@@ -30,7 +30,7 @@
                         <td rowspan="3">
                             <img width="40" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png'))) !!} ">
                         </td>
-                        <td>FARMASI RSAU dr. Norman T Lubis</td>
+                        <td>FARMASI RSAU Lanud Sulaiman</td>
                     </tr>
                     <tr>
                         <td><i>Jl. Terusan Kopo-Soreang No.461, Lanud Sulaiman</i></td>

@@ -255,24 +255,27 @@ class PenunjangController extends Controller
                 'idlayanan' => $pemeriksaan->id,
                 'idhasil' => $pemeriksaan->idhasil,
                 ];
-                DB::table('lab_hasil')->insert($data);
+                DB::table('lab_hasil')->updateOrInsert(
+                    ['iditem' => $lab['id_item'], 'idhasil' => $pemeriksaan->idhasil],
+                    $data
+                );
             }
             $periksa = DB::table('laboratorium_pemeriksaan')->where('id', $pemeriksaan->idpemeriksaan)->first();
             $tarif = DB::table('tarif')->where('id', $periksa->idtarif)->first();
-            if ($tarif) {
-                DB::table('transaksi_detail_rinci')->insert([
-                'idbayar' => $rawat->idbayar,
-                'iddokter' => $data_pemeriksaan->iddokter,
-                'idpaket' => 0,
-                'idjenis' => 0,
-                'idrawat' => $rawat->id,
-                'idtransaksi' => $transaksi->id,
-                'idtarif' => $tarif->id,
-                'tarif' => $tarif->tarif,
-                'idtindakan' => $tarif->kat_tindakan,
-                'tgl' => now(),
-                ]);
-            }
+                if ($tarif && $transaksi) {
+                    DB::table('transaksi_detail_rinci')->insert([
+                    'idbayar' => $rawat->idbayar,
+                    'iddokter' => $data_pemeriksaan->iddokter,
+                    'idpaket' => 0,
+                    'idjenis' => 0,
+                    'idrawat' => $rawat->id,
+                    'idtransaksi' => $transaksi->id,
+                    'idtarif' => $tarif->id,
+                    'tarif' => $tarif->tarif,
+                    'idtindakan' => $tarif->kat_tindakan,
+                    'tgl' => now(),
+                    ]);
+                }
             }
             DB::table('laboratorium_hasildetail')->where('id', $id)->update([
             'status' => '2'
@@ -282,6 +285,7 @@ class PenunjangController extends Controller
             return redirect()->route('penunjang.detail', ['id' => $rawat->id, 'jenis' => 'Lab'])->with('berhasil', 'Berhasil Membuat Hasil Pemeriksaan');
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             return redirect()->back()->with('gagal', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -307,6 +311,7 @@ class PenunjangController extends Controller
         $data_pemeriksaan = LabHasil::find($pemeriksaan->idhasil);
         $rawat = Rawat::find($data_pemeriksaan->idrawat);
         $lab_form = DB::table('laboratorium_form')->where('idpemeriksaan', $idpemeriksaan)->orderBy('urutan', 'asc')->get();
+        
         // return $lab_form;
         return view('penunjang.input_hasil_lab', compact('pemeriksaan', 'rawat', 'lab_form'));
     }

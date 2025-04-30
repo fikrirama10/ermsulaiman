@@ -383,7 +383,7 @@
                                                                     <a href="{{ route('laboratorium.hapus-pemeriksaan', $pld->id) }}"
                                                                         class="btn btn-sm btn-danger">Hapus</a>
                                                                 @else
-                                                                    <a href="{{ route('penunjang.lihat-hasil', [$pld->id, $pld->idpemeriksaan]) }}"
+                                                                    <a href="{{ route('penunjang.input-hasil', [$pld->id, $pld->idpemeriksaan]) }}"
                                                                         class="btn btn-success btn-sm">Lihat Hasil</a>
                                                                 @endif
 
@@ -900,6 +900,7 @@
                             </div>
                             <form action="{{ route('laboratorium.tambah-pemeriksaan', $pl->id) }}" id='frmTambahLab'
                                 method="POST">
+                                <input type="hidden" name="idrawat" value="{{ $rawat->id }}">
                                 @csrf
                                 <div class="modal-body">
                                     <h5>Permintaan Pemeriksaan</h5>
@@ -917,7 +918,7 @@
                                                                             Lab</label>
                                                                         <select name="tindakan_lab" class="form-select"
                                                                             data-kt-repeater="select2lab_tambah"
-                                                                            data-placeholder="-Pilih-" required>
+                                                                            data-placeholder="-Pilih-" data-dropdown-parent="#modal_tambah_layanan_lab{{ $pl->id }}" required>
                                                                             <option></option>
                                                                             @foreach ($lab as $l)
                                                                                 <option value="{{ $l->id }}">

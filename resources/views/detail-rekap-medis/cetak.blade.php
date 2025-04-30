@@ -19,7 +19,7 @@
                     <br>
                     <img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png'))) !!} ">
                     <br>
-                    RSAU dr. Norman T Lubis <br>
+                    RSAU Lanud Sulaiman <br>
                     Jl. Terusan Kopo-Soreang No.461, Lanud Sulaiman
 
                     {{-- <p>RSAU DR SISWANTO</p> --}}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rawat;
+use App\Models\LabHasil;
 use App\Models\RekapMedis\RekapMedis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -81,6 +82,7 @@ class LaboratoriumController extends Controller
                 ->Leftjoin('demo_rekap_medis as rekap_medis', 'rekap_medis.idrawat', '=', 'rawat.id')
                 ->leftJoin('rawat_jenis', 'rawat_jenis.id', '=', 'rawat.idjenisrawat')
                 ->leftJoin('ruangan', 'ruangan.id', '=', 'rawat.idruangan')
+                ->whereBetween('rawat.tglmasuk', [now()->subDays(7), now()])
                 ->where('rawat_status.status', '!=', 5)->orderBy('rawat.tglmasuk', 'desc');
                 return DataTables::query($rawat)
                 ->addColumn('opsi', function ($rawat) {
@@ -108,6 +110,7 @@ class LaboratoriumController extends Controller
     public function tambah_pemeriksaan(Request $request,$id){
         // return $request->all();
         $lab_hasil = DB::table('laboratorium_hasildetail')->where('idhasil',$id)->first();
+        $rawat = DB::table('rawat')->where('id',$request->idrawat)->first();
         foreach($request->lab as $lab){
             $cek_hasil = DB::table('laboratorium_hasildetail')->where('idhasil',$id)->where('idpemeriksaan',$lab['tindakan_lab'])->first();
             if(!$cek_hasil){
@@ -117,10 +120,10 @@ class LaboratoriumController extends Controller
                     'idpemeriksaan'=>$lab['tindakan_lab'],
                     'nama_pemeriksaan'=>$data_lab->nama_pemeriksaan,
                     'status'=>1,
-                    'idbayar'=>$lab_hasil->idbayar,
-                    'no_rm'=>$lab_hasil->no_rm,
-                    'kat_pasien'=>$lab_hasil->kat_pasien,
-                    'idpengantar'=>$lab_hasil->idpengantar,
+                    'idbayar'=>$rawat->idbayar,
+                    'no_rm'=>$rawat->no_rm,
+                    'kat_pasien'=>$rawat->kat_pasien,
+                    'idpengantar'=>$cek_hasil?->idpengantar,
                 ];
                 DB::table('laboratorium_hasildetail')->insert($data);
             }
@@ -130,23 +133,41 @@ class LaboratoriumController extends Controller
     }
 
     public function tambah_pemeriksaan_lab(Request $request,$id){
-        $rawat = Rawat::find($id);
-        $rekap = RekapMedis::where('idrawat',$id)->first();
-        $data = [
-            'idrawat'=>$id,
-            'pemeriksaan_penunjang'=>'null',
-            'created_at'=>now(),
-            'updated_at'=>now(),
-            'status_pemeriksaan'=>'Antrian',
-            'jenis_penunjang'=>'Lab',
-            'peminta'=>$rawat->iddokter,
-            'idbayar'=>$rawat->idbayar,
-            'no_rm'=>$rawat->no_rm,
-            'jenis_rawat'=>$rawat->idjenisrawat,
-            'idrekap'=>$rekap?->id,
-        ];
-        #insert demo_permintaan_penunjang
-        $idpermintaan = DB::table('demo_permintaan_penunjang')->insert($data);
+        DB::beginTransaction();
+        try {
+            $rawat = Rawat::find($id);
+            $rekap = RekapMedis::where('idrawat', $id)->first();
+            $data = [
+            'idrawat' => $id,
+            'pemeriksaan_penunjang' => 'null',
+            'created_at' => now(),
+            'updated_at' => now(),
+            'status_pemeriksaan' => 'Antrian',
+            'jenis_penunjang' => 'Lab',
+            'peminta' => $rawat->iddokter,
+            'idbayar' => $rawat->idbayar,
+            'no_rm' => $rawat->no_rm,
+            'jenis_rawat' => $rawat->idjenisrawat,
+            'idrekap' => $rekap?->id,
+            ];
+            #insert demo_permintaan_penunjang
+            $idpermintaan = DB::table('demo_permintaan_penunjang')->insert($data);
+
+            $hasil = new LabHasil();
+            $hasil->idrawat = $rawat->id;
+            $hasil->labid = 'LAB' . date('Ymd') . rand(1000000, 9999999);
+            $hasil->tgl_permintaan = now();
+            $hasil->iddokter = $rawat->iddokter;
+            $hasil->idpetugas = auth()->user()->id;
+            $hasil->status = 1;
+            $hasil->save();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('gagal', 'Gagal menambahkan pemeriksaan: ' . $e->getMessage());
+        }
+
         return redirect()->back()->with('berhasil','Berhasil menambahkan pemeriksaan');
     }
     public function edit_tgl_hasil(Request $request,$id){

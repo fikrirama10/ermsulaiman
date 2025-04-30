@@ -26,7 +26,7 @@
             <table>
                 <tr>
                     <td rowspan="3"><img width="100" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png'))) !!} "></td>
-                    <td class="text-center"><b>RSAU dr. Norman T Lubis</b></td>
+                    <td class="text-center"><b>RSAU Lanud Sulaiman</b></td>
                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </td>
                 </tr>

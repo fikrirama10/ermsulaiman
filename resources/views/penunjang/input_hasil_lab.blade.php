@@ -158,7 +158,7 @@
                                 <h5 class="card-title">Input Pemeriksaan {{ $pemeriksaan->nama_pemeriksaan }}</h5>
                             </div>
                             <div class="card-body">
-                                @if ($pemeriksaan->status == 2)
+                                {{-- @if ($pemeriksaan->status == 2)
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
@@ -191,7 +191,7 @@
 
                                         </tbody>
                                     </table>
-                                @else
+                                @else --}}
                                     <form action="{{ route('penunjang.lab-post-hasil', $pemeriksaan->id) }}"
                                         id='frmLabhasil' method="post">
                                         @csrf
@@ -200,34 +200,38 @@
                                             <div class="form-group">
                                                 <div data-repeater-list="lab">
                                                     @foreach ($lab_form as $val)
+                                                        @php
+                                                           $hasil = DB::table('lab_hasil')
+                                                                ->where('idhasil', $pemeriksaan->idhasil)
+                                                                ->where('iditem', $val->id)
+                                                                ->first();
+                                                            
+                                                        @endphp
+                                                        {{-- @dd($hasil) --}}
                                                         <div data-repeater-item>
-                                                            <div class="form-group row mb-2">
+                                                            <div class="form-group row mb-3">
                                                                 <div class="col-md-3">
-                                                                    <label for="">Item</label>
-                                                                    <input type="hidden"
-                                                                        class="form-control form-control-solid" readonly
-                                                                        name='id_item' value="{{ $val->id }}">
-                                                                    <input type="text"
-                                                                        class="form-control form-control-solid" readonly
-                                                                        name='item' value="{{ $val->form }}">
+                                                                    <label class="form-label fw-semibold">Item</label>
+                                                                    <input type="hidden" class="form-control form-control-solid" readonly
+                                                                        name="id_item" value="{{ $val?->id }}">
+                                                                    <input type="text" class="form-control form-control-solid" readonly
+                                                                        name="item" value="{{ $val?->form }}" tabindex="-1">
                                                                 </div>
                                                                 <div class="col-md-2">
-                                                                    <label for="">Hasil</label>
-                                                                    <input type="text" class="form-control"
-                                                                        name='hasil'>
+                                                                    <label class="form-label fw-semibold">Hasil</label>
+                                                                    <input type="text" value="{{ $hasil?->hasil }}" 
+                                                                        class="form-control" name="hasil" autofocus>
                                                                 </div>
                                                                 <div class="col-md-2">
-                                                                    <label for="">Satuan</label>
-                                                                    <input type="text"
-                                                                        class="form-control form-control-solid" readonly
-                                                                        value="{{ $val->satuan }}" name='satuan'>
+                                                                    <label class="form-label fw-semibold">Satuan</label>
+                                                                    <input type="text" class="form-control form-control-solid" readonly
+                                                                        value="{{ $val?->satuan }}" name="satuan" tabindex="-1">
                                                                 </div>
                                                                 <div class="col-md-2">
-                                                                    <label for="">Nilai Normal</label>
-                                                                    <input type="text"
-                                                                        class="form-control form-control-solid" readonly
-                                                                        value="{{ $rawat->pasien->jenis_kelamin == 'L' ? $val->nilai_normallaki : $val->nilai_normalp }}"
-                                                                        name='nilai_normal'>
+                                                                    <label class="form-label fw-semibold">Nilai Normal</label>
+                                                                    <input type="text" class="form-control form-control-solid" readonly
+                                                                        value="{{ $rawat->pasien->jenis_kelamin == 'L' ? $val?->nilai_normallaki : $val->nilai_normalp }}"
+                                                                        name="nilai_normal" tabindex="-1">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -250,7 +254,7 @@
                                         <br>
                                         <button class="btn btn-primary">Simpan</button>
                                     </form>
-                                @endif
+                                {{-- @endif --}}
 
                             </div>
                         </div>
