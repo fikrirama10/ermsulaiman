@@ -35,12 +35,12 @@ class RekapMedisController extends Controller
         return View::make('rekap-medis.icare', compact('icare'));
     }
     public function get_data_racik_obat($id){
-        $resep = DB::table('demo_resep_dokter')->where('id', $id)->first();   
+        $resep = DB::table('demo_resep_dokter')->where('id', $id)->first();
         $takaran = ['-','tablet','kapsul','bungkus','tetes','ml','sendok takar 5ml','sendok takar 15ml','oles'];
         return View::make('rekap-medis.data-obat', compact('resep','takaran'));
     }
     public function get_data_obat($id){
-        $resep = DB::table('demo_resep_dokter')->where('id', $id)->first();   
+        $resep = DB::table('demo_resep_dokter')->where('id', $id)->first();
         $takaran = ['-','tablet','kapsul','bungkus','tetes','ml','sendok takar 5ml','sendok takar 15ml','oles'];
         return View::make('rekap-medis.data-obat', compact('resep','takaran'));
     }
@@ -91,13 +91,13 @@ class RekapMedisController extends Controller
         // return $transaksi;
         // return $rekap_medis;
         $detail = DetailRekapMedis::where('idrekapmedis', $rekap_medis->id)->first();
-        $current_time = round(microtime(true) * 1000); 
+        $current_time = round(microtime(true) * 1000);
 
 
         if ($request->jenis == 'perawat') {
             $rekap_medis->perawat = 1;
             // return $rawat->idrawat;
-            $current_time = round(microtime(true) * 1000); 
+            $current_time = round(microtime(true) * 1000);
             VclaimHelper::update_task($rawat->idrawat,4,$current_time);
         }elseif($request->jenis == 'bpjs'){
             $rekap_medis->bpjs = 1;
@@ -106,8 +106,8 @@ class RekapMedisController extends Controller
             $rekap_medis->dokter = 1;
             $resep_dokter = DB::table('demo_resep_dokter')->where('idrawat', $rawat->id)->get();
             // if($rekap_medis->dokter == null){
-                if (count($resep_dokter) > 0) {   
-                    // VclaimHelper::update_task($rawat->idrawat,6,$current_time);             
+                if (count($resep_dokter) > 0) {
+                    // VclaimHelper::update_task($rawat->idrawat,6,$current_time);
                     $non_racik = [];
                     $racikan = [];
                     foreach($resep_dokter as $rd){
@@ -125,10 +125,10 @@ class RekapMedisController extends Controller
                                     'jumlah_obat'=>$o,
                                 ];
                             }
-                
+
                             $obatData= json_encode(array_merge($data_obat,$jumlah_obat));
                             $data = json_decode($obatData, true);
-                
+
                             // Inisialisasi array 2 dimensi
                             $result = [];
                             $finalResult = array();
@@ -141,7 +141,7 @@ class RekapMedisController extends Controller
                                     $finalResult[$key][] = $value;
                                 }
                             }
-                            
+
                             // Menggabungkan hasil menjadi array sesuai format yang diinginkan
                             $combinedArray = array();
                             for ($i = 0; $i < count($finalResult['obat']); $i++) {
@@ -150,9 +150,9 @@ class RekapMedisController extends Controller
                                     'jumlah_obat' => $finalResult['jumlah_obat'][$i]
                                 );
                             }
-                            
+
                             // return $combinedArray;
-                
+
                             $racikan[] = [
                                 'obat'=>$combinedArray,
                                 'jumlah_obat'=>$jumlah_obat,
@@ -205,7 +205,7 @@ class RekapMedisController extends Controller
                             'idantrian'=>$antrian
                         ]);
                     }
-                    
+
                 }
                 if ($detail->radiologi != null || $detail->radiologi != 'null' || $detail->radiologi != '') {
                     $cek_permintaan_penunjang_radiologi = DB::table('demo_permintaan_penunjang')->where('idrawat', $rekap_medis->idrawat)->where('jenis_penunjang','Radiologi')->where('status_pemeriksaan','Antrian')->first();
@@ -302,12 +302,12 @@ class RekapMedisController extends Controller
                             'idrekap' => $rekap_medis->id,
                         ]);
                     }
-                    
+
                 }
             // }
-           
 
-            // $current_time = round(microtime(true) * 1000); 
+
+            // $current_time = round(microtime(true) * 1000);
             // VclaimHelper::update_task($rawat->idrawat,5,$current_time);
         }
 
@@ -319,9 +319,9 @@ class RekapMedisController extends Controller
                 if($rawat->status != 2){
                     $rawat->status = 4;
                 }
-                
+
                 $rawat->save();
-                
+
                 // if ($rekap_medis->tindakan != 'null' || $rekap_medis->tindakan != null || $rekap_medis->tindakan != '') {
                 if (!empty($rekap_medis->tindakan)) {
                     $jumlah = 0;
@@ -345,16 +345,16 @@ class RekapMedisController extends Controller
                                     'idtindakan' => $tarif->kat_tindakan,
                                     'tgl' => now(),
                                 ]);
-                            // }   
+                            // }
                         }
-                        
+
                     // }
                     }
                     // return $jumlah;
                 }
             }
         }
-       
+
         return redirect()->back()->with('berhasil', 'Pasien Selesai Diperiksa');
     }
 
@@ -434,7 +434,7 @@ class RekapMedisController extends Controller
             ]);
             // return $rekap_medis->id;
         }
-        
+
         // $obat_lama = DB::table('demo_resep_dokter')->where('idrawat', $id)->get();
 
         // // return $obat_lama;
@@ -453,7 +453,7 @@ class RekapMedisController extends Controller
         //     ];
         //     DB::table('demo_resep_dokter')->insert($data);
         // }
-        
+
         $originalPost = DetailRekapMedis::where('idrawat', $id)->first();
         // return $originalPost;
         if(!$cek_rekap){
@@ -461,7 +461,7 @@ class RekapMedisController extends Controller
             return back()->with('gagal','Data gagal disalin harap perawat mengisi isiannya terlebihdahulu');
         }else{
             $pemodal = DetailRekapMedis::where('idrawat', $idrawatbaru)->first();
-            
+
             $pemodal->diagnosa = $originalPost->diagnosa;
             $pemodal->pemeriksaan_fisik_dokter = $originalPost->pemeriksaan_fisik_dokter;
             $pemodal->pemeriksaan_fisio = $originalPost->pemeriksaan_fisio;
@@ -469,11 +469,11 @@ class RekapMedisController extends Controller
             $pemodal->kategori_penyakit = $originalPost->kategori_penyakit;
             $pemodal->icdx = $originalPost->icdx;
             $pemodal->icd9 = $originalPost->icd9;
-       
+
             $pemodal->save();
         }
-       
-       
+
+
         return redirect()->back()->with('berhasil', 'Template Berhasil Disalin');
     }
 
@@ -708,7 +708,7 @@ class RekapMedisController extends Controller
         if($rawat->status != 2){
             $rawat->status = 3;
         }
-       
+
         $rawat->timestamps = false;
         $rawat->save();
         $current_time = round(microtime(true) * 1000);
@@ -767,7 +767,7 @@ class RekapMedisController extends Controller
         $resep = DB::table('demo_resep_dokter')->insertGetId([
             'idrawat'=>$id,
             'idobat'=>json_encode($request->obat),
-            'nama_obat'=>$nama_obat,
+            'nama_obat'=>$nama_obat->toJson(),
             'jenis'=>'Racik',
             'jumlah'=>json_encode($request->jumlah_obat),
             'takaran'=>$request->takaran_obat,
@@ -780,29 +780,32 @@ class RekapMedisController extends Controller
         ]);
 
 
-        $list_obat = json_decode($nama_obat);
+        $list_obat = json_decode($nama_obat->toJson());
         $html_obat = '';
         $html_jumlah = '';
         foreach($list_obat->obat as $ob){
             if($ob != null){
-                $html_obat .= VclaimHelper::get_data_obat($ob).'+';
+                $html_obat .= VclaimHelper::get_data_obat($ob).' + ';
             }
-           
+
         }
 
         foreach($list_obat->jumlah as $jum){
             if($jum != null){
-                $html_jumlah .= $jum.'+';
+                $html_jumlah .= $jum.' + ';
             }
         }
 
+        // Format aturan pakai
+        $aturan_pakai = is_array($request->diminum) ? implode(', ', $request->diminum) : '';
+
         $html ='';
         $html .= '<tr id="li'.$resep.'">';
-        $html .= '<td>'.$html_obat.' <span class="badge badge-success">Racikan</span></td>';
-        $html .= '<td>'.$html_jumlah.'</td>';
+        $html .= '<td>'.rtrim($html_obat, ' + ').' <span class="badge badge-success">Racikan</span></td>';
+        $html .= '<td>'.rtrim($html_jumlah, ' + ').'</td>';
         $html .= '<td>'.$request->dosis_obat.'</td>';
         $html .= '<td>'.$request->takaran_obat.'</td>';
-        $html .= '<td>'.json_encode($request->diminum).'</td>';
+        $html .= '<td>'.$aturan_pakai.'</td>';
         $html .= '<td>'.$request->takaran.'</td>';
         $html .= '<td>'.$request->catatan.'</td>';
         $html .= '<td>
@@ -825,8 +828,8 @@ class RekapMedisController extends Controller
                 'diminum'=>$request->takaran,
                 'diberikan'=>$request->pemberian
             ]);
-    
-    
+
+
             $list_obat = json_decode($resep->nama_obat);
             $html_obat = '';
             $html_jumlah = '';
@@ -834,9 +837,9 @@ class RekapMedisController extends Controller
                 if($ob != null){
                     $html_obat .= VclaimHelper::get_data_obat($ob).'+';
                 }
-               
+
             }
-    
+
             foreach($list_obat->jumlah as $jum){
                 if($jum != null){
                     $html_jumlah .= $jum.'+';
@@ -866,9 +869,9 @@ class RekapMedisController extends Controller
                 'catatan'=>$request->catatan,
                 'diminum'=>$request->takaran
             ]);
-    
-            
-    
+
+
+
             $html ='';
             $html .= '<tr id="li'.$resep->id.'">';
             $html .= '<td>'.$resep->nama_obat.'</td>';
@@ -882,11 +885,11 @@ class RekapMedisController extends Controller
             class="btn btn-sm btn-danger btn-hapus"
             id="'.$resep->id.'" href="javascript:void(0)"
             style="cursor:pointer;"">Hapus</a>
-            <button data-id="'.$resep->id.'" class="btn btn-sm btn-info btn-edit">Edit</button>   
+            <button data-id="'.$resep->id.'" class="btn btn-sm btn-info btn-edit">Edit</button>
             </td>';
-    
+
             $html .= '</tr>';
-    
+
             return response()->json(['status'=>'ok','data'=>$html]);
         }
 
@@ -908,20 +911,23 @@ class RekapMedisController extends Controller
             'diminum'=>$request->takaran
         ]);
 
+        // Format aturan pakai
+        $aturan_pakai = is_array($request->diminum) ? implode(', ', $request->diminum) : '';
+
         $html ='';
         $html .= '<tr id="li'.$resep.'">';
         $html .= '<td>'.$obat->nama_obat.'</td>';
         $html .= '<td role="button" id="'.$resep.'">'.$request->jumlah_obat.'</td>';
         $html .= '<td>'.$request->dosis_obat.'</td>';
         $html .= '<td>'.$request->takaran_obat.'</td>';
-        $html .= '<td>'.json_encode($request->diminum).'</td>';
+        $html .= '<td>'.$aturan_pakai.'</td>';
         $html .= '<td>'.$request->takaran.'</td>';
         $html .= '<td>'.$request->catatan.'</td>';
         $html .= '<td><a
         class="btn btn-sm btn-danger btn-hapus"
         id="'.$resep.'" href="javascript:void(0)"
         style="cursor:pointer;"">Hapus</a>
-        <button data-id="'.$resep.'" class="btn btn-sm btn-info btn-edit-racik">Edit</button>   
+        <button data-id="'.$resep.'" class="btn btn-sm btn-info btn-edit-racik">Edit</button>
         </td>';
 
         $html .= '</tr>';

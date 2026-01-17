@@ -1,8 +1,48 @@
 @extends('layouts.index')
 @section('css')
+<style>
+    .form-control:read-only {
+        background-color: #f5f8fa;
+        cursor: not-allowed;
+    }
+    .patient-info-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+    }
+    .info-row {
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        padding: 0.75rem 0;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+</style>
 @endsection
 @section('content')
-    <div class="d-flex flex-column flex-column-fluid">
+    {{-- Check if user can edit based on role and status --}}
+    @php
+        $canEdit = false;
+        $isCompleted = false;
+
+        // Check if rawat exists and has status
+        if(isset($rawat)) {
+            $isCompleted = in_array($rawat->status, [4, 5]); // Status 4 or 5 means completed
+        }
+
+        // Determine edit permission based on role
+        $userRole = auth()->user()->idpriv;
+        if (!$isCompleted) {
+            if (in_array($userRole, [7, 14, 18, 20, 29])) {
+                $canEdit = true;
+            }
+        }
+
+        $readonlyAttr = $canEdit ? '' : 'readonly';
+        $disabledAttr = $canEdit ? '' : 'disabled';
+    @endphp
+
+    <div class="d-flex flex-column flex-column-fluid"
         <!--begin::Toolbar-->
         <div id="kt_app_toolbar" class="app-toolbar pt-7 pt-lg-10">
             <!--begin::Toolbar container-->
@@ -54,130 +94,144 @@
             <div id="kt_app_content_container" class="app-container container-fluid">
                 <!--begin::FAQ card-->
                 <div class="card shadow-sm">
-                    <div class="card-header">
+                    <div class="card-header border-0">
                         <div class="card-title">
-                            <h5 class="card-title">Rekam Medis Pasien</h5>
+                            <h3 class="fw-bold m-0">
+                                <i class="ki-duotone ki-medical-records fs-2 text-primary me-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                                Rekam Medis Pasien
+                            </h3>
                         </div>
                         <div class="card-toolbar">
-                            <a href="{{ route('rekam-medis-poli', $rekap->idrawat) }}"
-                                class="btn btn-sm btn-secondary">Kembali</a>
+                            @if($isCompleted)
+                                <span class="badge badge-light-success me-3">
+                                    <i class="ki-duotone ki-check-circle fs-5 text-success">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Sudah Diselesaikan
+                                </span>
+                            @else
+                                <span class="badge badge-light-warning me-3">
+                                    <i class="ki-duotone ki-information-5 fs-5 text-warning">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Belum Diselesaikan
+                                </span>
+                            @endif
+                            <a href="{{ route('rekam-medis-poli', $rekap->idrawat) }}" class="btn btn-sm btn-light-secondary">
+                                <i class="ki-duotone ki-arrow-left fs-5">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                                Kembali
+                            </a>
                         </div>
                     </div>
                     <!--begin::Body-->
                     <div class="card-body p-lg-10">
+                        @if(!$canEdit)
+                            <div class="alert alert-warning d-flex align-items-center mb-7">
+                                <i class="ki-duotone ki-shield-cross fs-2hx text-warning me-4">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                                <div class="d-flex flex-column">
+                                    <h4 class="mb-1 text-dark">Mode Tampilan Saja</h4>
+                                    <span>Rekam medis ini sudah diselesaikan atau Anda tidak memiliki akses untuk mengedit.</span>
+                                </div>
+                            </div>
+                        @endif
+
                         <form action="{{ route('detail-rekap-medis-update', $rekap->id) }}" method="post"
                             autocomplete="off" id="frm-data">
                             @csrf
                             <input type="hidden" name="kategori" value="{{ $rekap->rekapMedis->kategori->id }}">
-                            <div
-                                class="alert alert-dismissible bg-light-success border border-success border-3 border-dashed d-flex flex-column flex-sm-row w-100 p-5 mb-10">
-                                <!--begin::Icon-->
-                                <i class="ki-duotone ki-pulse fs-2hx text-success me-4 mb-5 mb-sm-0"><span
-                                        class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                                <!--end::Icon-->
 
-                                <!--begin::Content-->
-                                <div class="d-flex flex-column justify-content-center">
-                                    <h2 class="mb-1">{{ $rekap->rekapMedis->kategori->nama }}</h2>
-                                </div>
-                                <!--end::Content-->
-                            </div>
-                            <!--begin::Underline-->
-                            <span class="d-inline-block position-relative mb-5">
-                                <!--begin::Label-->
-                                <span class="d-inline-block mb-2 fs-2 fw-bold">
-                                    Detail Pasien
-                                </span>
-                                <!--end::Label-->
-
-                                <!--begin::Line-->
-                                <span
-                                    class="d-inline-block position-absolute h-5px bottom-0 end-0 start-0 bg-primary translate rounded"></span>
-                                <!--end::Line-->
-                            </span>
-                            <!--end::Underline-->
-                            <div class="row">
-                                <div class="row mb-3">
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-4">{{ $rekap->rekapMedis->pasien->nama_pasien }}</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">NIK</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span
-                                            class="fw-bold fs-6 text-gray-800">{{ $rekap->rekapMedis->pasien->nik }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">No RM</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span
-                                            class="fw-bold fs-6 text-gray-800">{{ $rekap->rekapMedis->pasien->no_rm }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">Tgl.Lahir</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $rekap->rekapMedis->pasien->tgllahir }}
-                                            - {{ $rekap->rekapMedis->pasien->usia_tahun }}Th
-                                            {{ $rekap->rekapMedis->pasien->usia_bulan }}Bln
-                                            {{ $rekap->rekapMedis->pasien->usia_hari }}Hr</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">No BPJS</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span
-                                            class="fw-bold fs-6 text-gray-800">{{ $rekap->rekapMedis->pasien->no_bpjs }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">No Handphone</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span
-                                            class="fw-bold fs-6 text-gray-800">{{ $rekap->rekapMedis->pasien->nohp }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">Alamat</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span
-                                            class="fw-bold fs-6 text-gray-800">{{ $rekap->rekapMedis->pasien->alamat->alamat }}</span>
-                                    </div>
-                                    <!--end::Col-->
+                            {{-- Kategori Alert --}}
+                            <div class="alert bg-light-primary border border-primary border-dashed d-flex align-items-center p-5 mb-10">
+                                <i class="ki-duotone ki-pulse fs-2hx text-primary me-4">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                                <div class="d-flex flex-column">
+                                    <h3 class="mb-1 text-dark">{{ $rekap->rekapMedis->kategori->nama }}</h3>
+                                    <span class="text-muted">Kategori Rekam Medis</span>
                                 </div>
                             </div>
-                            <div class="separator separator-dashed border-secondary mb-5"></div>
+
+                            {{-- Patient Info Card --}}
+                            <div class="card patient-info-card mb-10">
+                                <div class="card-body p-7">
+                                    <h2 class="text-white mb-5">
+                                        <i class="ki-duotone ki-profile-user fs-2x me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                            <span class="path4"></span>
+                                        </i>
+                                        {{ $rekap->rekapMedis->pasien->nama_pasien }}
+                                    </h2>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="info-row">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="opacity-75">NIK:</span>
+                                                    <span class="fw-bold">{{ $rekap->rekapMedis->pasien->nik }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="info-row">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="opacity-75">No. RM:</span>
+                                                    <span class="fw-bold">{{ $rekap->rekapMedis->pasien->no_rm }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="info-row">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="opacity-75">No. BPJS:</span>
+                                                    <span class="fw-bold">{{ $rekap->rekapMedis->pasien->no_bpjs }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-row">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="opacity-75">Tgl. Lahir:</span>
+                                                    <span class="fw-bold">
+                                                        {{ $rekap->rekapMedis->pasien->tgllahir }}
+                                                        ({{ $rekap->rekapMedis->pasien->usia_tahun }}Th {{ $rekap->rekapMedis->pasien->usia_bulan }}Bln {{ $rekap->rekapMedis->pasien->usia_hari }}Hr)
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="info-row">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="opacity-75">No. HP:</span>
+                                                    <span class="fw-bold">{{ $rekap->rekapMedis->pasien->nohp }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="info-row">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="opacity-75">Alamat:</span>
+                                                    <span class="fw-bold text-end">{{ $rekap->rekapMedis->pasien->alamat->alamat ?? '-' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="separator separator-dashed my-10"></div>
                             @if (auth()->user()->idpriv == 20)
                                 <div class="row mb-5">
                                     <div class="col-md-12">
-                                        <label class="form-label fw-bold">Kategori Penyakit</label>
-                                        <select class="form-select" data-control="select2"
-                                            data-placeholder="Select an option">
+                                        <label class="form-label fw-bold required">Kategori Penyakit</label>
+                                        <select class="form-select" data-control="select2" name="kategori_penyakit"
+                                            data-placeholder="Pilih kategori penyakit" {{ $disabledAttr }}>
                                             <option></option>
                                             @foreach ($kategori_diagnosa as $kd)
                                                 <option value="{{ $kd->id }}">{{ $kd->jenisdiagnosa }}</option>
@@ -189,8 +243,9 @@
                             @if (auth()->user()->idpriv == 7)
                                 <div class="row mb-5">
                                     <div class="col-md-12">
-                                        <label class="form-label fw-bold">Diagnosa</label>
-                                        <textarea name="diagnosa" data-kt-autosize="true" rows="3" class="form-control" placeholder="...">{{ $rekap->diagnosa }}</textarea>
+                                        <label class="form-label fw-bold required">Diagnosa</label>
+                                        <textarea name="diagnosa" data-kt-autosize="true" rows="3"
+                                            class="form-control" placeholder="Masukkan diagnosa..." {{ $readonlyAttr }}>{{ $rekap->diagnosa }}</textarea>
                                     </div>
                                 </div>
                                 {{-- <div class="row mb-5">
@@ -295,11 +350,11 @@
                                     </div>
                                 </div> --}}
                                 <div class="col-md-12">
-                                    <label class="form-label fw-bold">Tindakan / Prosedur</label>
-                                    <textarea data-kt-autosize="true" name="tindakan_prc" rows="3" class="form-control" placeholder="...">{{ $rekap->prosedur }}</textarea>
+                                    <label class="form-label fw-bold required">Tindakan / Prosedur</label>
+                                    <textarea data-kt-autosize="true" name="tindakan_prc" rows="3"
+                                        class="form-control" placeholder="Masukkan tindakan atau prosedur medis..." {{ $readonlyAttr }}>{{ $rekap->prosedur }}</textarea>
                                 </div>
-                                {{-- <div class="row mb-5">
-                                    <div class="col-md-12">
+                                {{-- <div class="row mb-5\">\n                                    <div class=\"col-md-12\">
                                         <div id="icd9_repeater">
                                             <!--begin::Form group-->
                                             <div class="form-group">
@@ -393,17 +448,107 @@
                             </span>
                             <!--end::Underline-->
                             @if (auth()->user()->idpriv == 7)
+
+                                <!--begin::SOAP Editable Section-->
+                                @if($soap_data)
+                                <div class="card card-bordered mb-10">
+                                    <div class="card-header bg-light-primary">
+                                        <h3 class="card-title">
+                                            <i class="ki-duotone ki-shield-tick fs-2 text-primary me-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            SOAP (Subjective, Objective, Assessment, Plan)
+                                        </h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-7">
+                                            <div class="col-12">
+                                                <div class="d-flex align-items-start">
+                                                    <span class="badge badge-success fs-5 me-3">S</span>
+                                                    <div class="flex-grow-1">
+                                                        <label class="form-label fw-bold mb-2">Subjective (Keluhan Pasien)</label>
+                                                        <textarea name="soap_subjective" data-kt-autosize="true" rows="3"
+                                                            class="form-control" placeholder="Masukkan keluhan subjektif pasien..." {{ $readonlyAttr }}>{{ $soap_data->subjective }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="separator separator-dashed my-5"></div>
+
+                                        <div class="row mb-7">
+                                            <div class="col-12">
+                                                <div class="d-flex align-items-start">
+                                                    <span class="badge badge-info fs-5 me-3">O</span>
+                                                    <div class="flex-grow-1">
+                                                        <label class="form-label fw-bold mb-2">Objective (Pemeriksaan Fisik & Penunjang)</label>
+                                                        <textarea name="soap_objective" data-kt-autosize="true" rows="3"
+                                                            class="form-control" placeholder="Masukkan hasil pemeriksaan objektif..." {{ $readonlyAttr }}>{{ $soap_data->objective }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="separator separator-dashed my-5"></div>
+
+                                        <div class="row mb-7">
+                                            <div class="col-12">
+                                                <div class="d-flex align-items-start">
+                                                    <span class="badge badge-warning fs-5 me-3">A</span>
+                                                    <div class="flex-grow-1">
+                                                        <label class="form-label fw-bold mb-2">Assessment (Diagnosis & Evaluasi)</label>
+                                                        <textarea name="soap_assessment" data-kt-autosize="true" rows="3"
+                                                            class="form-control" placeholder="Masukkan assessment dan diagnosis..." {{ $readonlyAttr }}>{{ $soap_data->assessment }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="separator separator-dashed my-5"></div>
+
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="d-flex align-items-start">
+                                                    <span class="badge badge-danger fs-5 me-3">P</span>
+                                                    <div class="flex-grow-1">
+                                                        <label class="form-label fw-bold mb-2">Plan (Rencana Tindakan & Terapi)</label>
+                                                        <textarea name="soap_plan" data-kt-autosize="true" rows="3"
+                                                            class="form-control" placeholder="Masukkan rencana tindakan dan terapi..." {{ $readonlyAttr }}>{{ $soap_data->plan }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="separator separator-dashed my-5"></div>
+
+                                        <div class="text-muted fs-7 text-end">
+                                            <i class="ki-duotone ki-calendar fs-6 me-1">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            Didokumentasikan pada: {{ \Carbon\Carbon::parse($soap_data->created_at)->translatedFormat('l, d F Y H:i') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+                                <!--end::SOAP Editable Section-->
+
+                                <div class="separator separator-dashed border-primary my-10"></div>
+
                                 <div class="row mb-5">
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold">Anamnesa</label>
-                                        <textarea name="anamnesa_dokter" data-kt-autosize="true" rows="3" class="form-control" placeholder="">{{ $rekap->anamnesa_dokter }}</textarea>
+                                        <textarea name="anamnesa_dokter" data-kt-autosize="true" rows="3"
+                                            class="form-control" placeholder="Masukkan anamnesa..." {{ $readonlyAttr }}>{{ $rekap->anamnesa_dokter }}</textarea>
                                     </div>
                                 </div>
                                 @if ($rawat->idjenisrawat == 3)
                                 <div class="row mb-5">
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold">Pemeriksaan Fisik</label>
-                                        <textarea name="pemeriksaan_fisik" rows="3" class="form-control" placeholder="Pemeriksaan Fisik">{{ $rekap->pemeriksaan_fisik_dokter }}</textarea>
+                                        <textarea name="pemeriksaan_fisik" rows="3"
+                                            class="form-control" placeholder="Masukkan hasil pemeriksaan fisik..." {{ $readonlyAttr }}>{{ $rekap->pemeriksaan_fisik_dokter }}</textarea>
                                     </div>
                                 </div>
                                 @endif
@@ -412,33 +557,35 @@
                                         <div class="col-md-12">
                                             <label class="form-label fw-bold">Pemeriksaan Fisik</label>
                                             <textarea data-kt-autosize="true" name="pemeriksaan_fisik" rows="3" class="form-control"
-                                                placeholder="Pemeriksaan Fisik">{{ $pemeriksaan_fisio->pemeriksaan_fisik }}</textarea>
+                                                placeholder="Pemeriksaan Fisik" {{ $readonlyAttr }}>{{ $pemeriksaan_fisio->pemeriksaan_fisik }}</textarea>
                                         </div>
                                     </div>
                                     <div class="row mb-5">
                                         <div class="col-md-12">
                                             <label class="form-label fw-bold">Pemeriksaan Uji Fungsi</label>
                                             <textarea data-kt-autosize="true" name="pemeriksaan_uji_fungsi" rows="3" class="form-control"
-                                                placeholder="Pemeriksaan Uji Fungsi">{{ $pemeriksaan_fisio->pemeriksaan_uji_fungsi }}</textarea>
+                                                placeholder="Pemeriksaan Uji Fungsi" {{ $readonlyAttr }}>{{ $pemeriksaan_fisio->pemeriksaan_uji_fungsi }}</textarea>
                                         </div>
                                     </div>
                                     <div class="row mb-5">
                                         <div class="col-md-12">
                                             <label class="form-label fw-bold">Tata Laksanan KFR (ICD ) CM </label>
                                             <textarea data-kt-autosize="true" name="tata_laksana" rows="3" class="form-control"
-                                                placeholder="Tata Laksana">{{ $pemeriksaan_fisio->tata_laksana }}</textarea>
+                                                placeholder="Tata Laksana" {{ $readonlyAttr }}>{{ $pemeriksaan_fisio->tata_laksana }}</textarea>
                                         </div>
                                     </div>
                                     <div class="row mb-5">
                                         <div class="col-md-12">
                                             <label class="form-label fw-bold">Anjuran</label>
-                                            <textarea data-kt-autosize="true" name="anjuran" rows="3" class="form-control" placeholder="Anjuran">{{ $pemeriksaan_fisio->anjuran }}</textarea>
+                                            <textarea data-kt-autosize="true" name="anjuran" rows="3" class="form-control"
+                                                placeholder="Anjuran" {{ $readonlyAttr }}>{{ $pemeriksaan_fisio->anjuran }}</textarea>
                                         </div>
                                     </div>
                                     <div class="row mb-5">
                                         <div class="col-md-12">
                                             <label class="form-label fw-bold">Evaluasi</label>
-                                            <textarea data-kt-autosize="true" name="evaluasi" rows="3" class="form-control" placeholder="Evaluasi">{{ $pemeriksaan_fisio->evaluasi }}</textarea>
+                                            <textarea data-kt-autosize="true" name="evaluasi" rows="3" class="form-control"
+                                                placeholder="Evaluasi" {{ $readonlyAttr }}>{{ $pemeriksaan_fisio->evaluasi }}</textarea>
                                         </div>
                                     </div>
 
@@ -731,7 +878,8 @@
                                 <div class="row mb-5">
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold">Anamnesa</label>
-                                        <textarea name="anamnesa" rows="3" class="form-control" placeholder="Alasan Masuk Rumah Sakit">{{ $rekap->anamnesa }}</textarea>
+                                        <textarea name="anamnesa" rows="3"
+                                            class="form-control" placeholder="Alasan Masuk Rumah Sakit" {{ $readonlyAttr }}>{{ $rekap->anamnesa }}</textarea>
                                     </div>
                                 </div>
                             @endif
@@ -740,7 +888,8 @@
                                 <div class="row mb-5">
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold">Obat Yang Dikonsumsi</label>
-                                        <textarea name="obat_yang_dikonsumsi" rows="3" class="form-control" placeholder="....">{{ $rekap->obat_yang_dikonsumsi }}</textarea>
+                                        <textarea name="obat_yang_dikonsumsi" rows="3"
+                                            class="form-control" placeholder="Masukkan obat yang dikonsumsi pasien..." {{ $readonlyAttr }}>{{ $rekap->obat_yang_dikonsumsi }}</textarea>
                                     </div>
                                 </div>
                                 <div class="row mb-5 p-lg-5">
@@ -1240,11 +1389,11 @@
                                 <div class="row mb-5">
                                     <div class="col-md-12">
                                         <textarea name="rencana_pemeriksaan" rows="3" class="form-control"
-                                            placeholder="Hasil Pemeriksaan Penunjang (yang relevan dengan diagnosis dan terapi)">{{ $rekap->rencana_pemeriksaan }}</textarea>
+                                            placeholder="Hasil Pemeriksaan Penunjang (yang relevan dengan diagnosis dan terapi)" {{ $readonlyAttr }}>{{ $rekap->rencana_pemeriksaan }}</textarea>
                                     </div>
                                 </div>
                                 <!--begin::Underline-->
-                                <span class="d-inline-block position-relative mb-7">
+                                <span class="d-inline-block position-relative mb-7 d-none">
                                     <!--begin::Label-->
                                     <span class="d-inline-block mb-2 fs-4 fw-bold">
                                         Terapi
@@ -1326,7 +1475,7 @@
                                                             </select>
 
                                                         </td>
-                                              
+
                                                         <td>
                                                             <div class="form-check form-check-inline mb-2">
                                                                 <input class="form-check-input" type="radio"
@@ -1459,7 +1608,7 @@
                                         <div class="form-group">
                                             <div data-repeater-list="terapi_obat">
                                                 @if ($rekap->terapi_obat != 'null')
-                                                    @foreach (json_decode($rekap->terapi_obat) as $val)    
+                                                    @foreach (json_decode($rekap->terapi_obat) as $val)
                                                         @if (isset($val->terapi_obat_racikan))
                                                         <div data-repeater-item>
                                                             <div class="form-group row mb-5">
@@ -1468,7 +1617,7 @@
                                                                         @foreach ($val->terapi_obat_racikan as $data_obat)
                                                                         <div data-repeater-list="terapi_obat_racikan"
                                                                             class="">
-                                                                           
+
                                                                             <div data-repeater-item>
                                                                                 <div class="row">
                                                                                     <div class="col-md-8">
@@ -1488,7 +1637,7 @@
                                                                                     <div class="col-md-4">
                                                                                         <label class="form-label">Jumlah (dosis) </label>
                                                                                         <div class="input-group pb-3">
-        
+
                                                                                             <input type="number"
                                                                                                 name="jumlah_obat" step=".01" value="{{ $data_obat->jumlah_obat }}"
                                                                                                 class="form-control mb-5 mb-md-0"
@@ -1510,14 +1659,14 @@
                                                                                                         class="path5"></span></i>
                                                                                             </button>
                                                                                         </div>
-                                                                                        
+
                                                                                     </div>
                                                                                 </div>
-        
+
                                                                             </div>
-                                                                           
-                                                                            
-        
+
+
+
                                                                         </div>
                                                                         @endforeach
                                                                         <button class="btn btn-sm btn-flex btn-light-success"
@@ -1526,7 +1675,7 @@
                                                                             Tambah Racikan
                                                                         </button>
                                                                     </div>
-        
+
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <label class="form-label">Signa</label>
@@ -1541,7 +1690,7 @@
                                                                             placeholder="...." aria-label="Server">
                                                                     </div>
                                                                 </div>
-        
+
                                                                 <div class="col-md-4">
                                                                     <a href="javascript:;" data-repeater-delete
                                                                         class="btn btn-sm btn-light-danger mt-3 mt-md-8">
@@ -1556,8 +1705,8 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        @endif                                                  
-                                                        
+                                                        @endif
+
                                                     @endforeach
                                                 @else
                                                     <div data-repeater-item>
@@ -1586,7 +1735,7 @@
                                                                                 <div class="col-md-4">
                                                                                     <label class="form-label">Jumlah (dosis)</label>
                                                                                     <div class="input-group pb-3">
-    
+
                                                                                         <input type="number"
                                                                                             name="jumlah_obat" step=".01"
                                                                                             class="form-control mb-5 mb-md-0"
@@ -1608,14 +1757,14 @@
                                                                                                     class="path5"></span></i>
                                                                                         </button>
                                                                                     </div>
-                                                                                    
+
                                                                                 </div>
                                                                             </div>
-    
+
                                                                         </div>
-    
-    
-    
+
+
+
                                                                     </div>
                                                                     <button class="btn btn-sm btn-flex btn-light-success"
                                                                         data-repeater-create type="button">
@@ -1623,7 +1772,7 @@
                                                                         Tambah Racikan
                                                                     </button>
                                                                 </div>
-    
+
                                                             </div>
                                                             <div class="col-md-3">
                                                                 <label class="form-label">Signa</label>
@@ -1638,7 +1787,7 @@
                                                                         placeholder="...." aria-label="Server">
                                                                 </div>
                                                             </div>
-    
+
                                                             <div class="col-md-4">
                                                                 <a href="javascript:;" data-repeater-delete
                                                                     class="btn btn-sm btn-light-danger mt-3 mt-md-8">
@@ -1679,7 +1828,23 @@
                     </div>
                     <!--end::Body-->
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-md btn-success">Simpan</button>
+                        @if($canEdit)
+                            <button type="submit" class="btn btn-md btn-success">
+                                <i class="ki-duotone ki-check fs-2"></i>
+                                Simpan
+                            </button>
+                        @else
+                            <div class="alert alert-light-info d-flex align-items-center p-5">
+                                <i class="ki-duotone ki-shield-tick fs-2hx text-info me-4">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                                <div class="d-flex flex-column">
+                                    <span class="text-gray-800 fw-bold">Data sudah dikunci dan tidak dapat diubah</span>
+                                    <span class="text-gray-600 fw-semibold fs-7">Rekam medis ini sudah diselesaikan</span>
+                                </div>
+                            </div>
+                        @endif
                         </form>
                     </div>
                 </div>
@@ -1834,7 +1999,7 @@
                     @else
                         new Tagify(this.querySelector('[data-kt-repeater="tagify"]'));
                     @endif
-                   
+
                 },
 
                 hide: function(deleteElement) {
@@ -1852,7 +2017,7 @@
                     new Tagify(document.querySelector('[data-kt-repeater="tagify"]'));
 
                     @endif
-                    
+
                 }
             });
 

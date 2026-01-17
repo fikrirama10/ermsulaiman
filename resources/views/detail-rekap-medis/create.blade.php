@@ -1,5 +1,54 @@
 @extends('layouts.index')
 @section('css')
+<style>
+    /* Compact Form Styling */
+    .accordion-button:not(.collapsed) {
+        background-color: #f1faff;
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .125);
+    }
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0, 0, 0, .125);
+    }
+    .accordion-item {
+        border: 1px solid #e4e6ef;
+        border-radius: 0.475rem !important;
+    }
+    .form-control-sm, .form-select-sm {
+        font-size: 0.925rem;
+    }
+    .input-group-sm .input-group-text {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.75rem;
+    }
+    /* Sticky Footer Shadow */
+    .sticky-bottom {
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.95) !important;
+    }
+    /* Badge compact */
+    .badge {
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+    }
+    /* Smooth transitions */
+    .accordion-collapse {
+        transition: all 0.3s ease-in-out;
+    }
+    /* Compact spacing for repeater */
+    [data-repeater-item] {
+        background-color: #f9fafb;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        margin-bottom: 0.5rem;
+    }
+    /* Focus states */
+    .form-control:focus, .form-select:focus {
+        border-color: #009ef7;
+        box-shadow: 0 0 0 0.15rem rgba(0, 158, 247, 0.15);
+    }
+</style>
 @endsection
 @section('content')
     <div class="d-flex flex-column flex-column-fluid">
@@ -64,629 +113,640 @@
                         </div>
                     </div>
                     <!--begin::Body-->
-                    <div class="card-body p-lg-10">
+                    <div class="card-body p-lg-6">
                         <form action="{{ route('detail-rekap-medis-store', $data->id) }}" method="post" autocomplete="off"
                             id="frm-data">
                             @csrf
                             <input type="hidden" name="kategori" value="{{ $kategori->id }}">
-                            <div
-                                class="alert alert-dismissible bg-light-success border border-success border-3 border-dashed d-flex flex-column flex-sm-row w-100 p-5 mb-10">
-                                <!--begin::Icon-->
-                                <i class="ki-duotone ki-pulse fs-2hx text-success me-4 mb-5 mb-sm-0"><span
-                                        class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                                <!--end::Icon-->
 
-                                <!--begin::Content-->
-                                <div class="d-flex flex-column justify-content-center">
-                                    {{-- <h2 class="mb-1">{{ $kategori->nama }}</h2> --}}
-                                </div>
-                                <!--end::Content-->
-                            </div>
-                            <!--begin::Underline-->
-                            <span class="d-inline-block position-relative mb-5">
-                                <!--begin::Label-->
-                                <span class="d-inline-block mb-2 fs-2 fw-bold">
-                                    Detail Pasien
-                                </span>
-                                <!--end::Label-->
-
-                                <!--begin::Line-->
-                                <span
-                                    class="d-inline-block position-absolute h-5px bottom-0 end-0 start-0 bg-primary translate rounded"></span>
-                                <!--end::Line-->
-                            </span>
-                            <!--end::Underline-->
-                            <div class="row">
-                                <div class="row mb-3">
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-4">{{ $pasien->nama_pasien }}</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">NIK</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->nik }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">No BPJS</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->no_bpjs }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">No Handphone</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->nohp }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-5">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-2 fw-semibold text-muted">Alamat</label>
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->alamat->alamat }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                            </div>
-                            <div class="separator separator-dashed border-secondary mb-5"></div>
-                            @if ($rawat->idjenisrawat == 3)
-                            @if (auth()->user()->idpriv == 14 || auth()->user()->idpriv == 18 || auth()->user()->idpriv == 29)
-                                    <div class="row mb-5">
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold">Triase</label>
-                                            <select class="form-select" name="triase" data-control="select2"
-                                                data-placeholder="Select an option">
-                                                <option></option>
-                                                @foreach ($triase as $t)
-                                                    <option class="red-option" value="{{ $t->id }}">
-                                                        {{ $t->triase }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                            <!--begin::Compact Patient Info Card-->
+                            <div class="card bg-light-primary mb-5">
+                                <div class="card-body p-5">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="ki-duotone ki-user fs-2x text-primary me-3">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                <div>
+                                                    <h4 class="fw-bold mb-0">{{ $pasien->nama_pasien }}</h4>
+                                                    <span class="text-muted fs-7">RM: {{ $pasien->no_rm }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <span class="text-muted fs-8">NIK:</span>
+                                                    <span class="fw-semibold fs-7 d-block">{{ $pasien->nik }}</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="text-muted fs-8">No BPJS:</span>
+                                                    <span class="fw-semibold fs-7 d-block">{{ $pasien->no_bpjs }}</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="text-muted fs-8">HP:</span>
+                                                    <span class="fw-semibold fs-7 d-block">{{ $pasien->nohp }}</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="text-muted fs-8">Alamat:</span>
+                                                    <span class="fw-semibold fs-7 d-block text-truncate" title="{{ $pasien->alamat->alamat }}">{{ $pasien->alamat->alamat }}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                @endif
-                            @endif
-                            @if (auth()->user()->idpriv == 7)
-                                {{-- <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Kategori Penyakit</label>
-                                        <select class="form-select" data-control="select2"
+                                </div>
+                            </div>
+                            <!--end::Compact Patient Info Card-->
+                            @if ($rawat->idjenisrawat == 3)
+                            @if (auth()->user()->idpriv == 14 || auth()->user()->idpriv == 18 || auth()->user()->idpriv == 29)
+                                    <div class="mb-5">
+                                        <label class="form-label fw-bold fs-6">Triase</label>
+                                        <select class="form-select form-select-sm" name="triase" data-control="select2"
                                             data-placeholder="Select an option">
                                             <option></option>
-                                            @foreach ($kategori_diagnosa as $kd)
-                                                <option value="{{ $kd->id }}">{{ $kd->jenisdiagnosa }}</option>
+                                            @foreach ($triase as $t)
+                                                <option value="{{ $t->id }}">{{ $t->triase }}</option>
                                             @endforeach
                                         </select>
                                     </div>
-                                </div> --}}
+                                @endif
                             @endif
+
                             @if (auth()->user()->idpriv == 7)
-                                <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Diagnosa</label>
-                                        <textarea name="diagnosa" rows="3" class="form-control" placeholder="..."></textarea>
+                            <!--begin::Accordion Sections-->
+                            <div class="accordion accordion-icon-toggle" id="kt_accordion_medical">
+
+                                <!--begin::Accordion Item 1 - SOAP-->
+                                <div class="accordion-item mb-3">
+                                    <h2 class="accordion-header" id="kt_accordion_medical_header_1">
+                                        <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#kt_accordion_medical_body_1" aria-expanded="false" aria-controls="kt_accordion_medical_body_1">
+                                            <i class="ki-duotone ki-shield-tick fs-2 me-2 text-primary">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            1. SOAP (Subjective, Objective, Assessment, Plan)
+                                            <span class="badge badge-light-primary ms-3">Wajib</span>
+                                        </button>
+                                    </h2>
+                                    <div id="kt_accordion_medical_body_1" class="accordion-collapse collapse"
+                                        aria-labelledby="kt_accordion_medical_header_1" data-bs-parent="#kt_accordion_medical">
+                                        <div class="accordion-body">
+                                            <div class="alert alert-info d-flex align-items-center p-4 mb-5">
+                                                <i class="ki-duotone ki-information fs-2 text-info me-3">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                                <span class="fs-7">Format standar dokumentasi medis untuk mencatat kondisi dan rencana perawatan pasien</span>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-bold required">
+                                                        <span class="badge badge-success me-2">S</span>
+                                                        Subjective (Keluhan Pasien)
+                                                    </label>
+                                                    <textarea name="soap[subjective]" rows="4" class="form-control form-control-sm"
+                                                        placeholder="Keluhan utama pasien, riwayat penyakit sekarang..." required></textarea>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-bold required">
+                                                        <span class="badge badge-info me-2">O</span>
+                                                        Objective (Pemeriksaan Fisik)
+                                                    </label>
+                                                    <textarea name="soap[objective]" rows="4" class="form-control form-control-sm"
+                                                        placeholder="Hasil pemeriksaan fisik, vital signs..." required></textarea>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-bold required">
+                                                        <span class="badge badge-warning me-2">A</span>
+                                                        Assessment (Diagnosis)
+                                                    </label>
+                                                    <textarea name="soap[assessment]" rows="4" class="form-control form-control-sm"
+                                                        placeholder="Diagnosis kerja, diagnosis banding..." required></textarea>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-bold required">
+                                                        <span class="badge badge-danger me-2">P</span>
+                                                        Plan (Rencana Tindakan)
+                                                    </label>
+                                                    <textarea name="soap[plan]" rows="4" class="form-control form-control-sm"
+                                                        placeholder="Rencana pemeriksaan, terapi medikamentosa..." required></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    {{-- <div class="col-md-12">
-                                        <div id="icdx_repeater">
-                                            <!--begin::Form group-->
-                                            <div class="form-group">
-                                                <div data-repeater-list="icdx">
-                                                    <div data-repeater-item>
-                                                        <div class="form-group row mb-5">
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">ICD X</label>
-                                                                <select name="diagnosa_icdx" class="form-select"
-                                                                    data-kt-repeater="select22" data-placeholder="-Pilih-"
-                                                                    required>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <label class="form-label">Jenis Diagnosa</label>
-                                                                <div class="input-group mb-5">
+                                </div>
+                                <!--end::Accordion Item 1-->
+
+                                <!--begin::Accordion Item 2 - Diagnosis & ICD-->
+                                <div class="accordion-item mb-3">
+                                    <h2 class="accordion-header" id="kt_accordion_medical_header_2">
+                                        <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#kt_accordion_medical_body_2" aria-expanded="false" aria-controls="kt_accordion_medical_body_2">
+                                            <i class="ki-duotone ki-abstract-26 fs-2 me-2 text-success">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            2. Diagnosis & Kode ICD
+                                            <span class="badge badge-light-success ms-3">Wajib</span>
+                                        </button>
+                                    </h2>
+                                    <div id="kt_accordion_medical_body_2" class="accordion-collapse collapse"
+                                        aria-labelledby="kt_accordion_medical_header_2" data-bs-parent="#kt_accordion_medical">
+                                        <div class="accordion-body">
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold fs-6">Diagnosa</label>
+                                                <textarea name="diagnosa" rows="2" class="form-control form-control-sm" placeholder="Tulis diagnosa..."></textarea>
+                                            </div>
+
+                                            <div class="alert alert-primary d-flex align-items-center p-3 mb-3">
+                                                <i class="ki-duotone ki-information-5 fs-3 text-primary me-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                                <span class="fs-7"><strong>Info ICD X:</strong> Minimal 1 diagnosa wajib diisi. Diagnosa pertama otomatis <strong>Primer</strong>, berikutnya <strong>Sekunder</strong></span>
+                                            </div>
+
+                                            <div id="icdx_repeater">
+                                                <div class="form-group">
+                                                    <div data-repeater-list="icdx">
+                                                        <div data-repeater-item>
+                                                            <div class="row g-2 mb-2 align-items-end">
+                                                                <div class="col-md-5">
+                                                                    <label class="form-label fw-bold fs-7 required">ICD X</label>
+                                                                    <select name="diagnosa_icdx" class="form-select form-select-sm icdx-diagnosa"
+                                                                        data-kt-repeater="select22" data-placeholder="-Pilih-" required>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <label class="form-label fw-bold fs-7 required">Jenis</label>
                                                                     <select name="jenis_diagnosa" required
-                                                                        class="form-select" id="">
+                                                                        class="form-select form-select-sm icdx-jenis-diagnosa">
                                                                         <option value="P" selected>Primer</option>
                                                                         <option value="S">Sekunder</option>
                                                                     </select>
                                                                 </div>
-                                                            </div>
-
-                                                            <div class="col-md-4">
-                                                                <a href="javascript:;" data-repeater-delete
-                                                                    class="btn btn-sm btn-light-danger mt-3 mt-md-8">
-                                                                    <i class="ki-duotone ki-trash fs-5"><span
-                                                                            class="path1"></span><span
-                                                                            class="path2"></span><span
-                                                                            class="path3"></span><span
-                                                                            class="path4"></span><span
-                                                                            class="path5"></span></i>
-                                                                    Hapus
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!--end::Form group-->
-
-                                            <!--begin::Form group-->
-                                            <div class="form-group mt-5">
-                                                <a href="javascript:;" data-repeater-create class="btn btn-light-primary">
-                                                    <i class="ki-duotone ki-plus fs-3"></i>
-                                                    Tambah ICD X
-                                                </a>
-                                            </div>
-                                            <!--end::Form group-->
-                                        </div>
-                                    </div> --}}
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label fw-bold">Tindakan / Prosedur</label>
-                                    <textarea name="tindakan_prc" rows="3" class="form-control" placeholder="..."></textarea>
-                                </div>
-                                {{-- <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <div id="icd9_repeater">
-                                            <!--begin::Form group-->
-                                            <div class="form-group">
-                                                <div data-repeater-list="icd9">
-                                                    <div data-repeater-item>
-                                                        <div class="form-group row mb-5">
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">ICD 9</label>
-                                                                <select name="diagnosa_icd9" class="form-select"
-                                                                    data-kt-repeater="select2icd9"
-                                                                    data-placeholder="-Pilih-" required>
-                                                                </select>
-                                                            </div>
-
-
-                                                            <div class="col-md-4">
-                                                                <a href="javascript:;" data-repeater-delete
-                                                                    class="btn btn-sm btn-light-danger mt-3 mt-md-8">
-                                                                    <i class="ki-duotone ki-trash fs-5"><span
-                                                                            class="path1"></span><span
-                                                                            class="path2"></span><span
-                                                                            class="path3"></span><span
-                                                                            class="path4"></span><span
-                                                                            class="path5"></span></i>
-                                                                    Hapus
-                                                                </a>
+                                                                <div class="col-md-4">
+                                                                    <a href="javascript:;" data-repeater-delete
+                                                                        class="btn btn-sm btn-light-danger icdx-delete-btn">
+                                                                        <i class="ki-duotone ki-trash fs-6">
+                                                                            <span class="path1"></span>
+                                                                            <span class="path2"></span>
+                                                                            <span class="path3"></span>
+                                                                            <span class="path4"></span>
+                                                                            <span class="path5"></span>
+                                                                        </i>
+                                                                        Hapus
+                                                                    </a>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="form-group mt-3">
+                                                    <a href="javascript:;" data-repeater-create class="btn btn-sm btn-light-primary">
+                                                        <i class="ki-duotone ki-plus fs-4"></i>
+                                                        Tambah ICD X
+                                                    </a>
+                                                </div>
                                             </div>
-                                            <!--end::Form group-->
 
-                                            <!--begin::Form group-->
-                                            <div class="form-group mt-5">
-                                                <a href="javascript:;" data-repeater-create class="btn btn-light-primary">
-                                                    <i class="ki-duotone ki-plus fs-3"></i>
-                                                    Tambah ICD 9
-                                                </a>
+                                            <div class="separator my-5"></div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold fs-6">Tindakan / Prosedur</label>
+                                                <textarea name="tindakan_prc" rows="2" class="form-control form-control-sm" placeholder="Tulis tindakan/prosedur..."></textarea>
                                             </div>
-                                            <!--end::Form group-->
+
+                                            <div id="icd9_repeater">
+                                                <div class="form-group">
+                                                    <div data-repeater-list="icd9">
+                                                        <div data-repeater-item>
+                                                            <div class="row g-2 mb-2 align-items-end">
+                                                                <div class="col-md-8">
+                                                                    <label class="form-label fw-bold fs-7">ICD 9</label>
+                                                                    <select name="diagnosa_icd9" class="form-select form-select-sm"
+                                                                        data-kt-repeater="select2icd9" data-placeholder="-Pilih-" required>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <a href="javascript:;" data-repeater-delete
+                                                                        class="btn btn-sm btn-light-danger">
+                                                                        <i class="ki-duotone ki-trash fs-6">
+                                                                            <span class="path1"></span>
+                                                                            <span class="path2"></span>
+                                                                            <span class="path3"></span>
+                                                                            <span class="path4"></span>
+                                                                            <span class="path5"></span>
+                                                                        </i>
+                                                                        Hapus
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <a href="javascript:;" data-repeater-create class="btn btn-sm btn-light-primary">
+                                                        <i class="ki-duotone ki-plus fs-4"></i>
+                                                        Tambah ICD 9
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div> --}}
-                            @endif
-                            <!--begin::Underline-->
-                            <span class="d-inline-block position-relative mb-7">
-                                <!--begin::Label-->
-                                <span class="d-inline-block mb-2 fs-4 fw-bold">
-                                    Anamnesa & Pemeriksaan Fisik
-                                </span>
-                                <!--end::Label-->
-
-                                <!--begin::Line-->
-                                <span
-                                    class="d-inline-block position-absolute h-5px bottom-0 end-0 start-0 bg-success translate rounded"></span>
-                                <!--end::Line-->
-                            </span>
-                            @if (auth()->user()->idpriv == 7)
-                                <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Anamnesa</label>
-                                        <textarea name="anamnesa_dokter" rows="3" class="form-control" placeholder="Anamnesa Dokter"></textarea>
-                                    </div>
                                 </div>
-                                @if ($rawat->idjenisrawat == 3)
-                                <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Pemeriksaan Fisik</label>
-                                        <textarea name="pemeriksaan_fisik" rows="3" class="form-control" placeholder="Pemeriksaan Fisik"></textarea>
+                                <!--end::Accordion Item 2-->
+
+                                <!--begin::Accordion Item 3 - Anamnesa & Pemeriksaan-->
+                                @if ($rawat->idjenisrawat == 3 || $rawat->idpoli == 12)
+                                <div class="accordion-item mb-3">
+                                    <h2 class="accordion-header" id="kt_accordion_medical_header_3">
+                                        <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#kt_accordion_medical_body_3" aria-expanded="false" aria-controls="kt_accordion_medical_body_3">
+                                            <i class="ki-duotone ki-stethoscope fs-2 me-2 text-info">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            3. Anamnesa & Pemeriksaan Tambahan
+                                        </button>
+                                    </h2>
+                                    <div id="kt_accordion_medical_body_3" class="accordion-collapse collapse"
+                                        aria-labelledby="kt_accordion_medical_header_3" data-bs-parent="#kt_accordion_medical">
+                                        <div class="accordion-body">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold fs-6">Anamnesa</label>
+                                                <textarea name="anamnesa_dokter" rows="2" class="form-control form-control-sm" placeholder="Anamnesa Dokter"></textarea>
+                                            </div>
+
+                                            @if ($rawat->idjenisrawat == 3)
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold fs-6">Pemeriksaan Fisik</label>
+                                                <textarea name="pemeriksaan_fisik" rows="2" class="form-control form-control-sm" placeholder="Pemeriksaan Fisik"></textarea>
+                                            </div>
+                                            @endif
+
+                                            @if ($rawat->idpoli == 12)
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-bold fs-6">Pemeriksaan Fisik</label>
+                                                        <textarea name="pemeriksaan_fisik" rows="2" class="form-control form-control-sm" placeholder="Pemeriksaan Fisik"></textarea>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-bold fs-6">Pemeriksaan Uji Fungsi</label>
+                                                        <textarea name="pemeriksaan_uji_fungsi" rows="2" class="form-control form-control-sm" placeholder="Pemeriksaan Uji Fungsi"></textarea>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-bold fs-6">Tata Laksana KFR (ICD CM)</label>
+                                                        <textarea name="tata_laksana" rows="2" class="form-control form-control-sm" placeholder="Tata Laksana"></textarea>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-bold fs-6">Anjuran</label>
+                                                        <textarea name="anjuran" rows="2" class="form-control form-control-sm" placeholder="Anjuran"></textarea>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <label class="form-label fw-bold fs-6">Evaluasi</label>
+                                                        <textarea name="evaluasi" rows="2" class="form-control form-control-sm" placeholder="Evaluasi"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="separator my-4"></div>
+
+                                                <div id="fisio_repeater">
+                                                    <div class="form-group">
+                                                        <div data-repeater-list="fisio">
+                                                            <div data-repeater-item>
+                                                                <div class="row g-2 mb-2 align-items-end">
+                                                                    <div class="col-md-8">
+                                                                        <label class="form-label fw-bold fs-7">Permintaan Terapi</label>
+                                                                        <select name="tindakan_fisio" class="form-select form-select-sm"
+                                                                            data-kt-repeater="select2fisio" data-placeholder="-Pilih-" required>
+                                                                            <option></option>
+                                                                            @foreach ($fisio as $fisio)
+                                                                                <option value="{{ $fisio->id }}">{{ $fisio->nama_tarif }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <a href="javascript:;" data-repeater-delete
+                                                                            class="btn btn-sm btn-light-danger">
+                                                                            <i class="ki-duotone ki-trash fs-6">
+                                                                                <span class="path1"></span>
+                                                                                <span class="path2"></span>
+                                                                                <span class="path3"></span>
+                                                                                <span class="path4"></span>
+                                                                                <span class="path5"></span>
+                                                                            </i>
+                                                                            Hapus
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mt-3">
+                                                        <a href="javascript:;" data-repeater-create class="btn btn-sm btn-light-info">
+                                                            <i class="ki-duotone ki-plus fs-4"></i>
+                                                            Tambah Terapi Fisio
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                                 @endif
-                                @if ($rawat->idpoli == 12)
-                                    <div class="row mb-5">
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold">Pemeriksaan Fisik</label>
-                                            <textarea name="pemeriksaan_fisik" rows="3" class="form-control" placeholder="Pemeriksaan Fisik"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-5">
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold">Pemeriksaan Uji Fungsi</label>
-                                            <textarea name="pemeriksaan_uji_fungsi" rows="3" class="form-control" placeholder="Pemeriksaan Uji Fungsi"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-5">
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold">Tata Laksanan KFR (ICD ) CM </label>
-                                            <textarea name="tata_laksana" rows="3" class="form-control" placeholder="Tata Laksana"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-5">
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold">Anjuran</label>
-                                            <textarea name="anjuran" rows="3" class="form-control" placeholder="Anjuran"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-5">
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold">Evaluasi</label>
-                                            <textarea name="evaluasi" rows="3" class="form-control" placeholder="Evaluasi"></textarea>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-5">
-                                        <!--begin::Repeater-->
-                                        <div id="fisio_repeater">
-                                            <!--begin::Form group-->
-                                            <div class="form-group">
-                                                <div data-repeater-list="fisio">
-                                                    <div data-repeater-item>
-                                                        <div class="form-group row mb-5">
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Permintaan Terapi</label>
-                                                                {{-- <input type="text" name='tindakan_fisio' class="form-control" required> --}}
-                                                                <select name="tindakan_fisio" class="form-select"
-                                                                    data-kt-repeater="select2fisio"
-                                                                    data-placeholder="-Pilih-" required>
-                                                                    <option></option>
-                                                                    @foreach ($fisio as $fisio)
-                                                                        <option value="{{ $fisio->id }}">
-                                                                            {{ $fisio->nama_tarif }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-md-4">
-                                                                <a href="javascript:;" data-repeater-delete
-                                                                    class="btn btn-sm btn-light-danger mt-3 mt-md-8">
-                                                                    <i class="ki-duotone ki-trash fs-5"><span
-                                                                            class="path1"></span><span
-                                                                            class="path2"></span><span
-                                                                            class="path3"></span><span
-                                                                            class="path4"></span><span
-                                                                            class="path5"></span></i>
-                                                                    Hapus
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!--end::Form group-->
-
-                                            <!--begin::Form group-->
-                                            <div class="form-group mt-5">
-                                                <a href="javascript:;" data-repeater-create class="btn btn-light-info">
-                                                    <i class="ki-duotone ki-plus fs-3"></i>
-                                                    Tambah Terapi Fisio
-                                                </a>
-                                            </div>
-                                            <!--end::Form group-->
-                                        </div>
-                                        <!--end::Repeater-->
-                                    </div>
-                                @endif
+                                <!--end::Accordion Item 3-->
+                            </div>
+                            <!--end::Accordion Sections-->
                             @endif
 
                             <!--end::Underline-->
                             @if (auth()->user()->idpriv == 14 || auth()->user()->idpriv == 18 || auth()->user()->idpriv == 29)
-                                <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Anamnesa</label>
-                                        <textarea name="anamnesa" rows="3" class="form-control" placeholder="Alasan Masuk Rumah Sakit"></textarea>
-                                    </div>
-                                </div>
-                                <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Obat Yang Dikonsumsi</label>
-                                        <textarea name="obat_yang_dikonsumsi" rows="3" class="form-control" placeholder="...."></textarea>
-                                    </div>
-                                </div>
-                                <div class="row mb-5 p-lg-5">
-                                    <div class="card card-bordered">
-                                        <div class="card-header">
-                                            <h5 class="card-title">Alergi</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row mb-5">
-                                                <div class="col-md-2">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="obat"
-                                                            id="obat" />
-                                                        <label class="form-check-label" for="obat">
-                                                            Obat
-                                                        </label>
-                                                    </div>
+                                <!--begin::Nurse Accordion-->
+                                <div class="accordion accordion-icon-toggle" id="kt_accordion_nurse">
+
+                                    <!--begin::Accordion Item 1 - Anamnesa & Kondisi-->
+                                    <div class="accordion-item mb-3">
+                                        <h2 class="accordion-header" id="kt_accordion_nurse_header_1">
+                                            <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#kt_accordion_nurse_body_1" aria-expanded="false">
+                                                <i class="ki-duotone ki-pulse fs-2 me-2 text-primary">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                1. Anamnesa & Kondisi Pasien
+                                            </button>
+                                        </h2>
+                                        <div id="kt_accordion_nurse_body_1" class="accordion-collapse collapse"
+                                            aria-labelledby="kt_accordion_nurse_header_1" data-bs-parent="#kt_accordion_nurse">
+                                            <div class="accordion-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold fs-6">Anamnesa</label>
+                                                    <textarea name="anamnesa" rows="2" class="form-control form-control-sm" placeholder="Alasan Masuk Rumah Sakit"></textarea>
                                                 </div>
-                                                <div class="col-md-10">
-                                                    <input type="text" name="value_obat" id="value_obat"
-                                                        class="form-control" placeholder="...." style="display: none;">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold fs-6">Obat Yang Dikonsumsi</label>
+                                                    <textarea name="obat_yang_dikonsumsi" rows="2" class="form-control form-control-sm" placeholder="Obat yang sedang dikonsumsi"></textarea>
                                                 </div>
-                                            </div>
-                                            <div class="row mb-5">
-                                                <div class="col-md-2">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="makanan"
-                                                            id="makanan" />
-                                                        <label class="form-check-label" for="makanan">
-                                                            Makanan
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-10">
-                                                    <input type="text" name="value_makanan" id="value_makanan"
-                                                        class="form-control" placeholder="...." style="display: none;">
-                                                </div>
-                                            </div>
-                                            <div class="row mb-5">
-                                                <div class="col-md-2">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="lain"
-                                                            id="lain" />
-                                                        <label class="form-check-label" for="lain">
-                                                            Lain - Lain
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-10">
-                                                    <input type="text" name="value_lain" id="value_lain"
-                                                        class="form-control" placeholder="...." style="display: none;">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold fs-6">Pasien Dalam Kondisi Tertentu</label>
+                                                    <input name="pasien_sedang" class="form-control form-control-sm" placeholder="Kondisi khusus pasien">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row mb-5">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Pasien Dalam Kondisi Tertentu</label>
-                                        <input name="pasien_sedang" rows="3" class="form-control"
-                                            placeholder="....">
-                                    </div>
-                                </div>
-                                <div class="row mb-5 p-lg-5">
-                                    <div class="card card-bordered">
-                                        <div class="card-header">
-                                            <h5 class="card-title">Pemeriksaan Fisik</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row md-5">
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Tekanan Darah</label>
-                                                    <div class="input-group mb-5">
-                                                        <input type="text" class="form-control" name="tekanan_darah"
-                                                            placeholder="...." aria-label="...."
-                                                            aria-describedby="tdarah" />
-                                                        <span class="input-group-text" id="tdarah">mmHg</span>
+
+                                    <!--begin::Accordion Item 2 - Alergi-->
+                                    <div class="accordion-item mb-3">
+                                        <h2 class="accordion-header" id="kt_accordion_nurse_header_2">
+                                            <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#kt_accordion_nurse_body_2" aria-expanded="false">
+                                                <i class="ki-duotone ki-shield-cross fs-2 me-2 text-danger">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                2. Riwayat Alergi
+                                            </button>
+                                        </h2>
+                                        <div id="kt_accordion_nurse_body_2" class="accordion-collapse collapse"
+                                            aria-labelledby="kt_accordion_nurse_header_2" data-bs-parent="#kt_accordion_nurse">
+                                            <div class="accordion-body">
+                                                <div class="row g-2 mb-2">
+                                                    <div class="col-md-3">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" value="obat" id="obat" />
+                                                            <label class="form-check-label fw-bold" for="obat">Obat</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <input type="text" name="value_obat" id="value_obat"
+                                                            class="form-control form-control-sm" placeholder="Sebutkan obat..." style="display: none;">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Nadi</label>
-                                                    <div class="input-group mb-5">
-                                                        <input type="text" class="form-control" name="nadi"
-                                                            placeholder="...." aria-label="...."
-                                                            aria-describedby="nadi" />
-                                                        <span class="input-group-text" id="nadi">x/Menit</span>
+                                                <div class="row g-2 mb-2">
+                                                    <div class="col-md-3">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" value="makanan" id="makanan" />
+                                                            <label class="form-check-label fw-bold" for="makanan">Makanan</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <input type="text" name="value_makanan" id="value_makanan"
+                                                            class="form-control form-control-sm" placeholder="Sebutkan makanan..." style="display: none;">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Pernapasan</label>
-                                                    <div class="input-group mb-5">
-                                                        <input type="text" class="form-control" name="pernapasan"
-                                                            placeholder="...." aria-label="...."
-                                                            aria-describedby="pernapasan" />
-                                                        <span class="input-group-text" id="pernapasan">x/Menit</span>
+                                                <div class="row g-2">
+                                                    <div class="col-md-3">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" value="lain" id="lain" />
+                                                            <label class="form-check-label fw-bold" for="lain">Lain-lain</label>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div class="row md-5">
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Suhu</label>
-                                                    <div class="input-group mb-5">
-                                                        <input type="text" class="form-control" name="suhu"
-                                                            placeholder="...." aria-label="...."
-                                                            aria-describedby="suhu" />
-                                                        <span class="input-group-text" id="suhu">Derajat</span>
+                                                    <div class="col-md-9">
+                                                        <input type="text" name="value_lain" id="value_lain"
+                                                            class="form-control form-control-sm" placeholder="Sebutkan lainnya..." style="display: none;">
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Berat Badan</label>
-                                                    <div class="input-group mb-5">
-                                                        <input type="text" class="form-control"
-                                                            onkeyup="calculateBMI()" id="berat_badan_val"
-                                                            name="berat_badan" placeholder="...." aria-label="...."
-                                                            aria-describedby="berat_badan" />
-                                                        <span class="input-group-text" id="berat_badan">Kg</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Tinggi Badan</label>
-                                                    <div class="input-group mb-5">
-                                                        <input type="text" class="form-control"
-                                                            onkeyup="calculateBMI()" id="tinggi_badan_val"
-                                                            name="tinggi_badan" placeholder="...." aria-label="....e"
-                                                            aria-describedby="tinggi_badan" />
-                                                        <span class="input-group-text" id="tinggi_badan">Cm</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row col-md-4">
-                                                <label class="form-label">BMI</label>
-                                                <div class="input-group mb-5">
-                                                    <input type="text" class="form-control" id='bmi_val'
-                                                        name="bmi" placeholder="...." aria-label="....e"
-                                                        aria-describedby="bmi" />
-                                                    <span class="input-group-text" id="bmi">Kg/M2</span>
-                                                </div>
-                                            </div>
-                                            <div class="row col-md-4">
-                                                <label class="form-label">saturasi oksigen (SpO2) </label>
-                                                <div class="input-group mb-5">
-                                                    <input type="text" class="form-control"
-                                                        name="spo2" placeholder="...." aria-label="....e"
-                                                        aria-describedby="spo2" />
-                                                    <span class="input-group-text" id="bmi">%</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row mb-5 p-lg-5">
-                                    <div class="card card-bordered">
-                                        <div class="card-header">
-                                            <h5 class="card-title">Riwayat Kesehatan</h5>
+
+                                    <!--begin::Accordion Item 3 - Vital Signs-->
+                                    <div class="accordion-item mb-3">
+                                        <h2 class="accordion-header" id="kt_accordion_nurse_header_3">
+                                            <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#kt_accordion_nurse_body_3" aria-expanded="false">
+                                                <i class="ki-duotone ki-heart-pulse fs-2 me-2 text-success">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                                3. Pemeriksaan Fisik & Vital Signs
+                                            </button>
+                                        </h2>
+                                        <div id="kt_accordion_nurse_body_3" class="accordion-collapse collapse"
+                                            aria-labelledby="kt_accordion_nurse_header_3" data-bs-parent="#kt_accordion_nurse">
+                                            <div class="accordion-body">
+                                                <div class="row g-3">
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-bold fs-7">Tekanan Darah</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control" name="tekanan_darah" placeholder="120/80" />
+                                                            <span class="input-group-text">mmHg</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-bold fs-7">Nadi</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control" name="nadi" placeholder="80" />
+                                                            <span class="input-group-text">x/mnt</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-bold fs-7">Pernapasan</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control" name="pernapasan" placeholder="20" />
+                                                            <span class="input-group-text">x/mnt</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-bold fs-7">Suhu</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control" name="suhu" placeholder="36.5" />
+                                                            <span class="input-group-text">°C</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-bold fs-7">Berat Badan</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control" onkeyup="calculateBMI()"
+                                                                id="berat_badan_val" name="berat_badan" placeholder="70" />
+                                                            <span class="input-group-text">Kg</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-bold fs-7">Tinggi Badan</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control" onkeyup="calculateBMI()"
+                                                                id="tinggi_badan_val" name="tinggi_badan" placeholder="170" />
+                                                            <span class="input-group-text">Cm</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-bold fs-7">BMI</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control" id='bmi_val' name="bmi" placeholder="Auto" readonly />
+                                                            <span class="input-group-text">Kg/M²</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-bold fs-7">SpO2</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control" name="spo2" placeholder="98" />
+                                                            <span class="input-group-text">%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="row mb-5">
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Riwayat penyakit yang lalu</label>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="d-flex justify-content-start">
-                                                        <div class="form-check form-check-custom form-check-solid">
-                                                            <input class="form-check-input" type="radio" value="1"
-                                                                id="riwayat-1" name="riwayat_1" />
-                                                            <label class="form-check-label" for="flexRadioDefault">
-                                                                Ya
-                                                            </label>
-                                                        </div>
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <div class="form-check form-check-custom form-check-solid">
-                                                            <input class="form-check-input" type="radio" value="5"
-                                                                id="riwayat-1" name="riwayat_1" />
-                                                            <label class="form-check-label" for="flexRadioDefault">
-                                                                Tidak
-                                                            </label>
+                                    </div>
+
+                                    <!--begin::Accordion Item 4 - Riwayat Kesehatan-->
+                                    <div class="accordion-item mb-3">
+                                        <h2 class="accordion-header" id="kt_accordion_nurse_header_4">
+                                            <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#kt_accordion_nurse_body_4" aria-expanded="false">
+                                                <i class="ki-duotone ki-notepad fs-2 me-2 text-warning">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                    <span class="path4"></span>
+                                                    <span class="path5"></span>
+                                                </i>
+                                                4. Riwayat Kesehatan
+                                            </button>
+                                        </h2>
+                                        <div id="kt_accordion_nurse_body_4" class="accordion-collapse collapse"
+                                            aria-labelledby="kt_accordion_nurse_header_4" data-bs-parent="#kt_accordion_nurse">
+                                            <div class="accordion-body">
+                                                <div class="row g-2 mb-3">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold fs-7">Riwayat penyakit yang lalu</label>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="d-flex gap-3">
+                                                            <div class="form-check form-check-sm">
+                                                                <input class="form-check-input" type="radio" value="1" id="riwayat-1" name="riwayat_1" />
+                                                                <label class="form-check-label fs-7" for="riwayat-1">Ya</label>
+                                                            </div>
+                                                            <div class="form-check form-check-sm">
+                                                                <input class="form-check-input" type="radio" value="5" name="riwayat_1" />
+                                                                <label class="form-check-label fs-7">Tidak</label>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="value_riwayat_1" id="value_riwayat_1"
-                                                        class="form-control" placeholder="...." style="display: none;">
-                                                </div>
-                                            </div>
-                                            <div class="separator separator-dashed border-secondary mb-5"></div>
-                                            <div class="row mb-5">
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Pernah dirawat</label>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="d-flex justify-content-start">
-                                                        <div class="form-check form-check-custom form-check-solid">
-                                                            <input class="form-check-input" type="radio" value="1"
-                                                                id="riwayat-2" name="riwayat_2" />
-                                                            <label class="form-check-label" for="flexRadioDefault">
-                                                                Ya
-                                                            </label>
-                                                        </div>
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <div class="form-check form-check-custom form-check-solid">
-                                                            <input class="form-check-input" type="radio" value="0"
-                                                                id="riwayat-2" name="riwayat_2" />
-                                                            <label class="form-check-label" for="flexRadioDefault">
-                                                                Tidak
-                                                            </label>
-                                                        </div>
+                                                    <div class="col-md-6">
+                                                        <input type="text" name="value_riwayat_1" id="value_riwayat_1"
+                                                            class="form-control form-control-sm" placeholder="Sebutkan..." style="display: none;">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="value_riwayat_2" id="value_riwayat_2"
-                                                        class="form-control" placeholder="...." style="display: none;">
-                                                </div>
-                                            </div>
-                                            <div class="separator separator-dashed border-secondary mb-5"></div>
-                                            <div class="row mb-5">
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Pernah dioperasi</label>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="d-flex justify-content-start">
-                                                        <div class="form-check form-check-custom form-check-solid">
-                                                            <input class="form-check-input" type="radio" value="1"
-                                                                id="riwayat-3" name="riwayat_3" />
-                                                            <label class="form-check-label" for="flexRadioDefault">
-                                                                Ya
-                                                            </label>
-                                                        </div>
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <div class="form-check form-check-custom form-check-solid">
-                                                            <input class="form-check-input" type="radio" value="0"
-                                                                id="riwayat-3" name="riwayat_3" />
-                                                            <label class="form-check-label" for="flexRadioDefault">
-                                                                Tidak
-                                                            </label>
+
+                                                <div class="row g-2 mb-3">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold fs-7">Pernah dirawat</label>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="d-flex gap-3">
+                                                            <div class="form-check form-check-sm">
+                                                                <input class="form-check-input" type="radio" value="1" id="riwayat-2" name="riwayat_2" />
+                                                                <label class="form-check-label fs-7" for="riwayat-2">Ya</label>
+                                                            </div>
+                                                            <div class="form-check form-check-sm">
+                                                                <input class="form-check-input" type="radio" value="0" name="riwayat_2" />
+                                                                <label class="form-check-label fs-7">Tidak</label>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="value_riwayat_3" id="value_riwayat_3"
-                                                        class="form-control" placeholder="...." style="display: none;">
-                                                </div>
-                                            </div>
-                                            <div class="separator separator-dashed border-secondary mb-5"></div>
-                                            <div class="row mb-5">
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Dalam pengobatan khusus</label>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="d-flex justify-content-start">
-                                                        <div class="form-check form-check-custom form-check-solid">
-                                                            <input class="form-check-input" type="radio" value="1"
-                                                                id="riwayat-4" name="riwayat_4" />
-                                                            <label class="form-check-label" for="flexRadioDefault">
-                                                                Ya
-                                                            </label>
-                                                        </div>
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <div class="form-check form-check-custom form-check-solid">
-                                                            <input class="form-check-input" type="radio" value="0"
-                                                                id="riwayat-4" name="riwayat_4" />
-                                                            <label class="form-check-label" for="flexRadioDefault">
-                                                                Tidak
-                                                            </label>
-                                                        </div>
+                                                    <div class="col-md-6">
+                                                        <input type="text" name="value_riwayat_2" id="value_riwayat_2"
+                                                            class="form-control form-control-sm" placeholder="Sebutkan..." style="display: none;">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="value_riwayat_4" id="value_riwayat_4"
-                                                        class="form-control" placeholder="...." style="display: none;">
+
+                                                <div class="row g-2 mb-3">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold fs-7">Pernah dioperasi</label>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="d-flex gap-3">
+                                                            <div class="form-check form-check-sm">
+                                                                <input class="form-check-input" type="radio" value="1" id="riwayat-3" name="riwayat_3" />
+                                                                <label class="form-check-label fs-7" for="riwayat-3">Ya</label>
+                                                            </div>
+                                                            <div class="form-check form-check-sm">
+                                                                <input class="form-check-input" type="radio" value="0" name="riwayat_3" />
+                                                                <label class="form-check-label fs-7">Tidak</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <input type="text" name="value_riwayat_3" id="value_riwayat_3"
+                                                            class="form-control form-control-sm" placeholder="Sebutkan..." style="display: none;">
+                                                    </div>
+                                                </div>
+
+                                                <div class="row g-2">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold fs-7">Dalam pengobatan khusus</label>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="d-flex gap-3">
+                                                            <div class="form-check form-check-sm">
+                                                                <input class="form-check-input" type="radio" value="1" id="riwayat-4" name="riwayat_4" />
+                                                                <label class="form-check-label fs-7" for="riwayat-4">Ya</label>
+                                                            </div>
+                                                            <div class="form-check form-check-sm">
+                                                                <input class="form-check-input" type="radio" value="0" name="riwayat_4" />
+                                                                <label class="form-check-label fs-7">Tidak</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <input type="text" name="value_riwayat_4" id="value_riwayat_4"
+                                                            class="form-control form-control-sm" placeholder="Sebutkan..." style="display: none;">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <!--end::Nurse Accordion-->
                             @endif
                             @if (auth()->user()->idpriv == 7)
                                 <!--begin::Underline-->
@@ -847,7 +907,7 @@
                                                 <th width=10>S</th>
                                                 <th width=10>M</th>
                                             </tr>
-                                    
+
                                         </thead>
                                         <tbody data-repeater-list="terapi_obat" class="align-middle">
                                             <tr data-repeater-item>
@@ -881,7 +941,7 @@
                                                         <option value="sendok takar 15ml">sendok takar 15ml</option>
                                                         <option value="Oles">Oles</option>
                                                     </select>
-                                    
+
                                                 </td>
                                                 <td class="text-center align-middle"><input name="diminum" class="form-check-input form-check-input-sm" type="checkbox"
                                                         value="P" id="flexCheckDefault" /></td>
@@ -894,7 +954,7 @@
                                                         <input class="form-check-input" type="radio" name="takaran" id="tablet" value="sebelum">
                                                         <label class="form-check-label" for="tablet">Sebelum</label>
                                                     </div>
-                                    
+
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="takaran" id="kapsul" value="sesudah">
                                                         <label class="form-check-label" for="kapsul">Sesudah</label>
@@ -915,7 +975,7 @@
                                                     </a>
                                                 </td>
                                             </tr>
-                                    
+
                                         </tbody>
                                         <tfoot>
                                             <tr>
@@ -979,7 +1039,7 @@
                                                                                                 class="path5"></span></i>
                                                                                     </button>
                                                                                 </div>
-                                                                                
+
                                                                             </div>
                                                                         </div>
 
@@ -1048,10 +1108,40 @@
                             @endif
                     </div>
                     <!--end::Body-->
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-md btn-success">Simpan</button>
+
+                    <!--begin::Sticky Footer-->
+                    <div class="card-footer bg-light border-top sticky-bottom" style="position: sticky; bottom: 0; z-index: 95; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted fs-7">
+                                    <i class="ki-duotone ki-information-5 fs-5 text-primary me-1">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                    Pastikan semua data wajib sudah terisi
+                                </span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('rekam-medis-poli', $data->idrawat) }}" class="btn btn-light btn-sm">
+                                    <i class="ki-duotone ki-arrow-left fs-5">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Kembali
+                                </a>
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="ki-duotone ki-check fs-5">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Simpan Rekam Medis
+                                </button>
+                            </div>
+                        </div>
                         </form>
                     </div>
+                    <!--end::Sticky Footer-->
                 </div>
                 <!--end::FAQ card-->
             </div>
@@ -1070,8 +1160,73 @@
             alergi();
             riwayat_kesehatan();
             calculateBMI();
+
             $("#frm-data").on("submit", function(event) {
                 event.preventDefault();
+
+                // Validasi SOAP untuk dokter
+                @if (auth()->user()->idpriv == 7)
+                var soapSubjective = $('textarea[name="soap[subjective]"]').val();
+                var soapObjective = $('textarea[name="soap[objective]"]').val();
+                var soapAssessment = $('textarea[name="soap[assessment]"]').val();
+                var soapPlan = $('textarea[name="soap[plan]"]').val();
+
+                if (!soapSubjective || !soapObjective || !soapAssessment || !soapPlan) {
+                    Swal.fire({
+                        text: 'Semua field SOAP (Subjective, Objective, Assessment, Plan) wajib diisi!',
+                        icon: "warning",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok",
+                        customClass: {
+                            confirmButton: "btn btn-primary"
+                        }
+                    });
+                    return false;
+                }
+
+                // Konversi SOAP ke JSON dan simpan ke hidden input
+                var soapData = {
+                    subjective: soapSubjective,
+                    objective: soapObjective,
+                    assessment: soapAssessment,
+                    plan: soapPlan,
+                    created_at: new Date().toISOString()
+                };
+
+                // Hapus field SOAP individual dan ganti dengan JSON
+                $('textarea[name="soap[subjective]"]').remove();
+                $('textarea[name="soap[objective]"]').remove();
+                $('textarea[name="soap[assessment]"]').remove();
+                $('textarea[name="soap[plan]"]').remove();
+
+                // Tambahkan hidden input dengan data JSON
+                $('#frm-data').append('<input type="hidden" name="soap_data" value=\'' + JSON.stringify(soapData) + '\'>');
+                @endif
+
+                // Validasi ICDX minimal 1
+                var icdxItems = $('#icdx_repeater [data-repeater-item]:visible');
+                var icdxFilled = 0;
+
+                icdxItems.each(function() {
+                    var diagnosaValue = $(this).find('.icdx-diagnosa').val();
+                    if (diagnosaValue && diagnosaValue !== '') {
+                        icdxFilled++;
+                    }
+                });
+
+                if (icdxFilled === 0) {
+                    Swal.fire({
+                        text: 'Minimal 1 diagnosa ICD X harus diisi!',
+                        icon: "warning",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok",
+                        customClass: {
+                            confirmButton: "btn btn-primary"
+                        }
+                    });
+                    return false;
+                }
+
                 var blockUI = new KTBlockUI(document.querySelector("#kt_app_body"));
                 Swal.fire({
                     title: 'Simpan Data',
@@ -1258,20 +1413,20 @@
                 });
             @endif
             $('#icdx_repeater').repeater({
-                initEmpty: true,
+                initEmpty: false, // Minimal 1 item harus ada
 
                 show: function() {
                     $(this).slideDown();
 
+                    // Inisialisasi Select2
                     $(this).find('[data-kt-repeater="select22"]').select2({
                         ajax: {
                             url: 'https://new-simrs.rsausulaiman.com/auth/listdiagnosa2',
                             dataType: 'json',
                             delay: 250,
                             data: function(params) {
-
                                 return {
-                                    q: params.term, // search term
+                                    q: params.term,
                                 };
                             },
                             processResults: function(data) {
@@ -1287,24 +1442,46 @@
                             cache: true
                         },
                         minimumInputLength: 1,
-                        placeholder: 'Search for a user...'
+                        placeholder: 'Cari diagnosa ICD X...'
                     });
+
+                    // Update jenis diagnosa setelah item ditambahkan
+                    updateICDXJenisDiagnosa();
                 },
 
                 hide: function(deleteElement) {
-                    $(this).slideUp(deleteElement);
+                    // Cek jumlah item sebelum hapus
+                    var itemCount = $('#icdx_repeater [data-repeater-item]').length;
+
+                    if (itemCount <= 1) {
+                        Swal.fire({
+                            text: 'Minimal 1 diagnosa ICD X harus ada!',
+                            icon: "warning",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        return false;
+                    }
+
+                    $(this).slideUp(deleteElement, function() {
+                        // Update jenis diagnosa setelah item dihapus
+                        updateICDXJenisDiagnosa();
+                    });
                 },
 
                 ready: function() {
+                    // Inisialisasi Select2 untuk item yang sudah ada
                     $('[data-kt-repeater="select22"]').select2({
                         ajax: {
                             url: 'https://new-simrs.rsausulaiman.com/auth/listdiagnosa2',
                             dataType: 'json',
                             delay: 250,
                             data: function(params) {
-
                                 return {
-                                    q: params.term, // search term
+                                    q: params.term,
                                 };
                             },
                             processResults: function(data) {
@@ -1320,9 +1497,76 @@
                             cache: true
                         },
                         minimumInputLength: 1,
-                        placeholder: 'Search for a user...'
+                        placeholder: 'Cari diagnosa ICD X...'
                     });
+
+                    // Set jenis diagnosa awal
+                    updateICDXJenisDiagnosa();
                 }
+            });
+
+            // Fungsi untuk update jenis diagnosa (Primer/Sekunder)
+            function updateICDXJenisDiagnosa() {
+                var items = $('#icdx_repeater [data-repeater-item]:visible');
+                var itemCount = items.length;
+
+                items.each(function(index) {
+                    var jenisSelect = $(this).find('.icdx-jenis-diagnosa');
+                    var deleteBtn = $(this).find('.icdx-delete-btn');
+
+                    // Hapus badge yang ada sebelum menambahkan yang baru
+                    jenisSelect.closest('.fv-row').find('.badge').remove();
+
+                    if (index === 0) {
+                        // Item pertama = Primer (tidak bisa diubah)
+                        jenisSelect.val('P');
+                        jenisSelect.prop('disabled', true);
+                        jenisSelect.attr('data-jenis', 'primer');
+
+                        // Tambahkan badge info Primer
+                        jenisSelect.closest('.fv-row').append(
+                            '<div class="mt-2"><span class="badge badge-light-primary">Diagnosa Primer (Utama)</span></div>'
+                        );
+                    } else {
+                        // Item selanjutnya = Sekunder (otomatis)
+                        jenisSelect.val('S');
+                        jenisSelect.prop('disabled', true);
+                        jenisSelect.attr('data-jenis', 'sekunder');
+
+                        // Tambahkan badge info Sekunder
+                        jenisSelect.closest('.fv-row').append(
+                            '<div class="mt-2"><span class="badge badge-light-info">Diagnosa Sekunder</span></div>'
+                        );
+                    }
+
+                    // Disable delete button jika hanya ada 1 item
+                    if (itemCount <= 1) {
+                        deleteBtn.addClass('disabled').attr('disabled', true);
+                        deleteBtn.attr('title', 'Minimal 1 diagnosa harus ada');
+                    } else {
+                        deleteBtn.removeClass('disabled').removeAttr('disabled');
+                        deleteBtn.removeAttr('title');
+                    }
+                });
+
+                // Update badge info
+                updateICDXBadgeCount();
+            }
+
+            // Fungsi untuk update badge jumlah diagnosa
+            function updateICDXBadgeCount() {
+                var totalItems = $('#icdx_repeater [data-repeater-item]:visible').length;
+                var primerCount = $('#icdx_repeater [data-repeater-item]:visible .icdx-jenis-diagnosa[data-jenis="primer"]').length;
+                var sekunderCount = totalItems - primerCount;
+
+                // Tampilkan info di console untuk debugging
+                console.log('Total ICDX:', totalItems, '| Primer:', primerCount, '| Sekunder:', sekunderCount);
+            }
+
+            // Monitor perubahan pada jenis diagnosa (prevent manual change)
+            $(document).on('change', '.icdx-jenis-diagnosa', function() {
+                // Refresh untuk memastikan tidak ada perubahan manual
+                updateICDXJenisDiagnosa();
             });
 
 
@@ -1424,5 +1668,76 @@
                 }
             });
         @endif
+
+        // Keyboard Shortcuts untuk User-Friendly Navigation
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + S untuk Submit
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                document.getElementById('frm-data').dispatchEvent(new Event('submit'));
+            }
+
+            // Ctrl + 1-4 untuk buka accordion (untuk dokter)
+            if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '4') {
+                e.preventDefault();
+                const accordionNum = e.key;
+                const targetAccordion = document.querySelector(`#kt_accordion_medical_body_${accordionNum}`);
+                if (targetAccordion) {
+                    const bsCollapse = new bootstrap.Collapse(targetAccordion, {
+                        toggle: true
+                    });
+                }
+            }
+
+            // ESC untuk kembali
+            if (e.key === 'Escape') {
+                if (confirm('Yakin ingin kembali? Data yang belum disimpan akan hilang.')) {
+                    window.location.href = '{{ route('rekam-medis-poli', $data->idrawat) }}';
+                }
+            }
+        });
+
+        // Auto-expand accordion yang memiliki error
+        $(document).ready(function() {
+            // Cek jika ada input required yang kosong saat submit
+            $('#frm-data').on('invalid', function(e) {
+                e.preventDefault();
+                // Cari accordion terdekat dari input yang error
+                const errorInput = $(e.target);
+                const closestAccordion = errorInput.closest('.accordion-collapse');
+                if (closestAccordion.length) {
+                    closestAccordion.collapse('show');
+                    // Scroll ke input yang error
+                    setTimeout(function() {
+                        errorInput[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        errorInput.focus();
+                    }, 350);
+                }
+            }, true);
+
+            // Tooltip untuk shortcuts
+            const helpTooltip = `
+                <div class="position-fixed" style="bottom: 70px; right: 20px; z-index: 90;">
+                    <div class="badge badge-light-primary" data-bs-toggle="tooltip" data-bs-placement="left"
+                        title="Keyboard Shortcuts:\nCtrl+S = Simpan\nCtrl+1-4 = Buka Section\nESC = Kembali">
+                        <i class="ki-duotone ki-information-5 fs-3">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
+                        Shortcuts
+                    </div>
+                </div>
+            `;
+            $('body').append(helpTooltip);
+
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    html: true
+                });
+            });
+        });
     </script>
 @endsection

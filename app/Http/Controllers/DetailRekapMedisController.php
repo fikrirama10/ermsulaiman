@@ -83,11 +83,11 @@ class DetailRekapMedisController extends Controller
         $pasien = Pasien::with('alamat')->find($data->idpasien);
         $kategori = Kategori::find($data->idkategori);
         $obat = Obat::with('satuan')->where('nama_obat', '!=', '')->orderBy('obat.nama_obat', 'asc')->get();
-       
+
         // return view('detail-rekap-medis.create', compact('pasien', 'kategori', 'data', 'obat'));
     }
 
-    
+
     public function store(Request $request, $id_rekapmedis)
     {
 
@@ -136,19 +136,27 @@ class DetailRekapMedisController extends Controller
             $rekap->pemeriksaan_fisio = $pemeriksaan_fisio->toJson();
         }
 
-        
+        if ($request->soap_data) {
+            $rekap->soap_data = $request->soap_data;
+            $rekap->anamnesa_dokter = $request->soap_data;
+        }
+
         $rekap->triase = $request->triase;
         $rekap->idrekapmedis = $id_rekapmedis;
         $rekap->diagnosa = $request->diagnosa;
         $rekap->anamnesa = $request->anamnesa;
         $rekap->pemeriksaan_fisik_dokter = $request->pemeriksaan_fisik;
-        $rekap->anamnesa_dokter = $request->anamnesa_dokter;
+
         $rekap->obat_yang_dikonsumsi = $request->obat_yang_dikonsumsi;
         $rekap->alergi = $alergi->toJson();
         $rekap->pasien_sedang = $request->pasien_sedang;
         $rekap->pemeriksaan_fisik = $pemeriksaan_fisik->toJson();
         $rekap->riwayat_kesehatan = $riwayat_kesehatan->toJson();
         $rekap->rencana_pemeriksaan = $request->rencana_pemeriksaan;
+
+        // Simpan data SOAP jika ada (untuk dokter)
+
+
         $rekap->terapi_obat = json_encode($request->terapi_obat);
         $rekap->radiologi = json_encode($request->radiologi);
         $rekap->laborat = json_encode($request->lab);
@@ -171,6 +179,7 @@ class DetailRekapMedisController extends Controller
         $pfisik = json_decode($rekap->pemeriksaan_fisik);
         $rkesehatan = json_decode($rekap->riwayat_kesehatan);
         $pemeriksaan_fisio  = json_decode($rekap->pemeriksaan_fisio);
+        $soap_data = json_decode($rekap->soap_data);
         $obat = Obat::with('satuan')->where('nama_obat', '!=', '')->orderBy('obat.nama_obat', 'asc')->get();
         $kategori_diagnosa = DB::table('kategori_diagnosa')->get();
         $radiologi = DB::table('radiologi_tindakan')->get();
@@ -178,7 +187,7 @@ class DetailRekapMedisController extends Controller
         $fisio = DB::table('tarif')->where('idkategori',8)->get();
         $rawat = Rawat::find($rekap->idrawat);
         // dd($lab);
-        return view('detail-rekap-medis.show', compact('rekap', 'alergi', 'pfisik', 'rkesehatan', 'obat', 'kategori_diagnosa', 'radiologi', 'lab', 'fisio','rawat','pemeriksaan_fisio'));
+        return view('detail-rekap-medis.show', compact('rekap', 'alergi', 'pfisik', 'rkesehatan', 'obat', 'kategori_diagnosa', 'radiologi', 'lab', 'fisio','rawat','pemeriksaan_fisio','soap_data'));
     }
 
     public function update(Request $request, $id)
@@ -194,6 +203,19 @@ class DetailRekapMedisController extends Controller
             $rekap->anamnesa_dokter = $request->anamnesa_dokter;
             $rekap->pemeriksaan_fisik_dokter = $request->pemeriksaan_fisik;
             $rekap->rencana_pemeriksaan = $request->rencana_pemeriksaan;
+
+            // Update data SOAP jika ada
+            if ($request->soap_subjective || $request->soap_objective || $request->soap_assessment || $request->soap_plan) {
+                $soap_data = new Collection([
+                    'subjective' => $request->soap_subjective,
+                    'objective' => $request->soap_objective,
+                    'assessment' => $request->soap_assessment,
+                    'plan' => $request->soap_plan,
+                    'created_at' => now(),
+                ]);
+                $rekap->soap_data = $soap_data->toJson();
+            }
+
             // if ($request->terapi_obat) {
             //     $rekap->terapi_obat = json_encode($request->terapi_obat);
             // } else {
@@ -337,5 +359,5 @@ class DetailRekapMedisController extends Controller
         // return view('detail-rekap-medis.cetak');
     }
 
-    
+
 }
