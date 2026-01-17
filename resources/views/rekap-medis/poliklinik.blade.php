@@ -225,7 +225,7 @@
         };
 
         // Initialize history table
-        $("#tbl_histori").DataTable(dtConfig);
+   
 
         // Initialize recap table
         $("#tbl-rekap").DataTable({
