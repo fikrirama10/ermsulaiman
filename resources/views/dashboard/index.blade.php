@@ -82,7 +82,7 @@
                         $percentage = $total > 0 ? round(($kosong / $total) * 100) : 0;
                     @endphp
                     <div>
-                        <div class="card dashboard-bed-card shadow-sm hover-elevate-up h-100">
+                        <div class="card dashboard-bed-card shadow-sm hover-elevate-up h-100  {{ $kosong > 0 ? '' : 'bg-light-danger border' }}">
                             <div class="card-body">
                                 <div class="text-center mb-2">
                                     <h5 class="mb-1 fw-bold text-gray-800">{{ $val->nama_ruangan }}</h5>

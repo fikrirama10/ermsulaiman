@@ -596,6 +596,42 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
     });
 })->middleware('auth');
 
+// Management Dokter Routes
+Route::prefix('dokter')->middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\DokterController::class, 'index'])->name('dokter.index');
+    Route::get('/data', [App\Http\Controllers\DokterController::class, 'data'])->name('dokter.data');
+    Route::get('/edit/{id}', [App\Http\Controllers\DokterController::class, 'edit'])->name('dokter.edit');
+    Route::post('/store', [App\Http\Controllers\DokterController::class, 'store'])->name('dokter.store');
+    Route::put('/update/{id}', [App\Http\Controllers\DokterController::class, 'update'])->name('dokter.update');
+    Route::delete('/delete/{id}', [App\Http\Controllers\DokterController::class, 'destroy'])->name('dokter.destroy');
+    Route::post('/toggle/{id}', [App\Http\Controllers\DokterController::class, 'toggleStatus'])->name('dokter.toggle');
+    Route::post('/toggle-status/{id}', [App\Http\Controllers\DokterController::class, 'toggleStatus'])->name('dokter.toggle-status');
+    Route::post('/bulk-toggle', [App\Http\Controllers\DokterController::class, 'bulkToggleStatus'])->name('dokter.bulk-toggle');
+    Route::post('/bulk-toggle-status', [App\Http\Controllers\DokterController::class, 'bulkToggleStatus'])->name('dokter.bulk-toggle-status');
+
+    // User Sync Routes
+    Route::get('/without-user', [App\Http\Controllers\DokterController::class, 'getDokterWithoutUser'])->name('dokter.without-user');
+    Route::post('/sync-user', [App\Http\Controllers\DokterController::class, 'syncUser'])->name('dokter.sync-user');
+    Route::post('/sync-all-users', [App\Http\Controllers\DokterController::class, 'syncAllUsers'])->name('dokter.sync-all-users');
+
+    // Jadwal Routes
+    Route::get('/{id}/jadwal', [App\Http\Controllers\DokterController::class, 'jadwal'])->name('dokter.jadwal');
+    Route::get('/{id}/jadwal/data', [App\Http\Controllers\DokterController::class, 'jadwal'])->name('dokter.jadwal.data');
+    Route::post('/jadwal/store', [App\Http\Controllers\DokterController::class, 'storeJadwal'])->name('dokter.jadwal.store');
+    Route::get('/jadwal/edit/{id}', [App\Http\Controllers\DokterController::class, 'editJadwal'])->name('dokter.jadwal.edit');
+    Route::put('/jadwal/update/{id}', [App\Http\Controllers\DokterController::class, 'updateJadwal'])->name('dokter.jadwal.update');
+    Route::delete('/jadwal/delete/{id}', [App\Http\Controllers\DokterController::class, 'destroyJadwal'])->name('dokter.jadwal.destroy');
+
+    // Kuota Routes
+    Route::get('/{id}/kuota', [App\Http\Controllers\DokterController::class, 'kuota'])->name('dokter.kuota');
+    Route::get('/{id}/kuota/data', [App\Http\Controllers\DokterController::class, 'kuota'])->name('dokter.kuota.data');
+    Route::get('/{id}/kuota/summary', [App\Http\Controllers\DokterController::class, 'kuotaSummary'])->name('dokter.kuota.summary');
+    Route::post('/kuota/store', [App\Http\Controllers\DokterController::class, 'storeKuota'])->name('dokter.kuota.store');
+    Route::get('/kuota/edit/{id}', [App\Http\Controllers\DokterController::class, 'editKuota'])->name('dokter.kuota.edit');
+    Route::put('/kuota/update/{id}', [App\Http\Controllers\DokterController::class, 'updateKuota'])->name('dokter.kuota.update');
+    Route::delete('/kuota/delete/{id}', [App\Http\Controllers\DokterController::class, 'destroyKuota'])->name('dokter.kuota.destroy');
+});
+
 //Ajax
 Route::prefix('ajax')->middleware('auth')->group(function () {
     Route::get('bed/edit', [RuanganBedController::class, 'edit'])->name('edit.ruangan-bed-ajax');

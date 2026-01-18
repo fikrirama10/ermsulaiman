@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $ruangan = Ruangan::with('kelas')
             ->withCount('bed','bed_kosong')
             ->where('jenis', 2)
-            ->where('status', 1)->get();
+            ->where('status', 1)->orderBy('idkelas','asc')->get();
 
         return view('dashboard.index', compact('ruangan'));
     }
