@@ -52,29 +52,57 @@
                     <div class="card-toolbar">
                         @canany(['dokter', 'perawat'])
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#tambah-ruangan">
-                                Tambah Data Ruangan
+                                <i class="bi bi-plus-circle"></i> Tambah Ruangan
                             </button>
                         @endcanany
                     </div>
                 </div>
                 <!--begin::Body-->
-                <div class="card-body p-lg-15">
-                    <table id="tbl-ruangan" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
-                        <thead class="border">
-                            <tr class="fw-bold fs-6 text-gray-800 px-7">
-                                <th>No</th>
-                                <th>Nama Ruangan</th>
-                                <th>Kelas</th>
-                                <th>Ruangan Jenis</th>
-                                <th>Gender</th>
-                                <th>Kapasitas</th>
-                                <th>Opsi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="border">
+                <div class="card-body pt-2">
+                    <!-- Filter Section - Compact -->
+                    <div class="d-flex gap-3 mb-4 p-3 bg-light rounded">
+                        <div class="flex-grow-1" style="max-width: 200px;">
+                            <label class="form-label fw-bold fs-7 mb-1">Filter Status</label>
+                            <select id="filter_status" class="form-select form-select-sm">
+                                <option value="">Semua Status</option>
+                                <option value="1">Aktif</option>
+                                <option value="0">Nonaktif</option>
+                            </select>
+                        </div>
+                        <div class="vr my-2"></div>
+                        <div>
+                            <label class="form-label fw-bold fs-7 mb-1">Aksi Massal</label>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-success" onclick="bulkActionRuangan('activate')" title="Aktifkan ruangan terpilih">
+                                    <i class="bi bi-check-circle"></i> Aktifkan
+                                </button>
+                                <button type="button" class="btn btn-sm btn-warning" onclick="bulkActionRuangan('deactivate')" title="Nonaktifkan ruangan terpilih">
+                                    <i class="bi bi-x-circle"></i> Nonaktifkan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table id="tbl-ruangan" class="table table-sm table-striped table-row-bordered gy-3 gs-5 border rounded">
+                            <thead class="border bg-light">
+                                <tr class="fw-bold fs-7 text-gray-800">
+                                    <th width="3%">
+                                        <input type="checkbox" class="form-check-input" id="check-all-ruangan">
+                                    </th>
+                                    <th width="5%">No</th>
+                                    <th width="18%">Nama Ruangan</th>
+                                    <th width="10%">Gender</th>
+                                    <th width="8%">Bed<br><small>(Kosong/Total)</small></th>
+                                    <th width="10%">Status</th>
+                                    <th width="10%">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border fs-7">
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <!--end::Body-->
             </div>
@@ -177,7 +205,7 @@
 <script>
     $(function(){
 
-        $("#tbl-ruangan").DataTable({
+        var table = $("#tbl-ruangan").DataTable({
             "language": {
                 "lengthMenu": "Show _MENU_",
             },
@@ -201,17 +229,47 @@
             ajax: '{{ url()->current() }}',
             columns: [
                 {
+                    data: 'checkbox',
+                    name: 'checkbox',
+                    orderable: false,
+                    searchable: false
+                },
+                {
                     "data": 'DT_RowIndex',
                     orderable: false,
                     searchable: false
                 },
                 { data: 'nama_ruangan', name: 'nama_ruangan' },
-                { data: 'kelas', name: 'kelas' },
-                { data: 'ruangan_jenis', name: 'ruangan_jenis' },
                 { data: 'gender', name: 'gender' },
-                { data: 'kapasitas', name: 'kapasitas' },
+                { data: 'jumlah_bed', name: 'jumlah_bed', orderable: false, searcheable: false },
+                { data: 'status_aktif', name: 'status_aktif', orderable: false, searcheable: false },
                 { data: 'opsi', name: 'opsi', orderable: false, searcheable: false },
             ]
+        });
+
+        // Filter status
+        $('#filter_status').on('change', function() {
+            table.ajax.reload();
+        });
+
+        // Kirim filter ke server
+        table.on('preXhr.dt', function(e, settings, data) {
+            data.filter_status = $('#filter_status').val();
+        });
+
+        // Check all checkbox
+        $('#check-all-ruangan').on('click', function() {
+            $('.ruangan-checkbox').prop('checked', this.checked);
+        });
+
+        // Uncheck "check all" jika ada yang dilepas
+        $(document).on('change', '.ruangan-checkbox', function() {
+            if (!this.checked) {
+                $('#check-all-ruangan').prop('checked', false);
+            }
+            if ($('.ruangan-checkbox:checked').length === $('.ruangan-checkbox').length) {
+                $('#check-all-ruangan').prop('checked', true);
+            }
         });
 
         $("#frm-data").on( "submit", function(event) {
@@ -247,6 +305,81 @@
             });
         });
     });
+
+    // Bulk action ruangan
+    function bulkActionRuangan(action) {
+        var selected = [];
+        $('.ruangan-checkbox:checked').each(function() {
+            selected.push($(this).val());
+        });
+
+        if (selected.length === 0) {
+            Swal.fire({
+                text: 'Pilih minimal 1 ruangan!',
+                icon: 'warning',
+                confirmButtonText: 'Ok'
+            });
+            return;
+        }
+
+        var actionText = action === 'activate' ? 'mengaktifkan' : 'menonaktifkan';
+
+        Swal.fire({
+            title: 'Konfirmasi Aksi Massal',
+            text: `Apakah Anda yakin akan ${actionText} ${selected.length} ruangan?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Lanjutkan!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var form = $('<form>', {
+                    'method': 'POST',
+                    'action': '{{ route('bulk.ruangan.status') }}'
+                });
+
+                form.append($('<input>', {
+                    'type': 'hidden',
+                    'name': '_token',
+                    'value': '{{ csrf_token() }}'
+                }));
+
+                form.append($('<input>', {
+                    'type': 'hidden',
+                    'name': 'action',
+                    'value': action
+                }));
+
+                selected.forEach(function(id) {
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'ids[]',
+                        'value': id
+                    }));
+                });
+
+                $.blockUI({
+                    css: {
+                        border: 'none',
+                        padding: '15px',
+                        backgroundColor: '#000',
+                        '-webkit-border-radius': '10px',
+                        '-moz-border-radius': '10px',
+                        opacity: .5,
+                        color: '#fff',
+                        fontSize: '16px'
+                    },
+                    message: "<img src='{{ asset('assets/img/loading.gif') }}' width='10%' height='auto'> Memproses...",
+                    baseZ: 9000,
+                });
+
+                $('body').append(form);
+                form.submit();
+            }
+        });
+    }
 
     @if ($message = session('gagal'))
         Swal.fire({

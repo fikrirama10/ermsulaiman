@@ -44,3 +44,75 @@ td {
 .hr-line {
     border-top: 3px dashed white;
 }
+
+/* Header Enhancements */
+.app-header {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Clock & Date Widget */
+.app-navbar .border.rounded {
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.app-navbar .border.rounded:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Notification Badge Animation */
+.badge-circle {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+/* Icon Button Hover Effect */
+.btn-icon.btn-custom:hover {
+    background-color: rgba(0, 97, 176, 0.1);
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}
+
+/* Time Display Animation */
+#current-time {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+/* Responsive Clock - Hide on smaller screens */
+@media (max-width: 991px) {
+    .app-navbar .border.rounded {
+        display: none !important;
+    }
+}
+
+/* Sticky Logout Button Sidebar */
+.app-sidebar-logout-sticky {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    background: #fff;
+    z-index: 10;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+    padding-bottom: 1rem;
+}
+
+@media (max-width: 991px) {
+    .app-sidebar-logout-sticky {
+        position: static;
+        box-shadow: none;
+        padding-bottom: 0;
+    }
+}

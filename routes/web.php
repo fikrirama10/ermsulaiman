@@ -100,7 +100,7 @@ Route::prefix('location')->group(function () {
     Route::get('/update', function () {
         $id = '359f5ff7-61cc-4d43-b11b-b947c3ff450e'; //location id
         $data = DB::table('organisasi_satusehat')->get();
-        foreach($data as $d){
+        foreach ($data as $d) {
             LocationHelper::update($d->id_location);
         }
         return 'success';
@@ -134,7 +134,6 @@ Route::prefix('encounter')->group(function () {
         // return $rawat->id_encounter;
         return EncounterHelper::updateInProgress($rawat->id_encounter);
     });
-    
 });
 #Kondisi
 Route::prefix('condition')->group(function () {
@@ -142,7 +141,6 @@ Route::prefix('condition')->group(function () {
         $idrawat = $request->idrawat;
         return SatusehatKondisiHelper::create_kondisi($idrawat);
     });
-   
 });
 
 #Patient
@@ -158,13 +156,13 @@ Route::prefix('patient')->group(function () {
         $nik = 123214213; //example nik
         $nama = 'John';
         $birth = '1945-11-17';
-        return PatientHelper::searchNameBirthNik($nama,$birth,$nik);
+        return PatientHelper::searchNameBirthNik($nama, $birth, $nik);
     });
     Route::get('/search-name-birth-gender', function () {
         $gender = 'female';
         $nama = 'John';
         $birth = '1945-11-17';
-        return PatientHelper::searchNameBirthGender($nama,$birth,$gender);
+        return PatientHelper::searchNameBirthGender($nama, $birth, $gender);
     });
     Route::get('/search-id', function () {
         $id = 'P02029412619'; //example nik
@@ -179,27 +177,27 @@ Route::prefix('patient')->group(function () {
     });
 });
 
-Route::get('/obat-tes',function(){
+Route::get('/obat-tes', function () {
     $resep_dokter = DB::table('demo_resep_dokter')->where('idrawat', 39070)->get();
     $non_racik = [];
     $racikan = [];
-    foreach($resep_dokter as $rd){
-        if($rd->jenis == 'Racik'){
+    foreach ($resep_dokter as $rd) {
+        if ($rd->jenis == 'Racik') {
             $data_obat = [];
             $jumlah_obat = [];
             $obat = json_decode($rd->nama_obat);
-            foreach($obat->obat as $o){
+            foreach ($obat->obat as $o) {
                 $data_obat[] = [
-                    'obat'=>$o,
+                    'obat' => $o,
                 ];
             }
-            foreach($obat->jumlah as $o){
+            foreach ($obat->jumlah as $o) {
                 $jumlah_obat[] = [
-                    'jumlah_obat'=>$o,
+                    'jumlah_obat' => $o,
                 ];
             }
 
-            $obatData= json_encode(array_merge($data_obat,$jumlah_obat));
+            $obatData = json_encode(array_merge($data_obat, $jumlah_obat));
             $data = json_decode($obatData, true);
 
             // Inisialisasi array 2 dimensi
@@ -227,41 +225,39 @@ Route::get('/obat-tes',function(){
             // return $combinedArray;
 
             $racikan[] = [
-                'obat'=>$combinedArray,
-                'jumlah_obat'=>$jumlah_obat,
-                'takaran'=>$rd->takaran,
-                'dosis'=>$rd->dosis,
-                'signa'=>$rd->signa,
-                'diminum'=>$rd->diminum,
-                'catatan'=>$rd->catatan
+                'obat' => $combinedArray,
+                'jumlah_obat' => $jumlah_obat,
+                'takaran' => $rd->takaran,
+                'dosis' => $rd->dosis,
+                'signa' => $rd->signa,
+                'diminum' => $rd->diminum,
+                'catatan' => $rd->catatan
             ];
-        }else{
+        } else {
             $non_racik[] = [
-                'obat'=>$rd->idobat,
-                'takaran'=>$rd->takaran,
-                'jumlah'=>$rd->jumlah,
-                'dosis'=>$rd->dosis,
-                'signa'=>$rd->signa,
-                'diminum'=>$rd->diminum,
-                'catatan'=>$rd->catatan
+                'obat' => $rd->idobat,
+                'takaran' => $rd->takaran,
+                'jumlah' => $rd->jumlah,
+                'dosis' => $rd->dosis,
+                'signa' => $rd->signa,
+                'diminum' => $rd->diminum,
+                'catatan' => $rd->catatan
             ];
         }
     }
 
 
     DB::table('demo_antrian_resep')->insert([
-        'idrawat'=>39070,
-        'idbayar'=>2,
-        'status_antrian'=>'Antrian',
-        'obat'=>json_encode($non_racik),
-        'racikan'=>json_encode($racikan),
+        'idrawat' => 39070,
+        'idbayar' => 2,
+        'status_antrian' => 'Antrian',
+        'obat' => json_encode($non_racik),
+        'racikan' => json_encode($racikan),
     ]);
     return [
-        'racikan'=>$racikan,
-        'non_racik'=>$non_racik
+        'racikan' => $racikan,
+        'non_racik' => $non_racik
     ];
-
-
 });
 
 Route::get('/faskes', function (Request $request) {
@@ -272,7 +268,7 @@ Route::get('/faskes', function (Request $request) {
 Route::get('/update-task', function (Request $request) {
     $current_time = round(microtime(true) * 1000);
     // echo $current_time;
-    return VclaimHelper::update_task($request->kode,5,$current_time);
+    return VclaimHelper::update_task($request->kode, 5, $current_time);
 });
 
 
@@ -336,11 +332,15 @@ Route::prefix('data-master')->middleware('auth')->group(function () {
     Route::prefix('/ruangan')->group(function () {
         Route::get('/', [RuanganController::class, 'index'])->name('index.ruangan');
         Route::post('/store', [RuanganController::class, 'store'])->name('store.ruangan');
+        Route::post('/{id}/toggle-status', [RuanganController::class, 'toggleStatus'])->name('toggle.ruangan.status');
+        Route::post('/bulk-toggle-status', [RuanganController::class, 'bulkToggleStatus'])->name('bulk.ruangan.status');
         //BED
         Route::prefix('/bed')->group(function () {
             Route::get('/{id_ruangan}', [RuanganBedController::class, 'index'])->name('index.ruangan-bed');
             Route::post('/store', [RuanganBedController::class, 'store'])->name('store.ruangan-bed');
             Route::post('/update', [RuanganBedController::class, 'update'])->name('update.ruangan-bed');
+            Route::post('/{id}/toggle-status', [RuanganBedController::class, 'toggleBedStatus'])->name('toggle.bed.status');
+            Route::post('/bulk-toggle-status', [RuanganBedController::class, 'bulkToggleBedStatus'])->name('bulk.bed.status');
         });
     });
 });
@@ -493,9 +493,30 @@ Route::prefix('/rawat-inap')->middleware('auth')->group(function () {
 });
 Route::prefix('/pasien')->middleware('auth')->group(function () {
     Route::get('/', [PasienController::class, 'index'])->name('pasien.index');
+    Route::get('/view/{id}', [PasienController::class, 'rekammedis_detail'])->name('pasien.rekammedis_detail');
     Route::get('/create', [PasienController::class, 'tambah_pasien_baru'])->name('pasien.tambah-pasien');
+    Route::get('/create-kunjungan/{id}/{jenis}', [PasienController::class, 'tambah_kunjungan'])->name('pasien.tambah-kunjungan');
     Route::get('/cari-kelurahan', [PasienController::class, 'cari_kelurahan'])->name('pasien.cari-kelurahan');
-
+    Route::get('/get-jadwal-dokter-kontrol', [PasienController::class, 'get_jadwal_dokter_kontrol'])->name('get-jadwal-dokter-kontrol');
+    Route::get('/get-jadwal-dokter', [PasienController::class, 'get_jadwal_dokter'])->name('get-jadwal-dokter');
+    Route::get('/get-rujukan-faskes', [PasienController::class, 'get_rujukan_faskes'])->name('get-rujukan-faskes');
+    Route::get('/pilih-rujukan-faskes', [PasienController::class, 'pilih_rujukan_faskes'])->name('pilih-rujukan-faskes');
+    Route::get('/get-surat-kontrol', [PasienController::class, 'get_surat_kontrol'])->name('get-surat-kontrol');
+    Route::get('/get-pilih-nomer', [PasienController::class, 'get_pilih_nomer'])->name('get-pilih-nomer');
+    Route::get('/get-pilih-dokter/{jenis}', [PasienController::class, 'get_pilih_dokter'])->name('get-pilih-dokter');
+    Route::get('/show-sep/{sep}', [PasienController::class, 'show_sep'])->name('show-sep');
+    Route::get('/buat-sep-manual', [PasienController::class, 'buat_sep_manual'])->name('buat-sep-manual');
+    Route::get('/histori-pelayanan', [PasienController::class, 'get_histori_pasien'])->name('histori-pelayanan');
+    Route::get('/data-kontrol-sep', [PasienController::class, 'get_sep_kontrol'])->name('data-kontrol-sep');
+    Route::post('/store', [PasienController::class, 'store'])->name('pasien.post-tambah-pasien');
+    Route::post('/store-kunjungan', [PasienController::class, 'store_kunjungan'])->name('pasien.post-tambah-kunjungan');
+    Route::post('/check-password', [PasienController::class, 'check_password'])->name('pasien.check-password');
+    Route::post('/post-form-concent', [PasienController::class, 'post_form_consent'])->name('pasien.post-form-concent');
+    Route::post('/post-surat-kontrol', [PasienController::class, 'post_surat_kotrol'])->name('pasien.post-surat-kontrol');
+    //Rekam Medis
+    Route::prefix('/bpjs')->middleware('auth')->group(function () {
+        Route::get('/get-pasien', [PasienController::class, 'get_bpjs_by_nik'])->name('pasien.get-by-nik');
+    });
     //Rekam Medis
     Route::prefix('/rekap-medis')->middleware('auth')->group(function () {
         Route::get('/{id_pasien}/show', [RekapMedisController::class, 'index'])->name('rekap-medis-index');

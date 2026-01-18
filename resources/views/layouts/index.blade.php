@@ -13,7 +13,7 @@
     {{-- <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" /> --}}
     <!--end::Vendor Stylesheets-->
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
-    
+
     {{-- <link href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" rel="stylesheet" type="text/css" /> --}}
     <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
@@ -31,7 +31,7 @@
     data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
     data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true"
     data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default">
-    
+
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <!--begin::Page-->
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
@@ -74,7 +74,40 @@
         $(document).ready(function() {
 			$("#tgl_kontrol").flatpickr();
         });
-       
+
+        // Real-time Clock and Date
+        function updateDateTime() {
+            const now = new Date();
+
+            // Format tanggal: Senin, 18 Jan 2026
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+
+            const dayName = days[now.getDay()];
+            const date = now.getDate();
+            const monthName = months[now.getMonth()];
+            const year = now.getFullYear();
+
+            const formattedDate = `${dayName}, ${date} ${monthName} ${year}`;
+
+            // Format waktu: 14:30:45 WIB
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const formattedTime = `${hours}:${minutes}:${seconds} WIB`;
+
+            // Update DOM
+            $('#current-date').text(formattedDate);
+            $('#current-time').text(formattedTime);
+        }
+
+        // Update setiap detik
+        setInterval(updateDateTime, 1000);
+
+        // Jalankan pertama kali
+        updateDateTime();
+
     </script>
     <!--end::Global Javascript Bundle-->
     <!--begin::Vendors Javascript(used for this page only)-->
@@ -88,7 +121,7 @@
     <script src="https://code.highcharts.com/themes/high-contrast-light.js"></script> --}}
         <!--end::Vendors Javascript-->
     @yield('js')
-    
+
     <!--end::Javascript-->
 </body>
 <!--end::Body-->

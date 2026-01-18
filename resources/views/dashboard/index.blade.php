@@ -50,51 +50,68 @@
                 </h3>
                 <!--end::Title-->
             </div>
-            <div class="row g-6 g-xl-9">
+            <div class="row g-4">
                 @foreach ($ruangan as $val)
-                    <div class="col-sm-6 col-xl-3">
+                    @php
+                        $total = $val->bed_count;
+                        $kosong = $val->bed_kosong_count;
+                        $terisi = $total - $kosong;
+                        $percentage = $total > 0 ? round(($kosong / $total) * 100) : 0;
+                    @endphp
+                    <div class="col-sm-6 col-xl-4">
                         <!--begin::Card-->
-                        <div class="card shadow h-100" 
-                        {{-- style="background-image:url('{{ asset('assets/media/patterns/vektor-2.png') }}');background-size: cover;" --}}
-                        >
-                            <!--begin::Card header-->
-                            <div class="card-header flex-nowrap border-0 pt-9">
-                                <!--begin::Card title-->
-                                <div class="card-title m-0">
-                                    <!--begin::Icon-->
-                                     <div class="symbol me-5">
-                                        <i class="fa-solid fa-bed fs-4"></i>
-                                    </div>
-                                    <!--end::Icon-->
-
-                                    <!--begin::Title-->
-                                    
-                                    <a href="#" class="fs-4 fw-semibold text-hover-primary text-gray-600 m-0">
-                                        {{ $val->nama_ruangan }} <br> ( {{ $val->bed_count }} BED )
-                                    </a>
-                                    <!--end::Title-->
-                                </div>
-                                <!--end::Card title-->
-                            </div>
-                            <!--end::Card header-->
-
+                        <div class="card shadow-sm hover-elevate-up h-100">
                             <!--begin::Card body-->
-                            <div class="card-body d-flex flex-column px-9 pt-6 pb-8">
-                                <!--begin::Heading-->
-                                <div class="fs-2x fw-bold mb-3">
-                                    {{ $val->bed_kosong_count }} KOSONG
-                                </div>
-                                <!--end::Heading-->
-                                <!--begin::Stats-->
-                                <div class="d-flex align-items-center flex-wrap mb-5 mt-auto fs-6">
-                                    <i class="ki-outline ki-Up-right fs-3 me-1 text-danger"></i>
-                                    <!--begin::Label-->
-                                    <div class="fw-semibold text-gray-500">
-                                        {{ $val->kelas->kelas }}
+                            <div class="card-body p-5">
+                                <!-- Header -->
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="symbol symbol-45px me-3">
+                                        <div class="symbol-label bg-light-primary">
+                                            <i class="bi bi-hospital fs-2 text-primary"></i>
+                                        </div>
                                     </div>
-                                    <!--end::Label-->
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-0 fw-bold text-gray-800">{{ $val->nama_ruangan }}</h5>
+                                        <span class="badge badge-light-info badge-sm">{{ $val->kelas->kelas }}</span>
+                                    </div>
                                 </div>
-                                <!--end::Stats-->
+
+                                <!-- Stats -->
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <div class="bg-light-success rounded p-3 text-center">
+                                            <div class="fs-2x fw-bold text-success">{{ $kosong }}</div>
+                                            <div class="fs-7 text-gray-600 fw-semibold">Tersedia</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light-danger rounded p-3 text-center">
+                                            <div class="fs-2x fw-bold text-danger">{{ $terisi }}</div>
+                                            <div class="fs-7 text-gray-600 fw-semibold">Terisi</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fs-7 fw-semibold text-gray-700">Ketersediaan</span>
+                                        <span class="fs-7 fw-bold text-primary">{{ $percentage }}%</span>
+                                    </div>
+                                    <div class="progress h-8px bg-light-primary">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ $percentage }}%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Footer Info -->
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top border-gray-300">
+                                    <span class="fs-7 text-gray-600">
+                                        <i class="bi bi-border-all fs-6 me-1"></i>Total: <span class="fw-bold">{{ $total }} Bed</span>
+                                    </span>
+                                    <span class="badge badge-light-{{ $kosong > 0 ? 'success' : 'danger' }}">
+                                        {{ $kosong > 0 ? 'Tersedia' : 'Penuh' }}
+                                    </span>
+                                </div>
                             </div>
                             <!--end::Card body-->
                         </div>
