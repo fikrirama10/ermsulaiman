@@ -240,6 +240,17 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Poli Utama</label>
+                                <select name="idpoli" id="idpoli" class="form-select">
+                                    <option value="">Pilih Poli Utama</option>
+                                    @foreach($poli as $p)
+                                        <option value="{{ $p->id }}">{{ $p->poli }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
                     </div>
                     <div class="row">

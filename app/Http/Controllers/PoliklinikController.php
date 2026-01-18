@@ -9,7 +9,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 class PoliklinikController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (request()->ajax()) {
 
@@ -25,71 +25,78 @@ class PoliklinikController extends Controller
                     'dokter.kode_dpjp',
                     'rawat_bayar.bayar',
                     'rawat_status.status',
-                    // 'rekap_medis.dokter',
-                    // 'rekap_medis.perawat',
-                    // 'rekap_medis.bpjs',
+                    'rekap_medis.id as rekap_id',
+                    'rekap_medis.dokter as rekap_dokter',
+                    'rekap_medis.perawat as rekap_perawat',
+                    'rekap_medis.bpjs as rekap_bpjs'
                 ])
                 ->join('pasien', 'pasien.no_rm', '=', 'rawat.no_rm')
                 ->join('poli', 'poli.id', '=', 'rawat.idpoli')
                 ->join('rawat_bayar', 'rawat_bayar.id', '=', 'rawat.idbayar')
                 ->join('rawat_status', 'rawat_status.id', '=', 'rawat.status')
-                ->Leftjoin('dokter', 'dokter.id', '=', 'rawat.iddokter')
-                // ->Leftjoin('demo_rekap_medis as rekap_medis', 'rekap_medis.idrawat', '=', 'rawat.id')  
-                ->whereIn('rawat.status',[1,2,3,4,8])            
-                ->whereDate('rawat.tglmasuk', date('Y-m-d'))
-                ->groupBy('rawat.id')
-                ;
-                if(auth()->user()->idpriv != 20){
-                    $rawat->where('rawat.idpoli', auth()->user()->detail->idpoli);
-                }   
-            // if (auth()->user()->detail->idruangan == 1) {
-            //     $rawat->where('rawat.idpoli', auth()->user()->detail->idpoli);
-            // }else{
-            //     $rawat->where('rawat.idpoli','!=',1);
-            // }
-            if (auth()->user()->detail->dokter == 1) {
-                $rawat->where('dokter.kode_dpjp', auth()->user()->detail->dokter_detail->kode_dpjp)->orderBy('tglmasuk', 'desc');
+                ->leftJoin('dokter', 'dokter.id', '=', 'rawat.iddokter')
+                ->leftJoin('demo_rekap_medis as rekap_medis', 'rekap_medis.idrawat', '=', 'rawat.id')
+                ->whereIn('rawat.status',[1,2,3,4,8]);
+
+            // Filter tanggal masuk
+            if ($request->has('filter_tglmasuk') && $request->filter_tglmasuk != '') {
+                $rawat->whereDate('rawat.tglmasuk', $request->filter_tglmasuk);
             } else {
-                $rawat->orderBy('tglmasuk', 'desc');
+                // Default hari ini
+                $rawat->whereDate('rawat.tglmasuk', date('Y-m-d'));
             }
+
+            // Filter status pemeriksaan
+            if ($request->has('filter_status_periksa') && $request->filter_status_periksa != '') {
+                if ($request->filter_status_periksa == 'antrian') {
+                    // Antrian = belum ada rekap medis atau dokter belum selesai
+                    $rawat->where(function($query) {
+                        $query->whereNull('rekap_medis.id')
+                              ->orWhere('rekap_medis.dokter', '!=', 1);
+                    });
+                } elseif ($request->filter_status_periksa == 'selesai') {
+                    // Selesai = rekap medis ada dan dokter sudah selesai
+                    $rawat->whereNotNull('rekap_medis.id')
+                          ->where('rekap_medis.dokter', 1);
+                }
+            }
+
+            // Privilege filter
+            if(auth()->user()->idpriv != 20){
+                $rawat->where('rawat.idpoli', auth()->user()->detail->idpoli);
+            }
+            // Dokter filter
+            if (auth()->user()->detail->dokter == 1) {
+                $rawat->where('dokter.kode_dpjp', auth()->user()->detail->dokter_detail->kode_dpjp);
+            }
+
+            $rawat->orderBy('rawat.tglmasuk', 'desc');
+
             return DataTables::query($rawat)
                 ->addColumn('opsi', function ($rawat) {
-                    return '<a href="' . route('rekam-medis-poli', $rawat->id) . '" class="btn btn-sm btn-success">Lihat</a>';
+                    return '<a href="' . route('rekam-medis-poli', $rawat->id) . '" class="btn btn-sm btn-success"><i class="bi bi-eye"></i> Lihat</a>';
                 })
                 ->addColumn('jenis_rawat',function($rawat){
                     $jenis = DB::table('rawat_jenis')->where('id',$rawat->idjenisrawat)->first();
-                    return $jenis->jenis;
+                    return $jenis ? $jenis->jenis : '-';
                 })
                 ->addColumn('status_pemeriksaan', function ($rawat) {
-                    #span class="badge badge-success">Selesai</span>
-                    $rekap = DB::table('demo_rekap_medis')->where('idrawat',$rawat->id)->first();
-                    if($rekap){
-                        if ($rekap->perawat == 1) {
-                            $color_perawat = 'primary';
-                        } else {
-                            $color_perawat = 'danger';
-                        }
-                        if ($rekap->dokter == 1) {
-                            $color_dokter = 'primary';
-                        } else {
-                            $color_dokter = 'danger';
-                        }
-                        if($rekap->bpjs == 1){
-                            $color_bpjs = 'primary';
-                        }else{
-                            $color_bpjs = 'danger';
-                        }
-                    }else{
-                        $color_perawat = 'danger';
-                        $color_dokter = 'danger';
-                        $color_bpjs = 'danger';
+                    // Gunakan data dari select, bukan query lagi
+                    $color_perawat = 'danger';
+                    $color_dokter = 'danger';
+                    $color_bpjs = 'danger';
+
+                    if($rawat->rekap_id){
+                        $color_perawat = $rawat->rekap_perawat == 1 ? 'success' : 'danger';
+                        $color_dokter = $rawat->rekap_dokter == 1 ? 'success' : 'danger';
+                        $color_bpjs = $rawat->rekap_bpjs == 1 ? 'success' : 'danger';
                     }
-                   
-                    $perawat = '<span class="badge badge-' . $color_perawat . '">Perawat</span>';
-                    $dokter = '<span class="badge badge-' . $color_dokter . '">Dokter</span>';
+
+                    $dokter = '<span class="badge badge-' . $color_dokter . ' me-1">Dokter</span>';
+                    $perawat = '<span class="badge badge-' . $color_perawat . ' me-1">Perawat</span>';
                     $bpjs = '<span class="badge badge-' . $color_bpjs . '">BPJS</span>';
 
-                    return $dokter . ' ' . $perawat.' '.$bpjs;
+                    return '<div class="d-flex flex-wrap gap-1">' . $dokter . $perawat . $bpjs . '</div>';
                 })
                 ->rawColumns(['opsi', 'status_pemeriksaan','jenis_rawat'])
                 ->make(true);
@@ -98,7 +105,7 @@ class PoliklinikController extends Controller
         // return auth()->user()->detail->idpoli;
     }
 
-    public function index_semua()
+    public function index_semua(Request $request)
     {
         if (request()->ajax()) {
             $rawat = DB::table('rawat')
@@ -127,10 +134,10 @@ class PoliklinikController extends Controller
                 ->whereIn('rawat.status',[1,2,3,4,8])
                 ->groupBy('rawat.id')
                 ;
-                    
+
                 if(auth()->user()->idpriv != 20){
                     $rawat->where('rawat.idpoli', auth()->user()->detail->idpoli);
-                }   
+                }
             // if (auth()->user()->detail->idruangan == 1) {
             //     $rawat->where('rawat.idpoli', auth()->user()->detail->idpoli);
             // } else {
@@ -140,6 +147,16 @@ class PoliklinikController extends Controller
                 $rawat->where('dokter.kode_dpjp', auth()->user()->detail->dokter_detail->kode_dpjp)->orderBy('tglmasuk', 'desc');
             } else {
                 $rawat->orderBy('tglmasuk', 'desc');
+            }
+
+             // Filter tanggal masuk
+            if ($request->has('filter_tglmasuk') && $request->filter_tglmasuk != '') {
+                $rawat->whereDate('rawat.tglmasuk', $request->filter_tglmasuk);
+            }
+
+            // Filter status pemeriksaan
+            if ($request->has('filter_status_periksa') && $request->filter_status_periksa != '') {
+                $rawat->where('rawat.status', $request->filter_status_periksa);
             }
 
             // ;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Dokter;
+use App\Models\Poli;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -84,7 +85,8 @@ class DokterController extends Controller
         }
 
         $spesialis = DB::table('dokter_spesialis')->get();
-        return view('dokter.index', compact('spesialis'));
+        $poli = Poli::get();
+        return view('dokter.index', compact('spesialis', 'poli'));
     }
 
     public function store(Request $request)
@@ -93,6 +95,7 @@ class DokterController extends Controller
             'kode_dokter' => 'required|unique:dokter,kode_dokter',
             'nama_dokter' => 'required',
             'idspesialis' => 'nullable',
+            'idpoli' => 'nullable',
             'sip' => 'nullable',
             'status' => 'required|in:0,1',
             'username' => 'required|unique:user,username',
@@ -107,6 +110,7 @@ class DokterController extends Controller
                 'kode_dokter' => $request->kode_dokter,
                 'nama_dokter' => $request->nama_dokter,
                 'idspesialis' => $request->idspesialis,
+                'idpoli' => $request->idpoli,
                 'sip' => $request->sip,
                 'status' => $request->status
             ]);
@@ -135,6 +139,7 @@ class DokterController extends Controller
                 'email' => $request->email ?? $request->username . '@rsau.com',
                 'nama' => $request->nama_dokter,
                 'nohp' => '-',
+                'idpoli' => $request->idpoli,
                 'alamat' => '-',
                 'jenis_kelamin' => '-',
                 'iddokter' => $dokterId,

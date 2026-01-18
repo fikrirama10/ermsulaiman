@@ -50,7 +50,7 @@
                         <h5 class="card-title">Data Ruangan</h5>
                     </div>
                     <div class="card-toolbar">
-                        @canany(['dokter', 'perawat'])
+                        @canany(['rekammedis'])
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#tambah-ruangan">
                                 <i class="bi bi-plus-circle"></i> Tambah Ruangan
                             </button>
@@ -117,17 +117,21 @@
 <div class="modal fade" id="tambah-ruangan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Tambah Ruangan</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header bg-primary">
+            <h5 class="modal-title text-white" id="modal-title-ruangan">
+                <i class="bi bi-plus-circle"></i> Tambah Ruangan
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <form id="frm-data" action="{{ route('store.ruangan') }}" method="POST" autocomplete="off">
                 @csrf
+                <input type="hidden" id="ruangan_id" name="ruangan_id">
+                <input type="hidden" id="form_method" name="_method" value="POST">
                 <div class="row">
                     <div class="col-md-12">
-                        <label class="form-label">Jenis Ruangan</label>
-                        <select class="form-select" name="jenis_ruangan" data-control="select2" data-placeholder="Pilih Jenis Ruangan" data-dropdown-parent="#tambah-ruangan" required>
+                        <label class="form-label fw-bold">Jenis Ruangan <span class="text-danger">*</span></label>
+                        <select class="form-select" id="jenis_ruangan" name="jenis_ruangan" data-control="select2" data-placeholder="Pilih Jenis Ruangan" data-dropdown-parent="#tambah-ruangan" required>
                             <option></option>
                             @foreach ($jenis as $val)
                                 <option value="{{ $val->id }}">{{ $val->ruangan_jenis }}</option>
@@ -137,14 +141,14 @@
                 </div>
                 <div class="row mt-5">
                     <div class="col-md-12">
-                        <label class="form-label">Nama Ruangan</label>
-                        <input type="text" name="nama" class="form-control" required>
+                        <label class="form-label fw-bold">Nama Ruangan <span class="text-danger">*</span></label>
+                        <input type="text" id="nama_ruangan" name="nama" class="form-control" placeholder="Masukkan nama ruangan" required>
                     </div>
                 </div>
                 <div class="row mt-5">
                     <div class="col-md-12">
-                        <label class="form-label">Ruangan Untuk</label>
-                        <select class="form-select" name="gender" data-control="select2" data-placeholder="Pilih Ruangan" data-dropdown-parent="#tambah-ruangan" required>
+                        <label class="form-label fw-bold">Ruangan Untuk <span class="text-danger">*</span></label>
+                        <select class="form-select" id="gender" name="gender" data-control="select2" data-placeholder="Pilih Ruangan" data-dropdown-parent="#tambah-ruangan" required>
                             <option></option>
                             @foreach ($gender as $val)
                                 <option value="{{ $val->id }}">{{ $val->gender }}</option>
@@ -154,8 +158,8 @@
                 </div>
                 <div class="row mt-5">
                     <div class="col-md-12">
-                        <label class="form-label">Kelas Ruangan</label>
-                        <select class="form-select" name="kelas" data-control="select2" data-placeholder="Pilih Kelas Ruangan" data-dropdown-parent="#tambah-ruangan" required>
+                        <label class="form-label fw-bold">Kelas Ruangan <span class="text-danger">*</span></label>
+                        <select class="form-select" id="kelas" name="kelas" data-control="select2" data-placeholder="Pilih Kelas Ruangan" data-dropdown-parent="#tambah-ruangan" required>
                             <option></option>
                             @foreach ($kelas as $val)
                                 <option value="{{ $val->id }}">{{ $val->kelas }}</option>
@@ -165,18 +169,18 @@
                 </div>
                 <div class="row mt-5">
                     <div class="col-md-12">
-                        <label class="form-label">Status</label>
+                        <label class="form-label fw-bold">Status <span class="text-danger">*</span></label>
                         <div class="d-flex">
                             <div class="form-check form-check-custom form-check-solid">
-                                <input class="form-check-input" name="status" type="radio" value="1" id="flexRadioDefault" required/>
-                                <label class="form-check-label" for="flexRadioDefault">
+                                <input class="form-check-input" name="status" type="radio" value="1" id="status_aktif" required/>
+                                <label class="form-check-label" for="status_aktif">
                                     Aktif
                                 </label>
                             </div>
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             <div class="form-check form-check-custom form-check-solid">
-                                <input class="form-check-input" name="status" type="radio" value="0" id="flexRadioDefault" required/>
-                                <label class="form-check-label" for="flexRadioDefault">
+                                <input class="form-check-input" name="status" type="radio" value="0" id="status_nonaktif" required/>
+                                <label class="form-check-label" for="status_nonaktif">
                                     Tidak Aktif
                                 </label>
                             </div>
@@ -185,13 +189,16 @@
                 </div>
                 <div class="row mt-5">
                     <div class="col-md-12">
-                        <label class="form-label">Keterangan</label>
-                        <textarea name="keterangan" rows="3" class="form-control"></textarea>
+                        <label class="form-label fw-bold">Keterangan</label>
+                        <textarea id="keterangan" name="keterangan" rows="3" class="form-control" placeholder="Masukkan keterangan (opsional)"></textarea>
                     </div>
                 </div>
         </div>
         <div class="modal-footer">
-                <button type="submit" class="btn btn-success">Tambah</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary" id="btn-submit-ruangan">
+                    <i class="bi bi-save"></i> Simpan
+                </button>
             </form>
         </div>
         </div>
@@ -275,14 +282,18 @@
         $("#frm-data").on( "submit", function(event) {
             event.preventDefault();
             var blockUI = new KTBlockUI(document.querySelector("#kt_app_body"));
+
+            var isEdit = $('#ruangan_id').val() ? true : false;
+            var actionText = isEdit ? 'mengupdate' : 'menyimpan';
+
             Swal.fire({
-                title: 'Simpan Data',
-                text: "Apakah Anda yakin akan menyimpan data ini ?",
+                title: isEdit ? 'Update Data' : 'Simpan Data',
+                text: "Apakah Anda yakin akan " + actionText + " data ini ?",
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Simpan Data',
+                confirmButtonText: 'Ya, ' + (isEdit ? 'Update' : 'Simpan'),
                 cancelButtonText: 'Tidak'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -304,6 +315,86 @@
                 }
             });
         });
+    });
+
+    // Function to edit ruangan
+    function editRuangan(id) {
+        $.get('{{ route("edit.ruangan", ":id") }}'.replace(':id', id), function(data) {
+            $('#modal-title-ruangan').html('<i class="bi bi-pencil"></i> Edit Ruangan');
+            $('#ruangan_id').val(data.id);
+            $('#form_method').val('PUT');
+            $('#frm-data').attr('action', '{{ route("update.ruangan", ":id") }}'.replace(':id', data.id));
+
+            $('#jenis_ruangan').val(data.idjenis).trigger('change');
+            $('#nama_ruangan').val(data.nama_ruangan);
+            $('#gender').val(data.gender).trigger('change');
+            $('#kelas').val(data.idkelas).trigger('change');
+            $('#keterangan').val(data.keterangan);
+
+            if(data.status == 1) {
+                $('#status_aktif').prop('checked', true);
+            } else {
+                $('#status_nonaktif').prop('checked', true);
+            }
+
+            $('#btn-submit-ruangan').html('<i class="bi bi-save"></i> Update');
+            $('#tambah-ruangan').modal('show');
+        });
+    }
+
+    // Function to delete ruangan
+    function deleteRuangan(id) {
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Apakah Anda yakin ingin menghapus ruangan ini? Semua bed di ruangan ini juga akan dihapus!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("delete.ruangan", ":id") }}'.replace(':id', id),
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $('#tbl-ruangan').DataTable().ajax.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            timer: 1500
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: xhr.responseJSON?.message || 'Gagal menghapus ruangan'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    // Reset modal on close
+    $('#tambah-ruangan').on('hidden.bs.modal', function() {
+        $('#frm-data')[0].reset();
+        $('#ruangan_id').val('');
+        $('#form_method').val('POST');
+        $('#frm-data').attr('action', '{{ route("store.ruangan") }}');
+        $('#modal-title-ruangan').html('<i class="bi bi-plus-circle"></i> Tambah Ruangan');
+        $('#btn-submit-ruangan').html('<i class="bi bi-save"></i> Simpan');
+
+        // Reset select2
+        $('#jenis_ruangan').val('').trigger('change');
+        $('#gender').val('').trigger('change');
+        $('#kelas').val('').trigger('change');
     });
 
     // Bulk action ruangan

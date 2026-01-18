@@ -332,6 +332,9 @@ Route::prefix('data-master')->middleware('auth')->group(function () {
     Route::prefix('/ruangan')->group(function () {
         Route::get('/', [RuanganController::class, 'index'])->name('index.ruangan');
         Route::post('/store', [RuanganController::class, 'store'])->name('store.ruangan');
+        Route::get('/edit/{id}', [RuanganController::class, 'edit'])->name('edit.ruangan');
+        Route::put('/update/{id}', [RuanganController::class, 'update'])->name('update.ruangan');
+        Route::delete('/delete/{id}', [RuanganController::class, 'destroy'])->name('delete.ruangan');
         Route::post('/{id}/toggle-status', [RuanganController::class, 'toggleStatus'])->name('toggle.ruangan.status');
         Route::post('/bulk-toggle-status', [RuanganController::class, 'bulkToggleStatus'])->name('bulk.ruangan.status');
         //BED

@@ -29,8 +29,10 @@ class RuanganController extends Controller
                     csrf_field() .
                     '<button type="submit" class="btn btn-sm ' . ($ruangan->status ? 'btn-warning' : 'btn-success') . '" title="' . ($ruangan->status ? 'Nonaktifkan' : 'Aktifkan') . '">' .
                     '<i class="bi bi-power"></i></button></form>';
+                $editBtn = '<button type="button" class="btn btn-sm btn-info me-1" onclick="editRuangan(' . $ruangan->id . ')" title="Edit"><i class="bi bi-pencil"></i></button>';
                 $detailBtn = '<a href="' . route('index.ruangan-bed', $ruangan->id) . '" class="btn btn-sm btn-primary" title="Kelola Bed"><i class="bi bi-gear-fill"></i></a>';
-                return '<div class="d-flex gap-1">' . $statusBtn . $detailBtn . '</div>';
+                $deleteBtn = '<button type="button" class="btn btn-sm btn-danger ms-1" onclick="deleteRuangan(' . $ruangan->id . ')" title="Hapus"><i class="bi bi-trash"></i></button>';
+                return '<div class="d-flex gap-1">' . $statusBtn . $editBtn . $detailBtn . $deleteBtn . '</div>';
             })
                 ->addColumn('kelas', function (Ruangan $ruangan) {
                     return $ruangan->kelas->kelas;
@@ -104,5 +106,61 @@ class RuanganController extends Controller
         $updated = Ruangan::whereIn('id', $request->ids)->update(['status' => $status]);
 
         return back()->with('berhasil', "Berhasil mengubah status {$updated} ruangan!");
+    }
+
+    // Get data ruangan untuk edit
+    public function edit($id)
+    {
+        $ruangan = Ruangan::findOrFail($id);
+        return response()->json($ruangan);
+    }
+
+    // Update ruangan
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'jenis_ruangan' => 'required',
+            'nama' => 'required',
+            'gender' => 'required',
+            'kelas' => 'required',
+            'status' => 'required|in:0,1'
+        ]);
+
+        $ruangan = Ruangan::findOrFail($id);
+        $ruangan->idjenis = $request->jenis_ruangan;
+        $ruangan->nama_ruangan = $request->nama;
+        $ruangan->gender = $request->gender;
+        $ruangan->idkelas = $request->kelas;
+        $ruangan->status = $request->status;
+        $ruangan->keterangan = $request->keterangan;
+        $ruangan->save();
+
+        return redirect()->back()->with('berhasil', 'Data Ruangan Berhasil Diupdate!');
+    }
+
+    // Delete ruangan
+    public function destroy($id)
+    {
+        $ruangan = Ruangan::findOrFail($id);
+
+        // Cek apakah ada bed yang terisi
+        $bedTerisi = $ruangan->bed()->where('terisi', 1)->count();
+        if ($bedTerisi > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat menghapus ruangan karena masih ada bed yang terisi!'
+            ], 400);
+        }
+
+        // Hapus semua bed terlebih dahulu
+        $ruangan->bed()->delete();
+
+        // Hapus ruangan
+        $ruangan->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ruangan berhasil dihapus!'
+        ]);
     }
 }

@@ -51,25 +51,52 @@
                     </div>
                 </div>
                 <!--begin::Body-->
-                <div class="card-body p-lg-15">
-                    <table id="tbl-pasien" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
-                        <thead class="border">
-                            <tr class="fw-bold fs-6 text-gray-800 px-7">
-                                <th>No RM</th>
-                                <th>Nama Pasien</th>
-                                <th>Tgl.Masuk</th>
-                                <th>Jenis Rawat</th>
-                                <th>Poli</th>
-                                <th>Bayar</th>
-                                <th>Status</th>
-                                <th>Pemeriksaan</th>
-                                <th>Opsi</th>
+                <div class="card-body pt-2">
+                    <!-- Filter Section -->
+                    <div class="d-flex gap-3 mb-4 p-3 bg-light rounded align-items-end">
+                        <div style="min-width: 200px;">
+                            <label class="form-label fw-bold fs-7 mb-1">Tanggal Masuk</label>
+                            <input type="date" id="filter_tglmasuk" class="form-control form-control-sm" value="">
+                        </div>
+                        <div style="min-width: 200px;">
+                            <label class="form-label fw-bold fs-7 mb-1">Status Pemeriksaan</label>
+                            <select id="filter_status_periksa" class="form-select form-select-sm">
+                                <option value="">Semua Status</option>
+                                <option value="1">Antrian</option>
+                                <option value="3">Pemeriksaan</option>
+                                <option value="4">Selesai</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="applyFilters()">
+                                <i class="bi bi-funnel"></i> Filter
+                            </button>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="resetFilters()">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                    <table id="tbl-pasien" class="table table-sm table-striped table-row-bordered gy-3 gs-5 border rounded">
+                        <thead class="border bg-light">
+                            <tr class="fw-bold fs-7 text-gray-800">
+                                <th width="8%">No RM</th>
+                                <th width="15%">Nama Pasien</th>
+                                <th width="10%">Tgl.Masuk</th>
+                                <th width="10%">Jenis Rawat</th>
+                                <th width="12%">Poli</th>
+                                <th width="10%">Bayar</th>
+                                <th width="8%">Status</th>
+                                <th width="17%">Pemeriksaan</th>
+                                <th width="10%">Opsi</th>
                             </tr>
                         </thead>
-                        <tbody class="border">
+                        <tbody class="fs-7">
 
                         </tbody>
                     </table>
+                    </div>
                 </div>
                 <!--end::Body-->
             </div>
@@ -82,48 +109,103 @@
 @endsection
 @section('js')
 <script>
+    var table;
     $(function(){
-        $("#tbl-pasien").DataTable({
+        table = $("#tbl-pasien").DataTable({
             "language": {
                 "lengthMenu": "Show _MENU_",
+                "processing": "Memuat data...",
+                "search": "Cari:",
+                "zeroRecords": "Tidak ada data yang ditemukan",
+                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
+                "infoFiltered": "(difilter dari _MAX_ total data)"
             },
             "dom":
-                "<'row'" +
-                "<'col-sm-6 d-flex align-items-center justify-conten-start'l>" +
-                "<'col-sm-6 d-flex align-items-center justify-content-end'f>" +
+                "<'row mb-3'" +
+                "<'col-sm-12 col-md-6 d-flex align-items-center'l>" +
+                "<'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>" +
                 ">" +
-
                 "<'table-responsive'tr>" +
-
-                "<'row'" +
+                "<'row mt-3'" +
                 "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
                 "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
                 ">",
             processing: true,
             serverSide: true,
+            pageLength: 10,
+            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
             search: {
                 return: true
             },
-            ajax: '{{ url()->current() }}',
+            ajax: {
+                url: '{{ url()->current() }}',
+                data: function (d) {
+                    d.filter_tglmasuk = $('#filter_tglmasuk').val();
+                    d.filter_status_periksa = $('#filter_status_periksa').val();
+                },
+                error: function(xhr, error, thrown) {
+                    console.error('DataTables Error:', error, thrown);
+                }
+            },
             columns: [
-                { data: 'no_rm', name: 'no_rm' },
+                { data: 'no_rm', name: 'pasien.no_rm', className: 'text-center' },
                 { data: 'nama_pasien', name: 'pasien.nama_pasien' },
-                { data: 'tglmasuk', name: 'rawat.tglmasuk' },
-                { data: 'jenis_rawat', name: 'jenis_rawat' },
-                { data: 'poli', name: 'poli.poli' },
-                { data: 'bayar', name: 'rawat_bayar.bayar' },
-                { data: 'status', name: 'rawat_status.status' ,render: function(data, type, row){
-                    if(data == 'Pulang'){
-                        return '<span class="badge badge-light-success">Selesai</span>';
-                    }else{
-                        return '<span class="badge badge-secondary">'+data+'</span>';
+                {
+                    data: 'tglmasuk',
+                    name: 'rawat.tglmasuk',
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        if (data) {
+                            var date = new Date(data);
+                            var day = ("0" + date.getDate()).slice(-2);
+                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            var year = date.getFullYear();
+                            return day + '/' + month + '/' + year;
+                        }
+                        return data;
                     }
-                }},
-                { data: 'status_pemeriksaan', name: 'status_pemeriksaan' },
-                { data: 'opsi', name: 'opsi', orderable: false, searcheable: false },
-            ]
+                },
+                { data: 'jenis_rawat', name: 'jenis_rawat', className: 'text-center' },
+                { data: 'poli', name: 'poli.poli' },
+                { data: 'bayar', name: 'rawat_bayar.bayar', className: 'text-center' },
+                {
+                    data: 'status',
+                    name: 'rawat_status.status',
+                    className: 'text-center',
+                    render: function(data, type, row){
+                        if(data == 'Pulang'){
+                            return '<span class="badge badge-success">Selesai</span>';
+                        }else{
+                            return '<span class="badge badge-secondary">'+data+'</span>';
+                        }
+                    }
+                },
+                { data: 'status_pemeriksaan', name: 'status_pemeriksaan', className: 'text-center' },
+                { data: 'opsi', name: 'opsi', orderable: false, searchable: false, className: 'text-center' }
+            ],
+            order: [[2, 'desc']]
+        });
+
+        // Filter otomatis saat memilih tanggal
+        $('#filter_tglmasuk').on('change', function() {
+            table.ajax.reload();
+        });
+
+        // Filter otomatis saat memilih status
+        $('#filter_status_periksa').on('change', function() {
+            table.ajax.reload();
         });
     });
 
+    function applyFilters() {
+        table.ajax.reload();
+    }
+
+    function resetFilters() {
+        $('#filter_tglmasuk').val('{{ date('Y-m-d') }}');
+        $('#filter_status_periksa').val('');
+        table.ajax.reload();
+    }
 </script>
 @endsection
