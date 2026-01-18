@@ -29,7 +29,7 @@
                 class="app-sidebar-menu-primary menu menu-column menu-rounded menu-sub-indention menu-state-bullet-primary">
                 <!--begin::Heading-->
                 <div class="menu-item mb-2">
-                    <div class="menu-heading text-uppercase fs-7 fw-bold">Menu</div>
+                    <div class="menu-heading text-white text-uppercase fs-7 fw-bold">Menu</div>
                     <!--begin::Separator-->
                     <div class="app-sidebar-separator separator"></div>
                     <!--end::Separator-->
