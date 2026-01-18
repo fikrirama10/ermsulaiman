@@ -350,7 +350,29 @@ Route::prefix('data-master')->middleware('auth')->group(function () {
 
 //Laporan
 Route::prefix('/laporan')->middleware('auth')->group(function () {
-    Route::get('/', [LaporanController::class, 'index']);
+    Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
+    // Chart Data APIs
+    Route::get('/data-chart-kunjungan-bulanan', [LaporanController::class, 'dataChartKunjunganBulanan'])->name('laporan.data-chart-kunjungan-bulanan');
+    Route::get('/data-chart-kunjungan-poli', [LaporanController::class, 'dataChartKunjunganPoli'])->name('laporan.data-chart-kunjungan-poli');
+    Route::get('/data-chart-demografi-gender', [LaporanController::class, 'dataChartDemografiGender'])->name('laporan.data-chart-demografi-gender');
+    Route::get('/data-chart-demografi-usia', [LaporanController::class, 'dataChartDemografiUsia'])->name('laporan.data-chart-demografi-usia');
+    Route::get('/data-chart-cara-bayar', [LaporanController::class, 'dataChartCaraBayar'])->name('laporan.data-chart-cara-bayar');
+    // Laporan Routes
+    Route::get('/kunjungan', [LaporanController::class, 'kunjungan'])->name('laporan.kunjungan');
+    Route::get('/data-kunjungan', [LaporanController::class, 'dataKunjungan'])->name('laporan.data-kunjungan');
+    Route::get('/export-kunjungan', [LaporanController::class, 'exportKunjungan'])->name('laporan.export-kunjungan');
+    Route::get('/rawat-inap', [LaporanController::class, 'rawatInap'])->name('laporan.rawat-inap');
+    Route::get('/data-rawat-inap', [LaporanController::class, 'dataRawatInap'])->name('laporan.data-rawat-inap');
+    Route::get('/export-rawat-inap', [LaporanController::class, 'exportRawatInap'])->name('laporan.export-rawat-inap');
+    Route::get('/demografi', [LaporanController::class, 'demografi'])->name('laporan.demografi');
+    Route::get('/data-demografi', [LaporanController::class, 'dataDemografi'])->name('laporan.data-demografi');
+    Route::get('/export-demografi', [LaporanController::class, 'exportDemografi'])->name('laporan.export-demografi');
+    Route::get('/diagnosa', [LaporanController::class, 'diagnosa'])->name('laporan.diagnosa');
+    Route::get('/data-diagnosa', [LaporanController::class, 'dataDiagnosa'])->name('laporan.data-diagnosa');
+    Route::get('/export-diagnosa', [LaporanController::class, 'exportDiagnosa'])->name('laporan.export-diagnosa');
+    Route::get('/bpjs', [LaporanController::class, 'bpjs'])->name('laporan.bpjs');
+    Route::get('/data-bpjs', [LaporanController::class, 'dataBpjs'])->name('laporan.data-bpjs');
+    Route::get('/export-bpjs', [LaporanController::class, 'exportBpjs'])->name('laporan.export-bpjs');
 });
 
 //lab
