@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Ruangan\Ruangan;
 use App\Models\Ruangan\RuanganBed;
-use App\Models\Ruangan\RuanganKelas;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use App\Models\Ruangan\RuanganJenis;
+use App\Models\Ruangan\RuanganKelas;
 use App\Models\Ruangan\RuanganGender;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -15,43 +17,53 @@ class RuanganController extends Controller
     public function index(Request $request)
     {
         if (request()->ajax()) {
-            $ruangan = Ruangan::with('kelas', 'bed', 'jenisRuangan', 'genderRuangan');
+            $ruangan = DB::table('ruangan')
+                ->leftJoin('ruangan_kelas', 'ruangan.idkelas', '=', 'ruangan_kelas.id')
+                ->leftJoin('ruangan_jenis', 'ruangan.idjenis', '=', 'ruangan_jenis.id')
+                ->leftJoin('ruangan_gender', 'ruangan.gender', '=', 'ruangan_gender.id')
+                ->select([
+                    'ruangan.id',
+                    'ruangan.nama_ruangan',
+                    'ruangan.status',
+                    'ruangan_kelas.kelas',
+                    'ruangan_jenis.ruangan_jenis',
+                    'ruangan_gender.gender'
+                ]);
 
             // Filter berdasarkan status
-            if ($request->has('filter_status') && $request->filter_status !== '') {
-                $ruangan->where('status', $request->filter_status);
+            if ($request->has('filter_status') && $request->filter_status != '') {
+                $ruangan->where('ruangan.status', $request->filter_status);
             }
 
-            return DataTables::of($ruangan)->addColumn('checkbox', function (Ruangan $ruangan) {
-                return '<input type="checkbox" class="form-check-input ruangan-checkbox" value="' . $ruangan->id . '">';
-            })->addColumn('opsi', function (Ruangan $ruangan) {
-                $statusBtn = '<form action="' . route('toggle.ruangan.status', $ruangan->id) . '" method="POST" style="display:inline" class="me-1">' .
-                    csrf_field() .
-                    '<button type="submit" class="btn btn-sm ' . ($ruangan->status ? 'btn-warning' : 'btn-success') . '" title="' . ($ruangan->status ? 'Nonaktifkan' : 'Aktifkan') . '">' .
-                    '<i class="bi bi-power"></i></button></form>';
-                $editBtn = '<button type="button" class="btn btn-sm btn-info me-1" onclick="editRuangan(' . $ruangan->id . ')" title="Edit"><i class="bi bi-pencil"></i></button>';
-                $detailBtn = '<a href="' . route('index.ruangan-bed', $ruangan->id) . '" class="btn btn-sm btn-primary" title="Kelola Bed"><i class="bi bi-gear-fill"></i></a>';
-                $deleteBtn = '<button type="button" class="btn btn-sm btn-danger ms-1" onclick="deleteRuangan(' . $ruangan->id . ')" title="Hapus"><i class="bi bi-trash"></i></button>';
-                return '<div class="d-flex gap-1">' . $statusBtn . $editBtn . $detailBtn . $deleteBtn . '</div>';
-            })
-                ->addColumn('kelas', function (Ruangan $ruangan) {
-                    return $ruangan->kelas->kelas;
+            return DataTables::of($ruangan)
+                ->addColumn('checkbox', function ($ruangan) {
+                    return '<input type="checkbox" class="form-check-input ruangan-checkbox" value="' . $ruangan->id . '">';
                 })
-                ->addColumn('ruangan_jenis', function (Ruangan $ruangan) {
-                    return $ruangan->jenisRuangan->ruangan_jenis;
+                ->addColumn('opsi', function ($ruangan) {
+                    $statusBtn = '<form action="' . route('toggle.ruangan.status', $ruangan->id) . '" method="POST" style="display:inline" class="me-1">' .
+                        csrf_field() .
+                        '<button type="submit" class="btn btn-sm ' . ($ruangan->status ? 'btn-warning' : 'btn-success') . '" title="' . ($ruangan->status ? 'Nonaktifkan' : 'Aktifkan') . '">' .
+                        '<i class="bi bi-power"></i></button></form>';
+                    $editBtn = '<button type="button" class="btn btn-sm btn-info me-1" onclick="editRuangan(' . $ruangan->id . ')" title="Edit"><i class="bi bi-pencil"></i></button>';
+                    $detailBtn = '<a href="' . route('index.ruangan-bed', $ruangan->id) . '" class="btn btn-sm btn-primary" title="Kelola Bed"><i class="bi bi-gear-fill"></i></a>';
+                    $deleteBtn = '<button type="button" class="btn btn-sm btn-danger ms-1" onclick="deleteRuangan(' . $ruangan->id . ')" title="Hapus"><i class="bi bi-trash"></i></button>';
+                    return '<div class="d-flex gap-1">' . $statusBtn . $editBtn . $detailBtn . $deleteBtn . '</div>';
                 })
-                ->addColumn('gender', function (Ruangan $ruangan) {
-                    return $ruangan->genderRuangan->gender;
-                })
-                ->addColumn('status_aktif', function (Ruangan $ruangan) {
+                ->addColumn('status_aktif', function ($ruangan) {
                     return $ruangan->status ? '<span class="badge text-white bg-success">Aktif</span>' : '<span class="badge text-white bg-secondary">Nonaktif</span>';
                 })
-                ->addColumn('jumlah_bed', function (Ruangan $ruangan) {
-                    $total = $ruangan->bed->count();
-                    $kosong = $ruangan->bed->where('terisi', 0)->count();
+                ->addColumn('jumlah_bed', function ($ruangan) {
+                    $total = DB::table('ruangan_bed')->where('idruangan', $ruangan->id)->count();
+                    $kosong = DB::table('ruangan_bed')->where('idruangan', $ruangan->id)->where('terisi', 0)->count();
                     return '<span class="badge text-white bg-info">' . $kosong . '/' . $total . '</span>';
                 })
-                ->rawColumns(['checkbox', 'opsi', 'kelas', 'ruangan_jenis', 'gender', 'status_aktif', 'jumlah_bed'])
+                ->filterColumn('nama_ruangan', function($query, $keyword) {
+                    $query->where('ruangan.nama_ruangan', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('gender', function($query, $keyword) {
+                    $query->where('ruangan_gender.gender', 'like', "%{$keyword}%");
+                })
+                ->rawColumns(['checkbox', 'opsi', 'status_aktif', 'jumlah_bed'])
                 ->addIndexColumn()
                 ->make(true);
         }

@@ -233,7 +233,12 @@
             search: {
                 return: true
             },
-            ajax: '{{ url()->current() }}',
+            ajax: {
+                url: '{{ url()->current() }}',
+                data: function(d) {
+                    d.filter_status = $('#filter_status').val();
+                }
+            },
             columns: [
                 {
                     data: 'checkbox',
@@ -242,26 +247,44 @@
                     searchable: false
                 },
                 {
-                    "data": 'DT_RowIndex',
+                    data: 'DT_RowIndex',
                     orderable: false,
                     searchable: false
                 },
-                { data: 'nama_ruangan', name: 'nama_ruangan' },
-                { data: 'gender', name: 'gender' },
-                { data: 'jumlah_bed', name: 'jumlah_bed', orderable: false, searcheable: false },
-                { data: 'status_aktif', name: 'status_aktif', orderable: false, searcheable: false },
-                { data: 'opsi', name: 'opsi', orderable: false, searcheable: false },
+                {
+                    data: 'nama_ruangan',
+                    name: 'ruangan.nama_ruangan',
+                    searchable: true
+                },
+                {
+                    data: 'gender',
+                    name: 'ruangan_gender.gender',
+                    searchable: true
+                },
+                {
+                    data: 'jumlah_bed',
+                    name: 'jumlah_bed',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'status_aktif',
+                    name: 'status_aktif',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'opsi',
+                    name: 'opsi',
+                    orderable: false,
+                    searchable: false
+                }
             ]
         });
 
         // Filter status
         $('#filter_status').on('change', function() {
             table.ajax.reload();
-        });
-
-        // Kirim filter ke server
-        table.on('preXhr.dt', function(e, settings, data) {
-            data.filter_status = $('#filter_status').val();
         });
 
         // Check all checkbox
