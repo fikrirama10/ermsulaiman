@@ -462,15 +462,17 @@ class RekapMedisController extends Controller
         }else{
             $pemodal = DetailRekapMedis::where('idrawat', $idrawatbaru)->first();
 
-            $pemodal->diagnosa = $originalPost->diagnosa ?? '';
-            $pemodal->pemeriksaan_fisik_dokter = $originalPost->pemeriksaan_fisik_dokter;
-            $pemodal->pemeriksaan_fisio = $originalPost->pemeriksaan_fisio;
-            $pemodal->anamnesa_dokter = $originalPost->anamnesa_dokter;
-            $pemodal->kategori_penyakit = $originalPost->kategori_penyakit;
-            $pemodal->icdx = $originalPost->icdx;
-            $pemodal->icd9 = $originalPost->icd9;
+            if ($pemodal) {
+                $pemodal->diagnosa = $originalPost->diagnosa ?? '';
+                $pemodal->pemeriksaan_fisik_dokter = $originalPost->pemeriksaan_fisik_dokter;
+                $pemodal->pemeriksaan_fisio = $originalPost->pemeriksaan_fisio;
+                $pemodal->anamnesa_dokter = $originalPost->anamnesa_dokter;
+                $pemodal->kategori_penyakit = $originalPost->kategori_penyakit;
+                $pemodal->icdx = $originalPost->icdx;
+                $pemodal->icd9 = $originalPost->icd9;
 
-            $pemodal->save();
+                $pemodal->save();
+            }
         }
 
 
