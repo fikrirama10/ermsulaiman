@@ -280,12 +280,12 @@
                                                                 <div class="col-md-5">
                                                                     <label class="form-label fw-bold fs-7 required">ICD X</label>
                                                                     <select name="diagnosa_icdx" class="form-select form-select-sm icdx-diagnosa"
-                                                                        data-kt-repeater="select22" data-placeholder="-Pilih-" required>
+                                                                        data-kt-repeater="select22" data-placeholder="-Pilih-" >
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <label class="form-label fw-bold fs-7 required">Jenis</label>
-                                                                    <select name="jenis_diagnosa" required
+                                                                    <select name="jenis_diagnosa"
                                                                         class="form-select form-select-sm icdx-jenis-diagnosa">
                                                                         <option value="P" selected>Primer</option>
                                                                         <option value="S">Sekunder</option>
@@ -331,7 +331,7 @@
                                                                 <div class="col-md-8">
                                                                     <label class="form-label fw-bold fs-7">ICD 9</label>
                                                                     <select name="diagnosa_icd9" class="form-select form-select-sm"
-                                                                        data-kt-repeater="select2icd9" data-placeholder="-Pilih-" required>
+                                                                        data-kt-repeater="select2icd9" data-placeholder="-Pilih-">
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-md-4">

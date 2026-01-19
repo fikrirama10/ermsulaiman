@@ -324,7 +324,7 @@ Route::get('/index', function () {
 //Dasboard
 Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
-});
+})->name('dashboard');
 
 //Data Master
 Route::prefix('data-master')->middleware('auth')->group(function () {

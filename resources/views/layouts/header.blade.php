@@ -74,10 +74,9 @@
             <!--begin::User menu-->
             <div class="app-navbar-item ms-1 ms-md-3" id="kt_header_user_menu_toggle">
                 <!--begin::Menu wrapper-->
-                <div class="cursor-pointer symbol symbol-circle symbol-35px symbol-md-45px" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-                    <span class="fw-bold me-3 d-none d-md-inline"> {{ auth()->user()->detail->nama }} </span>
+                <div class="cursor-pointer symbol symbol-circle symbol-35px symbol-md-45px" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                    <span class="fw-bold me-3 d-none d-md-inline">{{ auth()->user()->detail->nama }}</span>
                     <img src="{{ asset('assets/media/avatars/blank.png') }}" alt="user" />
-                </div>
                 </div>
                 <!--begin::User account menu-->
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-300px" data-kt-menu="true">
