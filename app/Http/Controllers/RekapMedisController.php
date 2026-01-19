@@ -412,71 +412,101 @@ class RekapMedisController extends Controller
     }
 
     public function copy_template($id,$idrawatbaru){
-        // return $idrawatbaru;
-        $rekap_lama = RekapMedis::where('idrawat', $id)->first();
-        $cek_rekap = RekapMedis::where('idrawat', $idrawatbaru)->first();
-        // return $rekap_lama;
-        if($cek_rekap){
-            // $rekap_medis = RekapMedis::where('idrawat',$idrawatbaru)->update([
-            //     'dokter'=>0,
-            //     'perawat'=>0,
-            //     'bpjs'=>0,
-            // ]);
-        }else{
-            return back()->with('gagal','Data gagal disalin harap perawat mengisi isiannya terlebih dahulu');
-            $rekap_medis_baru = RekapMedis::create([
-                'idrawat'=>$idrawatbaru,
-                'idkategori'=>$rekap_lama->idkategori,
-                'idpasien'=>Rawat::find($idrawatbaru)->pasien->id,
-                'dokter'=>0,
-                'perawat'=>0,
-                'bpjs'=>0,
-            ]);
-            // return $rekap_medis->id;
-        }
-
-        // $obat_lama = DB::table('demo_resep_dokter')->where('idrawat', $id)->get();
-
-        // // return $obat_lama;
-        // foreach($obat_lama as $ol){
-        //     $obat = Obat::find($ol->idobat);
-        //     $data = [
-        //         'idrawat'=>$idrawatbaru,
-        //         'idobat'=>$ol->idobat,
-        //         'takaran'=>$ol->takaran,
-        //         'jumlah'=>$ol->jumlah,
-        //         'dosis'=>$ol->dosis,
-        //         'signa'=>'',
-        //         'diminum'=>'',
-        //         'nama_obat'=>$obat->nama_obat,
-        //         'jenis'=>'Non Racik'
-        //     ];
-        //     DB::table('demo_resep_dokter')->insert($data);
-        // }
-
-        $originalPost = DetailRekapMedis::where('idrawat', $id)->first();
-        // return $originalPost;
-        if(!$cek_rekap){
-            // return $rekap_medis->id;
-            return back()->with('gagal','Data gagal disalin harap perawat mengisi isiannya terlebihdahulu');
-        }else{
-            $pemodal = DetailRekapMedis::where('idrawat', $idrawatbaru)->first();
-
-            if ($pemodal) {
-                $pemodal->diagnosa = $originalPost->diagnosa ?? '';
-                $pemodal->pemeriksaan_fisik_dokter = $originalPost->pemeriksaan_fisik_dokter;
-                $pemodal->pemeriksaan_fisio = $originalPost->pemeriksaan_fisio;
-                $pemodal->anamnesa_dokter = $originalPost->anamnesa_dokter;
-                $pemodal->kategori_penyakit = $originalPost->kategori_penyakit;
-                $pemodal->icdx = $originalPost->icdx;
-                $pemodal->icd9 = $originalPost->icd9;
-
-                $pemodal->save();
+        try {
+            // Ambil data rekap medis lama (template)
+            $rekap_lama = RekapMedis::where('idrawat', $id)->first();
+            if (!$rekap_lama) {
+                return back()->with('gagal', 'Template tidak ditemukan!');
             }
+
+            // Ambil detail rekap medis lama (template source)
+            $originalPost = DetailRekapMedis::where('idrawat', $id)->first();
+            if (!$originalPost) {
+                return back()->with('gagal', 'Detail template tidak ditemukan!');
+            }
+
+            // Cek atau buat rekap medis baru jika belum ada
+            $cek_rekap = RekapMedis::where('idrawat', $idrawatbaru)->first();
+            if (!$cek_rekap) {
+                // Buat resume baru otomatis
+                $rawat_baru = Rawat::find($idrawatbaru);
+                if (!$rawat_baru) {
+                    return back()->with('gagal', 'Data rawat tidak ditemukan!');
+                }
+
+                $cek_rekap = new RekapMedis();
+                $cek_rekap->idrawat = $idrawatbaru;
+                $cek_rekap->idkategori = $rawat_baru->idkategori ?? 1;
+                $cek_rekap->idpasien = $rawat_baru->pasien->id ?? $rawat_baru->idpasien;
+                $cek_rekap->save();
+            }
+
+            // Cari atau buat detail rekap medis baru
+            $detail_baru = DetailRekapMedis::where('idrawat', $idrawatbaru)->first();
+            if (!$detail_baru) {
+                $detail_baru = new DetailRekapMedis();
+                $detail_baru->idrekapmedis = $cek_rekap->id;
+                $detail_baru->idrawat = $idrawatbaru;
+            }
+
+            // Copy semua field penting dari template
+            $detail_baru->diagnosa = $originalPost->diagnosa ?? '';
+            $detail_baru->soap_data = $originalPost->soap_data; // SOAP JSON
+            $detail_baru->icdx = $originalPost->icdx; // ICD-X diagnosa
+            $detail_baru->icd9 = $originalPost->icd9; // ICD-9 prosedur
+            $detail_baru->anamnesa_dokter = $originalPost->anamnesa_dokter;
+            $detail_baru->pemeriksaan_fisik_dokter = $originalPost->pemeriksaan_fisik_dokter;
+            $detail_baru->pemeriksaan_fisio = $originalPost->pemeriksaan_fisio;
+            $detail_baru->kategori_penyakit = $originalPost->kategori_penyakit;
+            $detail_baru->rencana_pemeriksaan = $originalPost->rencana_pemeriksaan;
+            $detail_baru->terapi = $originalPost->terapi;
+            $detail_baru->tindakan = $originalPost->tindakan;
+            $detail_baru->prosedur = $originalPost->prosedur;
+
+            // Jangan copy data yang sifatnya personal/per-kunjungan:
+            // - triase, alergi, riwayat_kesehatan (ini per pasien)
+            // - radiologi, laborat, fisio (order pemeriksaan)
+            // - terapi_obat (resep)
+
+            $detail_baru->save();
+
+            // Optional: Copy resep obat jika diperlukan (uncomment jika mau)
+            // $this->copyResepObat($id, $idrawatbaru);
+
+            $message = $cek_rekap->wasRecentlyCreated
+                ? 'Template berhasil diterapkan! Resume baru telah dibuat dan data diagnosa, SOAP, ICD, dan anamnesa telah disalin.'
+                : 'Template berhasil diterapkan! Data diagnosa, SOAP, ICD, dan anamnesa telah disalin.';
+
+            return redirect()->back()->with('berhasil', $message);
+
+        } catch (\Exception $e) {
+            \Log::error('Error copy template: ' . $e->getMessage());
+            return back()->with('gagal', 'Terjadi kesalahan saat menyalin template: ' . $e->getMessage());
         }
+    }
 
+    // Helper method untuk copy resep (optional)
+    private function copyResepObat($idrawat_lama, $idrawat_baru)
+    {
+        $resep_lama = DB::table('demo_resep_dokter')->where('idrawat', $idrawat_lama)->get();
 
-        return redirect()->back()->with('berhasil', 'Template Berhasil Disalin');
+        foreach($resep_lama as $resep) {
+            $data = [
+                'idrawat' => $idrawat_baru,
+                'idobat' => $resep->idobat,
+                'nama_obat' => $resep->nama_obat,
+                'jenis' => $resep->jenis,
+                'takaran' => $resep->takaran,
+                'jumlah' => $resep->jumlah,
+                'dosis' => $resep->dosis,
+                'signa' => $resep->signa,
+                'diminum' => $resep->diminum,
+                'catatan' => $resep->catatan,
+                'dtd' => $resep->dtd ?? null,
+                'diberikan' => $resep->diberikan ?? null,
+            ];
+            DB::table('demo_resep_dokter')->insert($data);
+        }
     }
 
     public function index_poli($id_rawat)
@@ -524,18 +554,35 @@ class RekapMedisController extends Controller
         $riwayat_berobat = RekapMedis::where('idpasien', $pasien->id)->where('idrawat', '!=', $id_rawat)->get();
         $penunjang = DB::table('demo_permintaan_penunjang')->where('idrawat', $id_rawat)->get();
         $resep = ObatTransaksi::where('no_rm', $rawat->no_rm)->get();
-        $get_template = RekapMedis::with('rawat')
+        // Query template yang telah dioptimasi
+        $get_template = RekapMedis::with(['rawat', 'rawat.poli', 'rawat.dokter'])
         ->join('demo_detail_rekap_medis','demo_detail_rekap_medis.idrekapmedis','=','demo_rekap_medis.id')
-        ->whereRelation('rawat','idpoli',auth()->user()->detail->idpoli)
-        // ->where('template',1)
-        ->where('idpasien', $pasien->id)
-        ->whereRelation('rawat','id','!=',$id_rawat)
-        ->whereRelation('rawat','iddokter',$rawat->iddokter)
-        ->whereNotNull('diagnosa')
-        // ->orderBy('updated_at','desc')
-        ->orderBy(DB::raw('COUNT(demo_detail_rekap_medis.diagnosa)'),'DESC')
-        // ->orderBy('demo_detail_rekap_medis.created_at','desc')
-        ->groupBy('demo_detail_rekap_medis.diagnosa')
+        ->join('rawat', 'rawat.id', '=', 'demo_rekap_medis.idrawat')
+        ->select(
+            'demo_rekap_medis.*',
+            'demo_detail_rekap_medis.diagnosa',
+            'demo_detail_rekap_medis.soap_data',
+            'demo_detail_rekap_medis.icdx',
+            'demo_detail_rekap_medis.icd9',
+            DB::raw('COUNT(*) as usage_count'),
+            DB::raw('MAX(demo_rekap_medis.updated_at) as last_used')
+        )
+        ->where('rawat.idpoli', auth()->user()->detail->idpoli)
+        ->where('demo_rekap_medis.idpasien', $pasien->id)
+        ->where('rawat.id', '!=', $id_rawat)
+        ->where('rawat.iddokter', $rawat->iddokter)
+        ->whereNotNull('demo_detail_rekap_medis.diagnosa')
+        ->where('demo_detail_rekap_medis.diagnosa', '!=', '')
+        // Template yang paling sering digunakan dan terbaru
+        ->groupBy(
+            'demo_detail_rekap_medis.diagnosa',
+            'demo_rekap_medis.id',
+            'demo_detail_rekap_medis.soap_data',
+            'demo_detail_rekap_medis.icdx',
+            'demo_detail_rekap_medis.icd9'
+        )
+        ->orderBy('usage_count', 'DESC')
+        ->orderBy('last_used', 'DESC')
         ->limit(10)
         ->get();
         // dd($get_template);
@@ -937,11 +984,82 @@ class RekapMedisController extends Controller
         return response()->json(['status'=>'ok','data'=>$html]);
     }
 
+    /**
+     * Menandai rekam medis sebagai template favorit
+     */
     public function update_template($id){
-        $rekap_medis = RekapMedis::find($id);
-        $rekap_medis->template = 1;
-        $rekap_medis->save();
-        return redirect()->back()->with('berhasil','Template Berhasil Diupdate');
+        try {
+            $rekap_medis = RekapMedis::find($id);
+
+            if (!$rekap_medis) {
+                return redirect()->back()->with('gagal', 'Rekam medis tidak ditemukan!');
+            }
+
+            // Toggle template status
+            $rekap_medis->template = $rekap_medis->template ? 0 : 1;
+            $rekap_medis->save();
+
+            $status = $rekap_medis->template ? 'ditandai' : 'dihapus dari';
+            return redirect()->back()->with('berhasil', "Template berhasil {$status} favorit!");
+
+        } catch (\Exception $e) {
+            \Log::error('Error update template: ' . $e->getMessage());
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Mendapatkan detail template untuk preview
+     */
+    public function get_template_detail($id)
+    {
+        try {
+            $rekap_medis = RekapMedis::with('rawat')->find($id);
+            $detail = DetailRekapMedis::where('idrekapmedis', $id)->first();
+
+            if (!$detail) {
+                return response()->json(['status' => 'error', 'message' => 'Detail template tidak ditemukan']);
+            }
+
+            // Parse SOAP data jika ada
+            $soap_data = null;
+            if ($detail->soap_data) {
+                $soap_data = json_decode($detail->soap_data, true);
+            }
+
+            // Parse ICD-X
+            $icdx_data = null;
+            if ($detail->icdx) {
+                $icdx_data = json_decode($detail->icdx, true);
+            }
+
+            // Parse ICD-9
+            $icd9_data = null;
+            if ($detail->icd9) {
+                $icd9_data = json_decode($detail->icd9, true);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'tanggal' => $rekap_medis->created_at->format('d/m/Y'),
+                    'diagnosa' => $detail->diagnosa,
+                    'soap' => $soap_data,
+                    'icdx' => $icdx_data,
+                    'icd9' => $icd9_data,
+                    'anamnesa_dokter' => $detail->anamnesa_dokter,
+                    'pemeriksaan_fisik' => $detail->pemeriksaan_fisik_dokter,
+                    'rencana_pemeriksaan' => $detail->rencana_pemeriksaan,
+                    'terapi' => $detail->terapi,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
+        }
     }
 
     public function edit_jumlah(Request $request){

@@ -138,7 +138,12 @@ class DetailRekapMedisController extends Controller
 
         if ($request->soap_data) {
             $rekap->soap_data = $request->soap_data;
-            $rekap->anamnesa_dokter = $request->soap_data;
+        }
+
+        if($rekap->anamnesa_dokter){
+            $rekap->anamnesa_dokter = $request->anamnesa_dokter;
+        }else{
+            $rekap->anamnesa_dokter = $request->soap_data ?? null;
         }
 
         $rekap->triase = $request->triase;
@@ -186,8 +191,9 @@ class DetailRekapMedisController extends Controller
         $lab = DB::table('laboratorium_pemeriksaan')->get();
         $fisio = DB::table('tarif')->where('idkategori',8)->get();
         $rawat = Rawat::find($rekap->idrawat);
+        $rekap_medis = RekapMedis::find($rekap->idrekapmedis);
         // dd($lab);
-        return view('detail-rekap-medis.show', compact('rekap', 'alergi', 'pfisik', 'rkesehatan', 'obat', 'kategori_diagnosa', 'radiologi', 'lab', 'fisio','rawat','pemeriksaan_fisio','soap_data'));
+        return view('detail-rekap-medis.show', compact('rekap', 'alergi', 'pfisik', 'rkesehatan', 'obat', 'kategori_diagnosa', 'radiologi', 'lab', 'fisio','rawat','pemeriksaan_fisio','soap_data','rekap_medis'));
     }
 
     public function update(Request $request, $id)
@@ -205,42 +211,53 @@ class DetailRekapMedisController extends Controller
             $rekap->rencana_pemeriksaan = $request->rencana_pemeriksaan;
 
             // Update data SOAP jika ada
-            if ($request->soap_subjective || $request->soap_objective || $request->soap_assessment || $request->soap_plan) {
+            if ($request->has('soap')) {
                 $soap_data = new Collection([
-                    'subjective' => $request->soap_subjective,
-                    'objective' => $request->soap_objective,
-                    'assessment' => $request->soap_assessment,
-                    'plan' => $request->soap_plan,
+                    'subjective' => $request->soap['subjective'] ?? '',
+                    'objective' => $request->soap['objective'] ?? '',
+                    'assessment' => $request->soap['assessment'] ?? '',
+                    'plan' => $request->soap['plan'] ?? '',
                     'created_at' => now(),
                 ]);
                 $rekap->soap_data = $soap_data->toJson();
             }
 
-            // if ($request->terapi_obat) {
-            //     $rekap->terapi_obat = json_encode($request->terapi_obat);
-            // } else {
-            //     $rekap->terapi_obat = 'null';
-            // }
-            // if ($request->radiologi) {
-            //     $rekap->radiologi = json_encode($request->radiologi);
-            // } else {
-            //     $rekap->radiologi = 'null';
-            // }
-            // if ($request->lab) {
-            //     $rekap->laborat = json_encode($request->lab);
-            // } else {
-            //     $rekap->laborat = 'null';
-            // }
-            // if ($request->icdx) {
-            //     $rekap->icdx = json_encode($request->icdx);
-            // } else {
-            //     $rekap->icdx = 'null';
-            // }
-            // if ($request->icd9) {
-            //     $rekap->icd9 = json_encode($request->icd9);
-            // } else {
-            //     $rekap->icd9 = 'null';
-            // }
+            // Update ICDX
+            if ($request->icdx) {
+                $rekap->icdx = json_encode($request->icdx);
+            } else {
+                $rekap->icdx = 'null';
+            }
+
+            // Update ICD9
+            if ($request->icd9) {
+                $rekap->icd9 = json_encode($request->icd9);
+            } else {
+                $rekap->icd9 = 'null';
+            }
+
+            // Update Terapi Obat
+            if ($request->terapi_obat) {
+                $rekap->terapi_obat = json_encode($request->terapi_obat);
+            } else {
+                $rekap->terapi_obat = 'null';
+            }
+
+            // Update Radiologi
+            if ($request->radiologi) {
+                $rekap->radiologi = json_encode($request->radiologi);
+            } else {
+                $rekap->radiologi = 'null';
+            }
+
+            // Update Laboratorium
+            if ($request->lab) {
+                $rekap->laborat = json_encode($request->lab);
+            } else {
+                $rekap->laborat = 'null';
+            }
+
+            // Update Fisioterapi
             if ($request->fisio) {
                 $rekap->fisio = json_encode($request->fisio);
             } else {

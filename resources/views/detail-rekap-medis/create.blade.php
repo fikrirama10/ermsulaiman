@@ -243,7 +243,7 @@
                                 <!--end::Accordion Item 1-->
 
                                 <!--begin::Accordion Item 2 - Diagnosis & ICD-->
-                                <div class="accordion-item mb-3">
+                                <div class="accordion-item mb-3" id="kt_accordion_medical_item_2">
                                     <h2 class="accordion-header" id="kt_accordion_medical_header_2">
                                         <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#kt_accordion_medical_body_2" aria-expanded="false" aria-controls="kt_accordion_medical_body_2">
@@ -252,7 +252,11 @@
                                                 <span class="path2"></span>
                                             </i>
                                             2. Diagnosis & Kode ICD
-                                            <span class="badge badge-light-success ms-3">Wajib</span>
+                                            @if (auth()->user()->idpriv == 7)
+                                            <span class="badge badge-light-danger ms-3">Minimal 1 ICD-X Wajib</span>
+                                            @else
+                                            <span class="badge badge-light-info ms-3">ICD-X Opsional</span>
+                                            @endif
                                         </button>
                                     </h2>
                                     <div id="kt_accordion_medical_body_2" class="accordion-collapse collapse"
@@ -263,14 +267,25 @@
                                                 <textarea name="diagnosa" rows="2" class="form-control form-control-sm" placeholder="Tulis diagnosa..."></textarea>
                                             </div>
 
-                                            <div class="alert alert-primary d-flex align-items-center p-3 mb-3">
-                                                <i class="ki-duotone ki-information-5 fs-3 text-primary me-2">
+                                            @if (auth()->user()->idpriv == 7)
+                                            <div class="alert alert-danger d-flex align-items-center p-3 mb-3">
+                                                <i class="ki-duotone ki-information-5 fs-3 text-danger me-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                     <span class="path3"></span>
                                                 </i>
-                                                <span class="fs-7"><strong>Info ICD X:</strong> Minimal 1 diagnosa wajib diisi. Diagnosa pertama otomatis <strong>Primer</strong>, berikutnya <strong>Sekunder</strong></span>
+                                                <span class="fs-7"><strong>Wajib untuk Dokter:</strong> Minimal 1 diagnosa ICD-X harus diisi. Diagnosa pertama otomatis <strong>Primer</strong>, berikutnya <strong>Sekunder</strong></span>
                                             </div>
+                                            @else
+                                            <div class="alert alert-info d-flex align-items-center p-3 mb-3">
+                                                <i class="ki-duotone ki-information-5 fs-3 text-info me-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                                <span class="fs-7"><strong>Info untuk Perawat:</strong> ICD-X bersifat opsional. Jika diisi, diagnosa pertama otomatis <strong>Primer</strong>, berikutnya <strong>Sekunder</strong></span>
+                                            </div>
+                                            @endif
 
                                             <div id="icdx_repeater">
                                                 <div class="form-group">
@@ -278,7 +293,7 @@
                                                         <div data-repeater-item>
                                                             <div class="row g-2 mb-2 align-items-end">
                                                                 <div class="col-md-5">
-                                                                    <label class="form-label fw-bold fs-7 required">ICD X</label>
+                                                                    <label class="form-label fw-bold fs-7 @if (auth()->user()->idpriv == 7) required @endif">ICD X</label>
                                                                     <select name="diagnosa_icdx" class="form-select form-select-sm icdx-diagnosa"
                                                                         data-kt-repeater="select22" data-placeholder="-Pilih-" >
                                                                     </select>
@@ -364,7 +379,7 @@
                                 <!--end::Accordion Item 2-->
 
                                 <!--begin::Accordion Item 3 - Anamnesa & Pemeriksaan-->
-                                @if ($rawat->idjenisrawat == 3 || $rawat->idpoli == 12)
+                                @if ($rawat->idjenisrawat == 3)
                                 <div class="accordion-item mb-3">
                                     <h2 class="accordion-header" id="kt_accordion_medical_header_3">
                                         <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse"
@@ -1203,7 +1218,8 @@
                 $('#frm-data').append('<input type="hidden" name="soap_data" value=\'' + JSON.stringify(soapData) + '\'>');
                 @endif
 
-                // Validasi ICDX minimal 1
+                // Validasi ICDX minimal 1 (HANYA UNTUK DOKTER)
+                @if (auth()->user()->idpriv == 7)
                 var icdxItems = $('#icdx_repeater [data-repeater-item]:visible');
                 var icdxFilled = 0;
 
@@ -1214,18 +1230,48 @@
                     }
                 });
 
+                console.log('Validasi ICDX untuk Dokter - Total terisi:', icdxFilled);
+
                 if (icdxFilled === 0) {
+                    console.error('Validasi gagal: Tidak ada ICD-X yang terisi');
+
+                    // Buka accordion diagnosis jika tertutup
+                    var diagnosisAccordion = $('#kt_accordion_medical_body_2');
+                    if (!diagnosisAccordion.hasClass('show')) {
+                        diagnosisAccordion.collapse('show');
+                    }
+
+                    // Tambahkan border merah pada ICDX repeater untuk highlight
+                    $('#icdx_repeater').addClass('border border-danger rounded p-3');
+
+                    // Scroll ke accordion diagnosis
+                    setTimeout(function() {
+                        $('html, body').animate({
+                            scrollTop: $('#kt_accordion_medical_item_2').offset().top - 100
+                        }, 500);
+
+                        // Hapus border merah setelah 5 detik
+                        setTimeout(function() {
+                            $('#icdx_repeater').removeClass('border border-danger rounded p-3');
+                        }, 5000);
+                    }, 300);
+
                     Swal.fire({
-                        text: 'Minimal 1 diagnosa ICD X harus diisi!',
+                        title: 'Validasi Gagal!',
+                        html: '<strong>Minimal 1 diagnosa ICD-X harus diisi untuk dokter!</strong><br><br>' +
+                              '<small class="text-muted">Silakan isi diagnosa ICD-X di bagian "2. Diagnosis & Kode ICD"</small>',
                         icon: "warning",
                         buttonsStyling: false,
-                        confirmButtonText: "Ok",
+                        confirmButtonText: "Ok, Saya Mengerti",
                         customClass: {
                             confirmButton: "btn btn-primary"
                         }
                     });
                     return false;
                 }
+                @else
+                console.log('Validasi ICDX untuk Perawat - Tidak ada validasi wajib');
+                @endif
 
                 var blockUI = new KTBlockUI(document.querySelector("#kt_app_body"));
                 Swal.fire({
@@ -1413,7 +1459,11 @@
                 });
             @endif
             $('#icdx_repeater').repeater({
-                initEmpty: false, // Minimal 1 item harus ada
+                @if (auth()->user()->idpriv == 7)
+                initEmpty: false, // Untuk dokter: minimal 1 item harus ada
+                @else
+                initEmpty: true, // Untuk perawat: bisa dimulai kosong
+                @endif
 
                 show: function() {
                     $(this).slideDown();
@@ -1453,9 +1503,12 @@
                     // Cek jumlah item sebelum hapus
                     var itemCount = $('#icdx_repeater [data-repeater-item]').length;
 
+                    @if (auth()->user()->idpriv == 7)
+                    // Untuk dokter: minimal 1 diagnosa harus ada
                     if (itemCount <= 1) {
                         Swal.fire({
-                            text: 'Minimal 1 diagnosa ICD X harus ada!',
+                            title: 'Tidak Dapat Menghapus',
+                            text: 'Minimal 1 diagnosa ICD-X harus ada untuk dokter!',
                             icon: "warning",
                             buttonsStyling: false,
                             confirmButtonText: "Ok",
@@ -1465,6 +1518,7 @@
                         });
                         return false;
                     }
+                    @endif
 
                     $(this).slideUp(deleteElement, function() {
                         // Update jenis diagnosa setelah item dihapus
@@ -1539,14 +1593,20 @@
                         );
                     }
 
-                    // Disable delete button jika hanya ada 1 item
+                    // Disable delete button jika hanya ada 1 item (HANYA UNTUK DOKTER)
+                    @if (auth()->user()->idpriv == 7)
                     if (itemCount <= 1) {
                         deleteBtn.addClass('disabled').attr('disabled', true);
-                        deleteBtn.attr('title', 'Minimal 1 diagnosa harus ada');
+                        deleteBtn.attr('title', 'Minimal 1 diagnosa harus ada untuk dokter');
                     } else {
                         deleteBtn.removeClass('disabled').removeAttr('disabled');
                         deleteBtn.removeAttr('title');
                     }
+                    @else
+                    // Untuk perawat: semua item bisa dihapus
+                    deleteBtn.removeClass('disabled').removeAttr('disabled');
+                    deleteBtn.removeAttr('title');
+                    @endif
                 });
 
                 // Update badge info

@@ -464,6 +464,7 @@ Route::prefix('/rawat-jalan')->middleware('auth')->group(function () {
         Route::get('/{idrawat}/{idrawatbaru}/copy-template', [RekapMedisController::class, 'copy_template'])->name('copy-template');
         Route::get('/{id_resep}/{idrawat}/copy-resep', [RekapMedisController::class, 'copy_resep'])->name('copy-resep');
         Route::get('/{id_pasien}/update-template', [RekapMedisController::class, 'update_template'])->name('update-template');
+        Route::get('/{id}/template-detail', [RekapMedisController::class, 'get_template_detail'])->name('get-template-detail');
         Route::get('/{id_pasien}/show', [RekapMedisController::class, 'index_poli'])->name('rekam-medis-poli');
         Route::get('/{no_rm}/{idrawat}/data-resep', [RekapMedisController::class, 'data_resep_pasien'])->name('rekam-medis-poli.data-resep');
         Route::post('/post-resume', [RekapMedisController::class, 'input_resume_poli'])->name('post.resume-poli');

@@ -87,22 +87,71 @@
 
                 {{-- Card Body --}}
                 <div class="card-body">
-                    {{-- Template Section --}}
-                    @if(auth()->user()->idpriv == 7 && ($rawat->status != 4 && $rawat->status != 5))
-                        <div class="row mb-10">
-                            <div class="col-md-12">
-                                <div class="alert alert-info d-flex align-items-center p-5">
-                                    <i class="ki-duotone ki-information-5 fs-2hx text-info me-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                                    <div class="d-flex flex-column">
-                                        <h4 class="mb-1 text-dark">Template Tersedia</h4>
-                                        <span>Pilih template untuk mempercepat input data:</span>
-                                        <div class="mt-3">
-                                            @foreach ($get_template as $temp)
-                                                <a href="{{ route('copy-template', [$temp->idrawat, $rawat->id]) }}"
-                                                   class="btn btn-warning btn-sm me-2 mb-2">
-                                                    <i class="ki-duotone ki-file fs-5"><span class="path1"></span><span class="path2"></span></i>
-                                                    {{ $temp->diagnosa }}
-                                                </a>
+{{-- Template Section - Compact Sidebar Style --}}
+                    @if((auth()->user()->idpriv == 7 || auth()->user()->idpriv == 14 || auth()->user()->idpriv == 18 || auth()->user()->idpriv == 29) && ($rawat->status != 4 && $rawat->status != 5) && count($get_template) > 0)
+                        <div class="mb-5">
+                            <div class="card card-flush border border-gray-300">
+                                <div class="card-header collapsible cursor-pointer" data-bs-toggle="collapse" data-bs-target="#kt_template_section">
+                                    <h3 class="card-title text-gray-800 fs-6 fw-semibold">
+                                        <i class="ki-duotone ki-file-added fs-4 text-primary me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                        Template Diagnosa
+                                        <span class="badge badge-circle badge-light-primary ms-2">{{ count($get_template) }}</span>
+                                    </h3>
+                                    <div class="card-toolbar">
+                                        <span class="text-muted fs-8 me-2">Klik untuk lihat</span>
+                                        <i class="ki-duotone ki-down fs-3 text-gray-600"></i>
+                                    </div>
+                                </div>
+                                <div id="kt_template_section" class="collapse">
+                                    <div class="card-body py-4 px-5">
+                                        <div class="row g-3">
+                                            @foreach ($get_template as $index => $temp)
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center p-3 bg-light-primary rounded border border-primary border-dashed">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="symbol symbol-35px symbol-circle" style="background: #009ef7;">
+                                                                <span class="symbol-label fs-7 fw-bold text-gray-600">{{ $index + 1 }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1 me-3">
+                                                            <div class="text-gray-900 fw-semibold fs-7 mb-1">
+                                                                {{ \Illuminate\Support\Str::limit($temp->diagnosa, 50) }}
+                                                            </div>
+                                                            <div class="d-flex gap-2 fs-8 text-muted">
+                                                                <span>{{ \Carbon\Carbon::parse($temp->last_used ?? $temp->created_at)->format('d/m/Y') }}</span>
+                                                                @if(isset($temp->usage_count) && $temp->usage_count > 1)
+                                                                    <span>• {{ $temp->usage_count }}x</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-shrink-0 d-flex gap-1">
+                                                            <button type="button"
+                                                                    class="btn btn-sm btn-light-info btn-preview-template"
+                                                                    data-id="{{ $temp->id }}"
+                                                                    title="Lihat Detail Template">
+                                                                <i class="ki-duotone ki-eye fs-6 me-1">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                    <span class="path3"></span>
+                                                                </i>
+                                                                Detail
+                                                            </button>
+                                                            <a href="{{ route('copy-template', [$temp->idrawat, $rawat->id]) }}"
+                                                               class="btn btn-sm btn-success"
+                                                               title="Terapkan Template ke Form"
+                                                               onclick="return confirm('Terapkan template ini? Data akan disalin ke form.')">
+                                                                <i class="ki-duotone ki-check-circle fs-6 me-1">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                </i>
+                                                                Terapkan
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             @endforeach
                                         </div>
                                     </div>
@@ -179,6 +228,7 @@
         routes: {
             copyTemplate: "{{ route('copy-template', ['', '']) }}",
             updateTemplate: "{{ route('update-template', $resume_medis ? $resume_medis->id : '') }}",
+            getTemplateDetail: "{{ route('get-template-detail', '__ID__') }}",
             getIcare: "{{ route('get-icare', ['id' => '__DOKTER_ID__', 'bpjs' => '__BPJS_NO__']) }}",
             getDataObat: "{{ route('get-data-obat', '') }}",
             getDataRacikObat: "{{ route('get-data-racik-obat', '') }}",
@@ -225,7 +275,7 @@
         };
 
         // Initialize history table
-   
+
 
         // Initialize recap table
         $("#tbl-rekap").DataTable({
@@ -718,6 +768,225 @@
         }
         loadModal(CONFIG.routes.getHasil + "/" + id);
     };
+
+// Template Preview Handler - Elegant & Minimalist
+    $(document).on('click', '.btn-preview-template', function(e) {
+        e.preventDefault();
+        const templateId = $(this).data('id');
+
+        if (!templateId) {
+            showError('ID template tidak ditemukan');
+            return;
+        }
+
+        // Block UI with elegant loader
+        Swal.fire({
+            title: 'Memuat Preview...',
+            html: '<div class="spinner-border text-primary" role="status"></div>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        });
+
+        // Fetch template detail
+        $.ajax({
+            url: CONFIG.routes.getTemplateDetail.replace('__ID__', templateId),
+            method: 'GET',
+            success: function(response) {
+                if (response.status === 'success') {
+                    const data = response.data;
+                    let htmlContent = `
+                        <div class="text-start">
+                            <div class="d-flex align-items-center mb-5 pb-3 border-bottom">
+                                <div class="symbol symbol-50px me-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="ki-duotone ki-document fs-2x text-white">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1 fw-bold">${data.diagnosa || 'Diagnosa'}</h4>
+                                    <span class="badge badge-light-primary">${data.tanggal}</span>
+                                </div>
+                            </div>
+                    `;
+
+                    // Display SOAP or soap_data
+                    if (data.soap || data.soap_data) {
+                        const soapData = data.soap || data.soap_data;
+                        htmlContent += `
+                            <div class="mb-5">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="ki-duotone ki-notepad fs-3 text-primary me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    SOAP
+                                </h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="p-4 rounded" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-left: 3px solid #667eea;">
+                                            <strong class="text-primary d-block mb-2">Subjective</strong>
+                                            <p class="mb-0 text-gray-700">${soapData.subjective || '-'}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-4 rounded" style="background: linear-gradient(135deg, #06a09d15 0%, #06a09d15 100%); border-left: 3px solid #06a09d;">
+                                            <strong class="text-success d-block mb-2">Objective</strong>
+                                            <p class="mb-0 text-gray-700">${soapData.objective || '-'}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-4 rounded" style="background: linear-gradient(135deg, #ffc10715 0%, #ffc10715 100%); border-left: 3px solid #ffc107;">
+                                            <strong class="text-warning d-block mb-2">Assessment</strong>
+                                            <p class="mb-0 text-gray-700">${soapData.assessment || '-'}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-4 rounded" style="background: linear-gradient(135deg, #f1416c15 0%, #f1416c15 100%); border-left: 3px solid #f1416c;">
+                                            <strong class="text-danger d-block mb-2">Plan</strong>
+                                            <p class="mb-0 text-gray-700">${soapData.plan || '-'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    if (data.icdx) {
+                        let icdxArray = Array.isArray(data.icdx) ? data.icdx : [data.icdx];
+                        htmlContent += `
+                            <div class="mb-5">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="ki-duotone ki-medical-records fs-3 text-success me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    ICD-X Diagnosa
+                                </h6>
+                                <div class="d-flex flex-wrap gap-2">
+                        `;
+                        icdxArray.forEach((icd, index) => {
+                            const jenis = icd.jenis_diagnosa === 'P' ? 'Primer' : 'Sekunder';
+                            const badgeClass = icd.jenis_diagnosa === 'P' ? 'badge-primary' : 'badge-info';
+                            htmlContent += `
+                                <span class="badge ${badgeClass} fs-7 px-3 py-2">
+                                    <strong>${jenis}:</strong> ${icd.diagnosa_icdx || icd}
+                                </span>
+                            `;
+                        });
+                        htmlContent += `</div></div>`;
+                    }
+
+                    if (data.icd9 && data.icd9.length > 0) {
+                        htmlContent += `
+                            <div class="mb-5">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="ki-duotone ki-pill fs-3 text-warning me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    ICD-9 Prosedur
+                                </h6>
+                                <div class="d-flex flex-wrap gap-2">
+                        `;
+                        data.icd9.forEach(icd => {
+                            htmlContent += `<span class="badge badge-light-warning fs-7 px-3 py-2">${icd}</span>`;
+                        });
+                        htmlContent += `</div></div>`;
+                    }
+
+                    if (data.anamnesa_dokter) {
+                        htmlContent += `
+                            <div class="mb-5">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="ki-duotone ki-message-text fs-3 text-info me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Anamnesa
+                                </h6>
+                                <div class="p-4 bg-light-info rounded">
+                                    <p class="mb-0 text-gray-800">${data.anamnesa_dokter}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    if (data.rencana_pemeriksaan) {
+                        htmlContent += `
+                            <div class="mb-5">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="ki-duotone ki-folder fs-3 text-primary me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Rencana Pemeriksaan
+                                </h6>
+                                <div class="p-4 bg-light rounded">
+                                    <p class="mb-0 text-gray-800">${data.rencana_pemeriksaan}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    if (data.terapi) {
+                        htmlContent += `
+                            <div class="mb-3">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="ki-duotone ki-capsule fs-3 text-success me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Terapi
+                                </h6>
+                                <div class="p-4 bg-light-success rounded">
+                                    <p class="mb-0 text-gray-800">${data.terapi}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    htmlContent += '</div>';
+
+                    Swal.fire({
+                        html: htmlContent,
+                        width: '900px',
+                        showCloseButton: true,
+                        showCancelButton: false,
+                        focusConfirm: false,
+                        confirmButtonText: '<i class="ki-duotone ki-cross fs-2"></i> Tutup',
+                        customClass: {
+                            confirmButton: 'btn btn-light-primary',
+                            popup: 'rounded'
+                        },
+                        buttonsStyling: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: response.message || 'Gagal memuat detail template',
+                        confirmButtonText: 'Tutup',
+                        customClass: {
+                            confirmButton: 'btn btn-danger'
+                        }
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Terjadi kesalahan: ' + (xhr.responseJSON?.message || xhr.statusText),
+                    confirmButtonText: 'Tutup',
+                    customClass: {
+                        confirmButton: 'btn btn-danger'
+                    }
+                });
+            }
+        });
+    });
 
     // Flash messages
     @if($message = session('gagal'))
