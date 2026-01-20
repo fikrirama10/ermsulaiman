@@ -1187,6 +1187,19 @@
                 var soapPlan = $('textarea[name="soap[plan]"]').val();
 
                 if (!soapSubjective || !soapObjective || !soapAssessment || !soapPlan) {
+                    // Buka accordion SOAP jika tertutup
+                    var soapAccordion = $('#kt_accordion_medical_body_1');
+                    if (!soapAccordion.hasClass('show')) {
+                        soapAccordion.collapse('show');
+                    }
+
+                    // Scroll ke accordion SOAP
+                    setTimeout(function() {
+                        $('html, body').animate({
+                            scrollTop: $('#kt_accordion_medical_header_1').offset().top - 100
+                        }, 500);
+                    }, 300);
+
                     Swal.fire({
                         text: 'Semua field SOAP (Subjective, Objective, Assessment, Plan) wajib diisi!',
                         icon: "warning",
@@ -1199,27 +1212,7 @@
                     return false;
                 }
 
-                // Konversi SOAP ke JSON dan simpan ke hidden input
-                var soapData = {
-                    subjective: soapSubjective,
-                    objective: soapObjective,
-                    assessment: soapAssessment,
-                    plan: soapPlan,
-                    created_at: new Date().toISOString()
-                };
-
-                // Hapus field SOAP individual dan ganti dengan JSON
-                $('textarea[name="soap[subjective]"]').remove();
-                $('textarea[name="soap[objective]"]').remove();
-                $('textarea[name="soap[assessment]"]').remove();
-                $('textarea[name="soap[plan]"]').remove();
-
-                // Tambahkan hidden input dengan data JSON
-                $('#frm-data').append('<input type="hidden" name="soap_data" value=\'' + JSON.stringify(soapData) + '\'>');
-                @endif
-
                 // Validasi ICDX minimal 1 (HANYA UNTUK DOKTER)
-                @if (auth()->user()->idpriv == 7)
                 var icdxItems = $('#icdx_repeater [data-repeater-item]:visible');
                 var icdxFilled = 0;
 
@@ -1273,6 +1266,7 @@
                 console.log('Validasi ICDX untuk Perawat - Tidak ada validasi wajib');
                 @endif
 
+                // SEMUA VALIDASI LOLOS - Konfirmasi simpan
                 var blockUI = new KTBlockUI(document.querySelector("#kt_app_body"));
                 Swal.fire({
                     title: 'Simpan Data',
@@ -1285,6 +1279,27 @@
                     cancelButtonText: 'Tidak'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        @if (auth()->user()->idpriv == 7)
+                        // Konversi SOAP ke JSON sebelum submit (HANYA SETELAH KONFIRMASI)
+                        var soapData = {
+                            subjective: soapSubjective,
+                            objective: soapObjective,
+                            assessment: soapAssessment,
+                            plan: soapPlan,
+                            created_at: new Date().toISOString()
+                        };
+
+                        // Hapus field SOAP individual dan ganti dengan JSON
+                        $('textarea[name="soap[subjective]"]').remove();
+                        $('textarea[name="soap[objective]"]').remove();
+                        $('textarea[name="soap[assessment]"]').remove();
+                        $('textarea[name="soap[plan]"]').remove();
+
+                        // Tambahkan hidden input dengan data JSON
+                        $('#frm-data').append('<input type="hidden" name="soap_data" value=\'' + JSON.stringify(soapData) + '\'>');
+                        @endif
+
+                        // Tampilkan loading indicator
                         $.blockUI({
                             css: {
                                 border: 'none',
@@ -1299,7 +1314,9 @@
                             message: "<img src='{{ asset('assets/img/loading.gif') }}' width='10%' height='auto'> Tunggu . . .",
                             baseZ: 9000,
                         });
-                        this.submit();
+
+                        // Submit form
+                        $('#frm-data')[0].submit();
                     }
                 });
             });
