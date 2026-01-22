@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Pasien\Pasien;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Rawat extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
     protected $table = 'rawat';
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
@@ -20,7 +21,7 @@ class Rawat extends Model
     {
         return $this->hasOne(Poli::class, 'id','idpoli');
     }
-    
+
     public function dokter(): HasOne
     {
         return $this->hasOne(Dokter::class, 'id','iddokter');

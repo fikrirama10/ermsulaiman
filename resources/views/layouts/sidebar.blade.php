@@ -53,6 +53,19 @@
                     <!--end:Menu link-->
                 </div>
                 <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ Request::routeIs('monitoring.integrasi') ? 'active' : '' }}"
+                        href="{{ route('monitoring.integrasi') }}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-chart-line-star fs-2"></i>
+                        </span>
+                        <span class="menu-title">Monitoring Integrasi</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
                 {{-- @canany(['dokter', 'perawat', 'rekammedis']) --}}
                 <!--begin:Menu item-->
                 @can('rekammedis')
@@ -608,7 +621,8 @@
             @csrf
             <button type="submit"
                 class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2">
-                <i class="bi bi-box-arrow-right fs-5"></i> <span>Logout</span>
+                <i class="bi bi-power fs-5"></i>
+                <span class="menu-title"></span>
             </button>
         </form>
     </div>

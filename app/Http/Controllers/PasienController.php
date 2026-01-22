@@ -108,6 +108,9 @@ class PasienController extends Controller
     {
         // return 'a';
         if (request()->ajax()){
+            $searchParam = $request->get('search');
+            $searchValue = is_array($searchParam) ? ($searchParam['value'] ?? '') : $searchParam;
+
             // Cek apakah ada filter yang diisi
             $hasFilter = $request->get('no_rm') != '' ||
                          $request->get('nik') != '' ||
@@ -115,7 +118,7 @@ class PasienController extends Controller
                          $request->get('nama') != '' ||
                          $request->get('tempat_lahir') != '' ||
                          $request->get('no_hp') != '' ||
-                         !empty($request->get('search'));
+                         !empty($searchValue);
 
             // Jika tidak ada filter, return data kosong
             if (!$hasFilter) {
@@ -150,17 +153,100 @@ class PasienController extends Controller
                     if ($request->get('no_hp') != '') {
                         $instance->where('nohp', 'LIKE', '%' . $request->get('no_hp') . '%');
                     }
-                    if (!empty($request->get('search'))) {
-                        $instance->where(function ($w) use ($request) {
-                            $search = $request->get('search');
-                            $w->orWhere('no_rm', 'LIKE', "%$search%")
-                                ->orWhere('nama_pasien', 'LIKE', "%$search%");
+                    
+                    $search = $request->get('search');
+                    // DataTables sends search as array ['value' => ..., 'regex' => ...]
+                    $keyword = is_array($search) ? ($search['value'] ?? '') : $search;
+
+                    if (!empty($keyword)) {
+                        $instance->where(function ($w) use ($keyword) {
+                            $w->orWhere('no_rm', 'LIKE', "%$keyword%")
+                                ->orWhere('nama_pasien', 'LIKE', "%$keyword%");
                         });
                     }
                 })
                 ->make(true);
         }
         return view('pasien.index');
+    }
+
+    // Statistics API for Dashboard
+    public function statistics()
+    {
+        $totalPasien = Pasien::count();
+        $pasienBaru = Pasien::whereYear('tgldaftar', date('Y'))
+            ->whereMonth('tgldaftar', date('m'))
+            ->count();
+        $kunjunganHariIni = Rawat::whereDate('tglmasuk', date('Y-m-d'))->count();
+        $totalKunjungan = Rawat::whereYear('tglmasuk', date('Y'))
+            ->whereMonth('tglmasuk', date('m'))
+            ->count();
+
+        return response()->json([
+            'total_pasien' => number_format($totalPasien, 0, ',', '.'),
+            'pasien_baru' => number_format($pasienBaru, 0, ',', '.'),
+            'kunjungan_hari_ini' => number_format($kunjunganHariIni, 0, ',', '.'),
+            'total_kunjungan' => number_format($totalKunjungan, 0, ',', '.')
+        ]);
+    }
+
+    // Recent Visits Today
+    public function recentVisits()
+    {
+        $visits = Rawat::with(['pasien', 'poli'])
+            ->whereDate('tglmasuk', date('Y-m-d'))
+            ->orderBy('tglmasuk', 'desc')
+            ->limit(5)
+            ->get();
+
+        $data = $visits->map(function($item) {
+            $status = 'Antri';
+            $statusClass = 'warning';
+            if ($item->status == 4) {
+                $status = 'Selesai';
+                $statusClass = 'success';
+            } elseif ($item->tglpulang) {
+                $status = 'Pulang';
+                $statusClass = 'info';
+            }
+
+            return [
+                'no_rm' => $item->no_rm,
+                'jam' => $item->tglmasuk ? date('H:i', strtotime($item->tglmasuk)) : '-',
+                'nama' => $item->pasien->nama_pasien ?? '-',
+                'poli' => $item->poli->namapoli ?? '-',
+                'status' => $status,
+                'status_class' => $statusClass
+            ];
+        });
+
+        return response()->json([
+            'data' => $data
+        ]);
+    }
+
+    // Search Patient by No RM
+    public function searchByNoRm(Request $request)
+    {
+        $patient = Pasien::where('no_rm', $request->no_rm)->first();
+
+        if ($patient) {
+            return response()->json([
+                'status' => true,
+                'data' => $patient
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data pasien tidak ditemukan'
+            ]);
+        }
+    }
+
+    // Pendaftaran Page
+    public function pendaftaran()
+    {
+        return view('pasien.pendaftaran');
     }
 
     function data_keluran($id_kel)
@@ -277,14 +363,14 @@ class PasienController extends Controller
                 'no_rm' => $no_rm[1],
             ]);
 
-            $get_satu_sehat = SatusehatPasienHelper::searchPasienNik($request->nik);
-            if (isset($get_satu_sehat['total']) && $get_satu_sehat['total'] > 0) {
-                Pasien::find($pasienId)->update([
-                    'ihs' => $get_satu_sehat['entry'][0]['resource']['id']
-                ]);
-            } else {
-                SatusehatPasienHelper::add_pasien($no_rm[1]);
-            }
+            // $get_satu_sehat = SatusehatPasienHelper::searchPasienNik($request->nik);
+            // if (isset($get_satu_sehat['total']) && $get_satu_sehat['total'] > 0) {
+            //     Pasien::find($pasienId)->update([
+            //         'ihs' => $get_satu_sehat['entry'][0]['resource']['id']
+            //     ]);
+            // } else {
+            //     SatusehatPasienHelper::add_pasien($no_rm[1]);
+            // }
 
             DB::commit();
             return redirect(route('pasien.rekammedis_detail', $pasienId))->with('berhasil', 'Data berhasil di input');
@@ -336,7 +422,7 @@ class PasienController extends Controller
         // return $cek_finger_print;
         $cek_general_concent = DB::table('demo_consent')->where('idpasien',$pasien->id)->whereDate('period',date('Y-m-d'))->first();
         // return Carbon::();
-        return view('pasien.tambah-kunjungan', compact('pasien', 'poli', 'cek_finger_print','cek_general_concent'));
+        return view('pasien.tambah-kunjungan-clean', compact('pasien', 'poli', 'cek_finger_print','cek_general_concent'));
     }
 
     public function check_password(Request $request)

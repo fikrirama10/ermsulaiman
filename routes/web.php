@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 use App\Helpers\SatusehatPasienHelper;
 use App\Helpers\SatusehatKondisiHelper;
 use App\Helpers\SatusehatResourceHelper;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\GiziController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasienController;
@@ -449,11 +450,24 @@ Route::prefix('/farmasi')->middleware('auth')->group(function () {
     Route::post('/edit-obat-farmasi-racikan', [FarmasiController::class, 'post_edit_farmasi_racikan'])->middleware('auth')->name('farmasi.edit-obat-farmasi-racikan');
     Route::post('/post-resep-racikan-farmasi/{id}', [FarmasiController::class, 'post_resep_racikan'])->middleware('auth')->name('farmasi.post-resep-racikan');
 });
+
+// Monitoring Routes
+Route::prefix('/monitoring')->middleware('auth')->group(function () {
+    Route::get('/', [ActivityLogController::class, 'index'])->name('monitoring.index');
+    Route::get('/integrasi', [App\Http\Controllers\Monitoring\IntegrationDashboardController::class, 'index'])->name('monitoring.integrasi');
+    Route::get('/show/{id}', [ActivityLogController::class, 'show'])->name('monitoring.show');
+    Route::get('/patient/{no_rm}', [ActivityLogController::class, 'byPatient'])->name('monitoring.patient');
+    Route::get('/rawat/{idrawat}', [ActivityLogController::class, 'byRawat'])->name('monitoring.rawat');
+    Route::get('/export', [ActivityLogController::class, 'export'])->name('monitoring.export');
+    Route::post('/cleanup', [ActivityLogController::class, 'cleanup'])->name('monitoring.cleanup');
+    Route::get('/chart-data', [ActivityLogController::class, 'chartData'])->name('monitoring.chart-data');
+});
+
 Route::prefix('/rawat-jalan')->middleware('auth')->group(function () {
     Route::get('/poli', [PoliklinikController::class, 'index'])->middleware('auth')->name('poliklinik');
     Route::get('/poli-semua', [PoliklinikController::class, 'index_semua'])->middleware('auth')->name('poliklinik-semua');
     Route::prefix('/tindak-lanjut')->group(function () {
-        Route::post('/', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
+        Route::get('/', [TindakLanjutController::class, 'index'])->middleware('auth')->name('tindak-lanjut.index');
         Route::get('/aksi-tindak-lanjut/{id}', [TindakLanjutController::class, 'aksi_tindak_lanjut'])->middleware('auth')->name('tindak-lanjut.aksi_tindak_lanjut');
         Route::get('/edit-tindak-lanjut/{id}', [TindakLanjutController::class, 'edit_tindak_lanjut'])->middleware('auth')->name('tindak-lanjut.edit_tindak_lanjut');
         Route::post('/post-tindak-lanjut/{id}', [TindakLanjutController::class, 'post_tindak_lanjut'])->middleware('auth')->name('tindak-lanjut.post_tindak_lanjut');
@@ -519,6 +533,10 @@ Route::prefix('/rawat-inap')->middleware('auth')->group(function () {
 });
 Route::prefix('/pasien')->middleware('auth')->group(function () {
     Route::get('/', [PasienController::class, 'index'])->name('pasien.index');
+    Route::get('/statistics', [PasienController::class, 'statistics'])->name('pasien.statistics');
+    Route::get('/recent-visits', [PasienController::class, 'recentVisits'])->name('pasien.recent-visits');
+    Route::get('/pendaftaran', [PasienController::class, 'pendaftaran'])->name('pasien.pendaftaran');
+    Route::get('/search-by-no-rm', [PasienController::class, 'searchByNoRm'])->name('pasien.search-by-no-rm');
     Route::get('/view/{id}', [PasienController::class, 'rekammedis_detail'])->name('pasien.rekammedis_detail');
     Route::get('/create', [PasienController::class, 'tambah_pasien_baru'])->name('pasien.tambah-pasien');
     Route::get('/create-kunjungan/{id}/{jenis}', [PasienController::class, 'tambah_kunjungan'])->name('pasien.tambah-kunjungan');
@@ -552,6 +570,7 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
         Route::post('/post-non-racikan/{id}', [RekapMedisController::class, 'post_resep_non_racikan'])->name('rekap-medis.post_resep_non_racikan');
         Route::post('/post-delete-resep', [RekapMedisController::class, 'post_delete_resep'])->name('post.delete-resep');
         Route::post('/post-edit-jumlah', [RekapMedisController::class, 'edit_jumlah'])->name('post.edit-jumlah');
+
         Route::prefix('/detail')->group(function () {
             Route::get('/{id_rekapmedis}/index', [DetailRekapMedisController::class, 'index'])->name('detail-rekap-medis-index');
             Route::get('/create', [DetailRekapMedisController::class, 'create'])->name('detail-rekap-medis-create');
@@ -562,6 +581,14 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
             Route::get('/cetak/{id}', [DetailRekapMedisController::class, 'cetak'])->name('detail-rekap-medis-cetak');
             Route::get('/cetak-resep/{id}', [DetailRekapMedisController::class, 'cetak_resep'])->name('resep-rekap-medis-cetak');
         });
+    });
+
+    // Cetak Pasien Routes
+    Route::prefix('/cetak')->middleware('auth')->group(function () {
+        Route::get('/rm/{id}', [App\Http\Controllers\PasienCetakController::class, 'cetakRM'])->name('pasien.cetak-rm');
+        Route::get('/label/{id}', [App\Http\Controllers\PasienCetakController::class, 'cetakLabel'])->name('pasien.cetak-label');
+        Route::get('/map/{id}', [App\Http\Controllers\PasienCetakController::class, 'cetakMap'])->name('pasien.cetak-map');
+        Route::get('/gelang/{id}', [App\Http\Controllers\PasienCetakController::class, 'cetakGelang'])->name('pasien.cetak-gelang');
     });
 
     //operasi

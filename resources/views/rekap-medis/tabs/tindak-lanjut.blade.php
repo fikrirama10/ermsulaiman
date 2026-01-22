@@ -12,15 +12,10 @@
                 <i class="ki-duotone ki-information-5 fs-2x me-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                 Belum ada rencana tindak lanjut
             </div>
-            <form action="{{ route('tindak-lanjut.index') }}" method="post" id='frmTindakLanjut'>
-                @csrf
-                <input type="hidden" name='idrawat' value="{{ $rawat->id }}">
-                <input type="hidden" name='idbayar' value="{{ $rawat->idbayar }}">
-                <button type="submit" class="btn btn-info">
-                    <i class="ki-duotone ki-plus fs-3"><span class="path1"></span><span class="path2"></span></i>
-                    Tambah Tindak Lanjut
-                </button>
-            </form>
+            <a href="{{ route('tindak-lanjut.index', ['idrawat' => $rawat->id]) }}" class="btn btn-info">
+                <i class="ki-duotone ki-plus fs-3"><span class="path1"></span><span class="path2"></span></i>
+                Tambah Tindak Lanjut
+            </a>
         @else
             <table class="table table-striped table-row-bordered gy-3 gs-5 border rounded">
                 <thead class="border">

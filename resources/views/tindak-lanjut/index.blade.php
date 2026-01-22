@@ -53,14 +53,20 @@
             <!--begin::Content container-->
             <div id="kt_app_content_container" class="app-container container-fluid">
                 <!--begin::FAQ card-->
-                <div class="card">
-                    <div class="card-header">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
                         <div class="card-title">
-                            <h5 class="card-title">Data Kategori Rekam Medis Pasien</h5>
+                            <h3 class="fw-bold">
+                                <i class="fas fa-file-medical-alt text-primary me-2"></i>
+                                Form Tindak Lanjut Pasien
+                            </h3>
                         </div>
                         <div class="card-toolbar">
                             <a href="{{ route('rekam-medis-poli', $rawat->id) }}"
-                                class="btn btn-sm btn-secondary">Kembali</a>
+                                class="btn btn-sm btn-light-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Kembali
+                            </a>
                         </div>
                     </div>
                     <!--begin::Body-->
@@ -140,29 +146,54 @@
                             </div>
                         </div>
                         <div class="separator separator-dashed border-secondary mb-5"></div>
-                        <div class="rounded border p-5">
+                        <div class="rounded border border-gray-300 p-6 bg-light-subtle">
                             <form action="{{ route('tindak-lanjut.post_tindak_lanjut', $rawat->id) }}" method="post"
                                 id='frmTindak'>
                                 @csrf
-                                <div class="row mb-5">
+                                <input type="hidden" name="idrekapmedis" value="{{ $rawat->rekapMedis->id ?? '' }}">
+
+                                <div class="row mb-7">
                                     <div class="col-md-12">
-                                        <label class="form-label fw-bold">Rencana Tindak Lanjut</label>
-                                        <select name="rencana_tindak_lanjut" data-control="select2"
-                                            data-placeholder="Select an option" class="form-select"
-                                            id="rencana_tindak_lanjut" arial-placeholder="Rencana Tindak Lanjut" required>
+                                        <label class="form-label fw-bold fs-5 required">
+                                            <i class="fas fa-clipboard-list text-primary me-2"></i>
+                                            Rencana Tindak Lanjut
+                                        </label>
+                                        <select name="rencana_tindak_lanjut"
+                                                data-control="select2"
+                                                data-placeholder="Pilih rencana tindak lanjut..."
+                                                class="form-select form-select-lg form-select-solid"
+                                                id="rencana_tindak_lanjut"
+                                                required>
                                             <option value=""></option>
-                                            <option value="Kontrol Kembali">Pasien Kontrol Kembali</option>
-                                            <option value="Dirujuk">Pasien Dirujuk</option>
-                                            <option value="Interm">Pasien Dirujuk Interm</option>
+                                            <option value="Kontrol Kembali">
+                                                <i class="fas fa-calendar-check"></i> Pasien Kontrol Kembali
+                                            </option>
+                                            <option value="Dirujuk">
+                                                <i class="fas fa-ambulance"></i> Pasien Dirujuk Keluar
+                                            </option>
+                                            <option value="Interm">
+                                                <i class="fas fa-exchange-alt"></i> Pasien Dirujuk Internal (Interm)
+                                            </option>
                                             @if ($rawat->idjenisrawat == 1)
-                                                <option value="Prb">Pasien Rujuk Balik</option>
+                                                <option value="Prb">
+                                                    <i class="fas fa-sync-alt"></i> Pasien Rujuk Balik (PRB)
+                                                </option>
                                             @else
-                                                <option value="Meninggal">Meninggal</option>
+                                                <option value="Meninggal">
+                                                    <i class="fas fa-sad-tear"></i> Pasien Meninggal
+                                                </option>
                                             @endif
-                                            <option value="Dirawat">Pasien Dirawat</option>
+                                            <option value="Dirawat">
+                                                <i class="fas fa-bed"></i> Pasien Dirawat Inap
+                                            </option>
                                         </select>
+                                        <div class="form-text text-muted">
+                                            <i class="fas fa-info-circle"></i> Pilih jenis tindak lanjut yang sesuai dengan kondisi pasien
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- Dynamic form sections will appear here -->
                                 <div id="interm" class="d-none">
                                     <div class="row mb-5">
                                         <div class="col-md-3">
@@ -301,14 +332,35 @@
                                 </div>
                                 <div id="tindak_lanjut"></div>
 
+                                <div class="separator separator-dashed border-gray-300 my-7"></div>
 
-                                <div class="row mb-5">
+                                <div class="row mb-7">
                                     <div class="col-md-12">
-                                        <label class="form-label fw-bold">Catatan</label>
-                                        <textarea name="catatan" rows="3" class="form-control" placeholder="Catatan"></textarea>
+                                        <label class="form-label fw-bold fs-6">
+                                            <i class="fas fa-sticky-note text-warning me-2"></i>
+                                            Catatan Tambahan
+                                        </label>
+                                        <textarea name="catatan"
+                                                  rows="4"
+                                                  class="form-control form-control-solid"
+                                                  placeholder="Tulis catatan atau informasi tambahan yang diperlukan..."></textarea>
+                                        <div class="form-text text-muted">
+                                            <i class="fas fa-info-circle"></i> Opsional - Tambahkan catatan jika diperlukan
+                                        </div>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary">Simpan</button>
+
+                                <div class="d-flex justify-content-between align-items-center pt-5">
+                                    <a href="{{ route('rekam-medis-poli', $rawat->id) }}"
+                                       class="btn btn-light-secondary btn-lg">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Kembali
+                                    </a>
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-save me-2"></i>
+                                        Simpan Tindak Lanjut
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
@@ -375,58 +427,46 @@
                 $('#poli_rujuk').prop('disabled', false);
             });
         });
+        // Handle tindak lanjut selection change
         $('#rencana_tindak_lanjut').on('change', function() {
-            aksi = $('#rencana_tindak_lanjut').val();
-            if (aksi == 'Dirujuk') {
-                $('#rujukan').removeClass('d-none');
-                $('#rawat').addClass('d-none');
-                $('#interm').addClass('d-none');
-                $('#kontrol').addClass('d-none');
-            } else if (aksi == 'Dirawat') {
-                $('#rujukan').addClass('d-none');
-                $('#rawat').removeClass('d-none');
-                $('#interm').addClass('d-none');
-                $('#kontrol').addClass('d-none');
-            } else if (aksi == 'Interm') {
-                $('#rujukan').addClass('d-none');
-                $('#rawat').addClass('d-none');
-                $('#interm').removeClass('d-none');
-                $('#kontrol').addClass('d-none');
-            } else if (aksi == 'Prb') {
-                $('#rujukan').addClass('d-none');
-                $('#rawat').addClass('d-none');
-                $('#interm').addClass('d-none');
-                $('#prb').removeClass('d-none');
-                $('#kontrol').addClass('d-none');
-            } else if (aksi == 'Kontrol Kembali') {
-                $('#rujukan').addClass('d-none');
-                $('#rawat').addClass('d-none');
-                $('#interm').addClass('d-none');
-                $('#prb').addClass('d-none');
-                $('#kontrol').removeClass('d-none');
-            }else if (aksi == 'Meninggal') {
-                $('#rujukan').addClass('d-none');
-                $('#rawat').addClass('d-none');
-                $('#interm').addClass('d-none');
-                $('#prb').addClass('d-none');
-                $('#kontrol').addClass('d-none');
-                $('#meninggal').removeClass('d-none');
+            const aksi = $(this).val();
+
+            // Hide all sections first
+            $('#rujukan, #rawat, #interm, #prb, #kontrol, #meninggal').addClass('d-none');
+
+            // Show selected section with animation
+            switch(aksi) {
+                case 'Dirujuk':
+                    $('#rujukan').removeClass('d-none').hide().slideDown(300);
+                    break;
+                case 'Dirawat':
+                    $('#rawat').removeClass('d-none').hide().slideDown(300);
+                    break;
+                case 'Interm':
+                    $('#interm').removeClass('d-none').hide().slideDown(300);
+                    break;
+                case 'Prb':
+                    $('#prb').removeClass('d-none').hide().slideDown(300);
+                    break;
+                case 'Kontrol Kembali':
+                    $('#kontrol').removeClass('d-none').hide().slideDown(300);
+                    break;
+                case 'Meninggal':
+                    $('#meninggal').removeClass('d-none').hide().slideDown(300);
+                    break;
             }
+        });
 
-            // $('#tgl_kontrol').val('');
-            // $('#tujuan_rujuk').val('');
-            // url = "{{ route('tindak-lanjut.aksi_tindak_lanjut', '') }}" + "/" + aksi;
-            // $.get(url).done(function(data) {
-            //     $('#tindak_lanjut').html(data);
-            // });
-        })
-
-
+        // Handle operasi checkbox (this is now handled in partial rawat.blade.php)
+        // Keep for backward compatibility if checkbox ID is different
         $('#obat').change(function() {
             if (this.checked) {
                 $('#value_operasi').show();
+                $('#value_operasi').prop('required', true);
             } else {
                 $('#value_operasi').hide();
+                $('#value_operasi').prop('required', false);
+                $('#value_operasi').val('');
             }
         });
 

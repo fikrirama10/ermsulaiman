@@ -5,637 +5,561 @@
             filter: blur(5px);
             transition: filter 0.3s;
         }
-
-        /* Ensure SweetAlert popup is not blurred */
-        .swal2-container {
-            z-index: 10000;
+        .profile-header-gradient {
+            background: linear-gradient(112.1deg, rgb(32, 38, 57) 11.4%, rgb(63, 76, 119) 70.2%);
+        }
+        .stat-icon-wrapper {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        /* Refined Timeline */
+        .timeline-label:before {
+            left: 50px !important;
+            background-color: #e4e6ef;
+        }
+        .timeline-label .timeline-label {
+            width: 50px !important;
+            color: #7e8299;
+            font-weight: 600;
+        }
+         /* Compact Table for Profile */
+        .table-profile td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px dashed #e4e6ef;
+            font-size: 0.95rem;
+        }
+        .table-profile tr:last-child td {
+            border-bottom: none;
+        }
+        .table-profile td:first-child {
+            font-weight: 600;
+            color: #5e6278;
+            width: 35%;
+        }
+        .table-profile td:last-child {
+            font-weight: 500;
+            color: #181c32;
+        }
+        /* Custom Tab Styling for Clarity */
+        .nav-line-tabs .nav-item .nav-link {
+            color: rgba(255,255,255,0.7);
+            border-bottom: 2px solid transparent;
+        }
+        .nav-line-tabs .nav-item .nav-link.active {
+            color: #ffffff;
+            border-bottom: 2px solid #ffffff;
+            font-weight: 700;
+        }
+        .nav-line-tabs .nav-item .nav-link:hover {
+            color: #ffffff;
+        }
+        
+        /* Stat Card Refinement */
+        .card-stat {
+            transition: transform 0.2s;
+            border: 1px solid #f1f1f4;
+        }
+        .card-stat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
     </style>
 @endsection
+
 @section('content')
     <div class="d-flex flex-column flex-column-fluid">
-        <!--begin::Toolbar-->
-        <div id="kt_app_toolbar" class="app-toolbar pt-7 pt-lg-10">
-            <!--begin::Toolbar container-->
-            <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
-                <!--begin::Toolbar wrapper-->
-                <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
-                    <!--begin::Page title-->
-                    <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                        <!--begin::Title-->
-                        <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">
-                            Rekammedis</h1>
-                        <!--end::Title-->
-                        <!--begin::Breadcrumb-->
-                        <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
-                            <!--begin::Item-->
-                            <li class="breadcrumb-item text-muted">
-                                <a href="#" class="text-muted text-hover-primary">Menu</a>
-                            </li>
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <li class="breadcrumb-item">
-                                <span class="bullet bg-gray-400 w-5px h-2px"></span>
-                            </li>
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <li class="breadcrumb-item text-muted">Pasien</li>
-                            <!--end::Item-->
-                        </ul>
-                        <!--end::Breadcrumb-->
-                    </div>
-
-                    <div class="d-flex align-items-center gap-2 gap-lg-3">
-                        <a href="{{ route('pasien.tambah-kunjungan', [$pasien->id, 2]) }}"
-                            class="btn btn-sm fw-bold btn-primary">Tambah Kunjungan</a>
-                        {{-- <a href="{{ route('pasien.tambah-kunjungan',[$pasien->id,1]) }}" class="btn btn-sm fw-bold btn-success" >Tambah Kunjungan Umum</a> --}}
-                    </div>
-                    <!--end::Page title-->
-                </div>
-                <!--end::Toolbar wrapper-->
-            </div>
-            <!--end::Toolbar container-->
-        </div>
+        <!--begin::Content-->
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
-                <div class="row g-5">
-                    <div class="col-md-4">
-                        <div class="card  mb-5">
-                            <div class="card-header">
-                                <h4 class="card-title">Data Pasien</h4>
 
-                                <div class="card-toolbar">
-                                    <button class="btn btn-light btn-sm">Ubah</button>
+                <!-- Header: Profile Summary -->
+                <div class="card mb-5 mb-xl-8 profile-header-gradient border-0 shadow-sm">
+                    <div class="card-body pt-9 pb-0">
+                        <div class="d-flex flex-wrap flex-sm-nowrap mb-3">
+                            <div class="me-7 mb-4">
+                                <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
+                                     @if($pasien->jenis_kelamin == 'L')
+                                        <div class="symbol-label bg-info bg-opacity-10 border border-white border-opacity-25">
+                                            <i class="ki-outline ki-profile-user fs-5x text-info"></i>
+                                        </div>
+                                     @else
+                                        <div class="symbol-label bg-danger bg-opacity-10 border border-white border-opacity-25">
+                                            <i class="ki-outline ki-profile-user fs-5x text-danger"></i>
+                                        </div>
+                                     @endif
+                                     <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
                                 </div>
                             </div>
-                            <div class="card-body p-9">
-                                <!--begin::Row-->
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">Nama Lengkap</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->nama_pasien }}</span>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <a href="#" class="text-white text-hover-light fs-1 fw-bold me-1">{{ $pasien->nama_pasien }}</a>
+                                            <span class="badge badge-light-success fw-bold ms-2 fs-7 px-3 py-1 rounded-pill">Pasien Umum</span>
+                                        </div>
+                                        <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2 text-white text-opacity-75">
+                                            <span class="d-flex align-items-center me-5 mb-2">
+                                                <i class="ki-outline ki-barcode fs-4 me-1 text-white text-opacity-75"></i> {{ $pasien->no_rm }}
+                                            </span>
+                                            <span class="d-flex align-items-center me-5 mb-2">
+                                                <i class="ki-outline ki-calendar fs-4 me-1 text-white text-opacity-75"></i> {{ $pasien->usia_tahun }} Tahun
+                                            </span>
+                                            <span class="d-flex align-items-center mb-2">
+                                                 @if($pasien->jenis_kelamin == 'L')
+                                                    <i class="ki-outline ki-user fs-4 me-1 text-white text-opacity-75"></i> Laki-Laki
+                                                @else
+                                                    <i class="ki-outline ki-user-square fs-4 me-1 text-white text-opacity-75"></i> Perempuan
+                                                @endif
+                                            </span>
+                                        </div>
                                     </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Row-->
+                                    
 
-                                <!--begin::Input group-->
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">No. Rekammedis</label>
-                                    <!--end::Label-->
+                                    <div class="d-flex my-4">
+                                        <a href="{{ route('pasien.index') }}" class="btn btn-sm btn-light btn-active-light-primary me-2">
+                                            <i class="ki-outline ki-arrow-left fs-3"></i> Kembali
+                                        </a>
+                                        
+                                        <!-- Dropdown Cetak -->
+                                        <div class="me-2">
+                                            <button class="btn btn-sm btn-light-info btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                <i class="ki-outline ki-printer fs-3 me-1"></i> Cetak
+                                                <span class="svg-icon fs-5 ms-1 me-0"><i class="ki-outline ki-down fs-5"></i></span>
+                                            </button>
+                                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                                                <div class="menu-item px-3">
+                                                    <a href="{{ route('pasien.cetak-rm', $pasien->id) }}" target="_blank" class="menu-link px-3">
+                                                        <i class="ki-outline ki-file-added fs-5 me-2"></i> Formulir RM
+                                                    </a>
+                                                </div>
+                                                <div class="menu-item px-3">
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalCetakLabel" class="menu-link px-3">
+                                                        <i class="ki-outline ki-purchase fs-5 me-2"></i> Label Pasien
+                                                    </a>
+                                                </div>
+                                                <div class="menu-item px-3">
+                                                    <a href="{{ route('pasien.cetak-map', $pasien->id) }}" target="_blank" class="menu-link px-3">
+                                                        <i class="ki-outline ki-map fs-5 me-2"></i> Label Map
+                                                    </a>
+                                                </div>
+                                                <div class="menu-item px-3">
+                                                    <a href="{{ route('pasien.cetak-gelang', $pasien->id) }}" target="_blank" class="menu-link px-3">
+                                                        <i class="ki-outline ki-wristband fs-5 me-2"></i> Gelang Pasien
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <span class="fw-semibold text-gray-800 fs-6">{{ $pasien->no_rm }}</span>
+                                        <a href="{{ route('pasien.tambah-kunjungan', [$pasien->id, 2]) }}" class="btn btn-sm btn-primary btn-shadow">
+                                            <i class="ki-outline ki-plus-square fs-2"></i> Kunjungan Baru
+                                        </a>
                                     </div>
-                                    <!--end::Col-->
                                 </div>
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">NIK</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <span class="fw-semibold text-gray-800 fs-6">{{ $pasien->nik }}</span>
+                                <div class="d-flex flex-wrap flex-stack">
+                                    <div class="d-flex flex-column flex-grow-1 pe-8">
+                                        <div class="d-flex flex-wrap">
+                                            <div class="bg-dark bg-opacity-25 rounded min-w-125px py-3 px-4 me-6 mb-3 border border-white border-opacity-10">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="fs-2 fw-bold text-white counted">{{ $pasien->no_bpjs ?? '-' }}</div>
+                                                </div>
+                                                <div class="fw-semibold fs-7 text-white text-opacity-50">No BPJS</div>
+                                            </div>
+                                             <div class="bg-dark bg-opacity-25 rounded min-w-125px py-3 px-4 me-6 mb-3 border border-white border-opacity-10">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="fs-2 fw-bold text-white counted">{{ $pasien->nohp ?? '-' }}</div>
+                                                </div>
+                                                <div class="fw-semibold fs-7 text-white text-opacity-50">No Handphone</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <!--end::Col-->
                                 </div>
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">No. BPJS</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 fv-row">
-                                        <span class="fw-semibold text-gray-800 fs-6">{{ $pasien->no_bpjs }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-
-                                <!--begin::Input group-->
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">
-                                        Kontak Pasien
-
-                                        <span class="ms-1" data-bs-toggle="tooltip"
-                                            aria-label="Phone number must be active"
-                                            data-bs-original-title="Phone number must be active" data-kt-initialized="1">
-                                            <i class="ki-duotone ki-information fs-7"><span class="path1"></span><span
-                                                    class="path2"></span><span class="path3"></span></i> </span>
-                                    </label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 d-flex align-items-center">
-                                        <span class="fw-bold fs-6 text-gray-800 me-2">{{ $pasien->nohp }}</span>
-                                        {{-- <span class="badge badge-success">Verified</span> --}}
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-
-                                <!--begin::Input group-->
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">Jenis Kelamin</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span
-                                            class="fw-bold fs-6 text-gray-800">{{ $pasien->jenis_kelamin == 'L' ? 'Laki-laki' : 'perempuan' }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-
-                                <!--begin::Input group-->
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">
-                                        Tanggal Lahir
-                                    </label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8 d-flex align-items-center">
-                                        <span
-                                            class="fw-bold fs-6 me-3 text-gray-800">{{ date('d F Y', strtotime($pasien->tgllahir)) }}
-                                        </span>
-                                        <span class="badge badge-success  ">{{ $pasien->usia_tahun }} th
-                                            {{ $pasien->usia_bulan }}bln {{ $pasien->usia_hari }}hr</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-
-                                <!--begin::Input group-->
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">Kepercayaan</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->agama->agama }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-
                             </div>
                         </div>
-                        <div class="card mb-5">
-                            <div class="card-header">
-                                <h4 class="card-title">Data Alamat</h4>
-
-                                <div class="card-toolbar">
-                                    <button class="btn btn-light btn-sm">Ubah</button>
-                                </div>
-                            </div>
-                            <div class="card-body p-9">
-                                <!--begin::Row-->
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">Alamat Utama</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->alamat?->alamat }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="card mb-5">
-                            <div class="card-header">
-                                <h4 class="card-title">Data Anggota</h4>
-
-                                <div class="card-toolbar">
-                                    <button class="btn btn-light btn-sm">Ubah</button>
-                                </div>
-                            </div>
-                            <div class="card-body p-9">
-                                <!--begin::Row-->
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">Kesatuan</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->kesatuan }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">Pangkat</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->pangkat }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <div class="row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="col-lg-4 fw-semibold text-muted">NRP</label>
-                                    <!--end::Label-->
-
-                                    <!--begin::Col-->
-                                    <div class="col-lg-8">
-                                        <span class="fw-bold fs-6 text-gray-800">{{ $pasien->nrp }}</span>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-
-                            </div>
+                        
+                        <!-- Navigation Tabs -->
+                        <div class="d-flex overflow-auto h-55px">
+                            <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold flex-nowrap">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_overview">Ringkasan Medis</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_profile">Profil Biodata</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_history">Riwayat Berobat</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_penunjang">Lab & Radiologi</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="col-md-8">
-                        <div class="row g-5">
-                            <div class="col-md-4">
-                                <div class="card card-stretch">
-                                    <div class="card-header">
-                                        <h6 class="card-title">Tanda Vital Terakhir</h6>
-                                        <div class="card-toolbar ">
-                                            <i class="ki-duotone ki-heart-circle text-primary fs-2hx">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="myTabContent">
+                    
+                    <!-- TAB 1: Ringkasan / Overview -->
+                    <div class="tab-pane fade show active" id="kt_tab_overview" role="tabpanel">
+                        <!-- Vital Signs Row -->
+                        @if ($detail_rekap_medis)
+                        <div class="row g-5 g-xl-8 mb-5 mb-xl-10">
+                             <div class="col-xl-3 col-6">
+                                <div class="card card-stat card-flush h-100">
+                                    <div class="card-body d-flex align-items-center p-4">
+                                        <div class="symbol symbol-50px me-3">
+                                            <div class="symbol-label bg-light-danger">
+                                                <i class="ki-outline ki-heart fs-2x text-danger"></i>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 fw-bold fs-7">Tekanan Darah</span>
+                                             <span class="fs-3 fw-bolder text-dark">{{ $pemeriksaan_fisik->tekanan_darah ?? '-' }} <small class="fs-6 fw-normal text-muted">mmHg</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-6">
+                                 <div class="card card-stat card-flush h-100">
+                                    <div class="card-body d-flex align-items-center p-4">
+                                        <div class="symbol symbol-50px me-3">
+                                            <div class="symbol-label bg-light-primary">
+                                                <i class="ki-outline ki-arrow-up fs-2x text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 fw-bold fs-7">Tinggi Badan</span>
+                                             <span class="fs-3 fw-bolder text-dark">{{ $pemeriksaan_fisik->tinggi_badan ?? '-' }} <small class="fs-6 fw-normal text-muted">cm</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-6">
+                                <div class="card card-stat card-flush h-100">
+                                    <div class="card-body d-flex align-items-center p-4">
+                                        <div class="symbol symbol-50px me-3">
+                                            <div class="symbol-label bg-light-success">
+                                                <i class="ki-outline ki-handcart fs-2x text-success"></i>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 fw-bold fs-7">Berat Badan</span>
+                                             <span class="fs-3 fw-bolder text-dark">{{ $pemeriksaan_fisik->berat_badan ?? '-' }} <small class="fs-6 fw-normal text-muted">kg</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-6">
+                                 <div class="card card-stat card-flush h-100">
+                                    <div class="card-body d-flex align-items-center p-4">
+                                        <div class="symbol symbol-50px me-3">
+                                            <div class="symbol-label bg-light-warning">
+                                                <i class="ki-outline ki-chart-pie-simple fs-2x text-warning"></i>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-600 fw-bold fs-7">BMI (Index)</span>
+                                             <span class="fs-3 fw-bolder text-dark">{{ $pemeriksaan_fisik->bmi == 'NaN' ? '-' : $pemeriksaan_fisik->bmi }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @else
+                           <div class="alert alert-dismissible bg-light-primary border border-primary border-dashed d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+                                <i class="ki-outline ki-message-text-2 fs-2hx text-primary me-4 mb-5 mb-sm-0"></i>
+                                <div class="d-flex flex-column pe-0 pe-sm-10">
+                                    <h5 class="mb-1">Belum Ada Data Rekam Medis</h5>
+                                    <span>Pasien ini belum memiliki riwayat pemeriksaan fisik atau kunjungan yang selesai.</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="row g-5 g-xl-8">
+                             <!-- Timeline Kunjungan Terakhir -->
+                            <div class="col-xl-8">
+                                <div class="card card-flush h-100 shadow-sm">
+                                    <div class="card-header pt-7">
+                                        <h3 class="card-title align-items-start flex-column">
+                                            <span class="card-label fw-bold text-dark fs-3">Kunjungan Terakhir</span>
+                                            <span class="text-muted mt-1 fw-semibold fs-7">Ringkasan SOAP dari kunjungan terakhir</span>
+                                        </h3>
+                                        <div class="card-toolbar">
+                                            <span class="badge badge-light-primary fw-bold me-2">{{ $detail_rekap_medis?->tglmasuk ? date('d M Y', strtotime($detail_rekap_medis->tglmasuk)) : '-' }}</span>
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        @if ($detail_rekap_medis)
-                                            <div class="row mb-5">
-                                                <!--begin::Label-->
-                                                <label class="col-lg-7 fw-semibold text-muted">Tinggi Badan</label>
-                                                <!--end::Label-->
-
-                                                <!--begin::Col-->
-                                                <div class="col-lg-5">
-                                                    <span
-                                                        class="fw-bold fs-6 text-gray-800">{{ $pemeriksaan_fisik->tinggi_badan ?? '-' }}
-                                                        cm</span>
+                                        @if($detail_rekap_medis)
+                                        <div class="timeline-label">
+                                            <!-- Anamnesa -->
+                                            <div class="timeline-item">
+                                                <div class="timeline-label fw-bold text-gray-800 fs-5">S</div>
+                                                <div class="timeline-badge">
+                                                    <i class="ki-outline ki-message-text-2 text-primary fs-1"></i>
                                                 </div>
-                                                <!--end::Col-->
-                                            </div>
-                                            <div class="row mb-5">
-                                                <!--begin::Label-->
-                                                <label class="col-lg-7 fw-semibold text-muted">Berat Badan</label>
-                                                <!--end::Label-->
-
-                                                <!--begin::Col-->
-                                                <div class="col-lg-5">
-                                                    <span
-                                                        class="fw-bold fs-6 text-gray-800">{{ $pemeriksaan_fisik->berat_badan ?? '-' }}
-                                                        kg</span>
+                                                <div class="timeline-content ps-3">
+                                                    <div class="fw-bold text-gray-800 fs-6 mb-1">Subjective (Keluhan)</div>
+                                                    <div class="text-gray-600 bg-light p-3 rounded">{{ $detail_rekap_medis?->anamnesa ?? 'Tidak ada data' }}</div>
                                                 </div>
-                                                <!--end::Col-->
                                             </div>
-                                            <div class="row mb-5">
-                                                <!--begin::Label-->
-                                                <label class="col-lg-7 fw-semibold text-muted">BMI</label>
-                                                <!--end::Label-->
-
-                                                <!--begin::Col-->
-                                                <div class="col-lg-5">
-                                                    <span
-                                                        class="fw-bold fs-6 text-gray-800">{{ $pemeriksaan_fisik->bmi == 'NaN' ? '-' : $pemeriksaan_fisik->bmi }}</span>
+                                            <!-- Diagnosa -->
+                                            <div class="timeline-item">
+                                                <div class="timeline-label fw-bold text-gray-800 fs-5">O</div>
+                                                <div class="timeline-badge">
+                                                    <i class="ki-outline ki-pulse text-danger fs-1"></i>
                                                 </div>
-                                                <!--end::Col-->
-                                            </div>
-                                            <div class="row mb-5">
-                                                <!--begin::Label-->
-                                                <label class="col-lg-7 fw-semibold text-muted">Tekanan Darah</label>
-                                                <!--end::Label-->
-
-                                                <!--begin::Col-->
-                                                <div class="col-lg-5">
-                                                    <span
-                                                        class="fw-bold fs-6 text-gray-800">{{ $pemeriksaan_fisik->tekanan_darah }}
-                                                        mmHg</span>
+                                                <div class="timeline-content ps-3">
+                                                    <div class="fw-bold text-gray-800 fs-6 mb-1">Objective (Pemeriksaan Fisik)</div>
+                                                     <div class="text-gray-600 bg-light p-3 rounded">
+                                                        @if($pemeriksaan_fisik)
+                                                            <div class="d-flex gap-4">
+                                                                <div><span class="fw-bold">Nadi:</span> {{ $pemeriksaan_fisik->nadi ?? '-' }} bpm</div>
+                                                                <div><span class="fw-bold">Suhu:</span> {{ $pemeriksaan_fisik->suhu ?? '-' }} °C</div>
+                                                                <div><span class="fw-bold">RR:</span> {{ $pemeriksaan_fisik->pernapasan ?? '-' }} x/m</div>
+                                                            </div>
+                                                        @else 
+                                                            Tidak ada data
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                                <!--end::Col-->
                                             </div>
+                                             <!-- Assessment -->
+                                            <div class="timeline-item">
+                                                <div class="timeline-label fw-bold text-gray-800 fs-5">A</div>
+                                                <div class="timeline-badge">
+                                                    <i class="ki-outline ki-file-added text-success fs-1"></i>
+                                                </div>
+                                                <div class="timeline-content ps-3">
+                                                    <div class="fw-bold text-gray-800 fs-6 mb-1">Assessment (Diagnosa)</div>
+                                                    <div class="text-gray-600 bg-light p-3 rounded fw-bold text-dark">{{ $detail_rekap_medis?->diagnosa ?? 'Tidak ada data' }}</div>
+                                                </div>
+                                            </div>
+                                            <!-- Plan / Terapi -->
+                                            <div class="timeline-item">
+                                                 <div class="timeline-label fw-bold text-gray-800 fs-5">P</div>
+                                                <div class="timeline-badge">
+                                                    <i class="ki-outline ki-capsule text-info fs-1"></i>
+                                                </div>
+                                                <div class="timeline-content ps-3">
+                                                    <div class="fw-bold text-gray-800 fs-6 mb-1">Plan (Terapi/Obat)</div>
+                                                    <div class="d-flex flex-wrap gap-2 mt-1">
+                                                         @if ($terapi_obat && json_decode($terapi_obat))
+                                                            @foreach (json_decode($terapi_obat) as $to)
+                                                                @foreach ($obat as $o)
+                                                                    @if ($o->id == $to->obat)
+                                                                        <div class="d-flex align-items-center px-3 py-2 border rounded bg-light-info border-info text-info fw-bold">
+                                                                            <i class="ki-outline ki-capsule fs-4 me-2 text-info"></i> {{ $o->nama_obat }}
+                                                                        </div>
+                                                                    @endif
+                                                                @endforeach
+                                                            @endforeach
+                                                        @else
+                                                            <span class="text-muted">Tidak ada data terapi</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         @else
-                                            <div class="alert alert-danger d-flex align-items-center p-5 mb-10">
-                                                <i class="ki-duotone ki-information text-danger fs-2hx me-4">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                                <div class="d-flex flex-column">
-
-                                                    <span>Data TTV tidak ditemukan</span>
-                                                </div>
+                                            <div class="text-center py-10">
+                                                <img src="{{ asset('assets/media/illustrations/sketchy-1/5.png') }}" class="h-150px mb-4" alt="" />
+                                                <div class="text-muted fs-6 fw-bold">Belum ada kunjungan selesai.</div>
                                             </div>
                                         @endif
-
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-8">
-                                <div class="card card-stretch">
-                                    <div class="card-header">
-                                        <h6 class="card-title">Diagnosis Terakhir</h6>
-                                        <div class="card-toolbar">
-                                            <button class="btn btn-sm btn-light">Lihat Semua</button>
-                                        </div>
+                            <!-- Side Col: ICD-X Summary -->
+                            <div class="col-xl-4">
+                                <div class="card card-flush h-100 shadow-sm">
+                                    <div class="card-header pt-7">
+                                        <h3 class="card-title fw-bold text-dark fs-3">Riwayat Diagnosa</h3>
                                     </div>
-                                    <div class="card-body">
-                                        <table class="table">
-                                            <thead>
-                                                <tr class="fw-bold fs-7 text-gray-800 border-bottom border-gray-200">
-                                                    <th>ICD X</th>
-                                                    <th>Tanggal</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($soap_icdx as $icd)
-                                                    <tr>
-                                                        <td>{{ $icd->icd10 }}</td>
-                                                        <td>{{ $icd->tglmasuk }}</td>
-                                                    </tr>
-                                                @endforeach
-                                                @foreach ($detail_rekap_medis_all as $dl)
-                                                    @if ($dl->icdx && json_decode($dl->icdx))
-                                                        @foreach (json_decode($dl->icdx) as $ix)
-                                                            @if ($ix->jenis_diagnosa == 'P')
-                                                                <tr>
-                                                                    <td>{{ $ix->diagnosa_icdx }}</td>
-                                                                    <td>{{ $dl->created_at }}</td>
-                                                                </tr>
-                                                            @endif
-                                                        @endforeach
-                                                    @endif
-                                                @endforeach
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-5">
-                            <div class="col-md-8">
-                                <div class="card card-stretch">
-                                    <div class="card-header">
-                                        <h6 class="card-title">Pemeriksaan Penunjang Terakhir</h6>
-                                        <div class="card-toolbar">
-                                            <button class="btn btn-sm btn-light">Lihat Semua</button>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <table class="table">
-                                            <thead>
-                                                <tr class="fw-bold fs-7 text-gray-800 border-bottom border-gray-200">
-                                                    <th width="60%">Pemeriksaan</th>
-                                                    <th>Jenis</th>
-                                                    <th>Tanggal</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($penunjang as $p)
-                                                    @if ($p->pemeriksaan_penunjang != 'null')
-                                                        <tr>
-
-                                                            <td>
-
-                                                                @if ($p->pemeriksaan_penunjang != 'null')
-                                                                    @foreach (json_decode($p->pemeriksaan_penunjang) as $pen)
-                                                                        @if ($p->jenis_penunjang == 'Lab')
-                                                                            @foreach ($lab as $l)
-                                                                                @if ($l->id == $pen->tindakan_lab)
-                                                                                    {{ $l->nama_pemeriksaan }},
-                                                                                @endif
-                                                                            @endforeach
-                                                                        @elseif($p->jenis_penunjang == 'Radiologi')
-                                                                            @foreach ($radiologi as $rad)
-                                                                                @if ($rad->id == $pen?->tindakan_rad)
-                                                                                    {{ $rad->nama_tindakan }},
-                                                                                @endif
-                                                                            @endforeach
-                                                                        @else
-                                                                            @foreach ($fisio_tindakan as $f)
-                                                                                @if ($f->id == $pen?->tindakan_fisio)
-                                                                                    {{ $f->nama_tarif }},
-                                                                                @endif
-                                                                            @endforeach
-                                                                        @endif
-                                                                    @endforeach
-                                                                @endif
-                                                            </td>
-                                                            <td>
-                                                                @if ($p->jenis_penunjang == 'Radiologi')
-                                                                    <span
-                                                                        class="badge badge-danger">{{ $p->jenis_penunjang }}</span>
-                                                                @elseif($p->jenis_penunjang == 'Lab')
-                                                                    <span
-                                                                        class="badge badge-warning">{{ $p->jenis_penunjang }}</span>
-                                                                @else
-                                                                    <span
-                                                                        class="badge badge-info">{{ $p->jenis_penunjang }}</span>
-                                                                @endif
-                                                            </td>
-                                                            <td>{{ $p->created_at }}</td>
-                                                        </tr>
-                                                    @endif
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card card-stretch">
-                                    <div class="card-header">
-                                        <h6 class="card-title">Kunjungan Terakhir</h6>
-                                        <div class="card-toolbar">
-
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="timeline timeline-border-dashed">
-
-                                            <div class="timeline-item">
-                                                <!--begin::Timeline line-->
-                                                {{-- <div class="timeline-line"></div> --}}
-                                                <!--end::Timeline line-->
-
-                                                <!--begin::Timeline icon-->
-                                                <div class="timeline-icon me-4">
-                                                    <i class="ki-duotone ki-book-square fs-2 text-gray-500">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                    </i>
-                                                </div>
-                                                <!--end::Timeline icon-->
-
-                                                <!--begin::Timeline content-->
-                                                <div class="timeline-content mb-10 mt-n2">
-                                                    <!--begin::Timeline heading-->
-                                                    <div class="overflow-auto pe-3">
-                                                        <!--begin::Title-->
-                                                        <div class="fs-7 text-muted  fw-semibold mb-2">
-                                                            Anamnesa
-                                                        </div>
-                                                        <!--end::Title-->
-
-                                                        <!--begin::Description-->
-                                                        <div class="d-flex align-items-center mt-1 fs-6">
-                                                            <!--begin::Info-->
-                                                            <div class="me-2 fs-6"> {{ $detail_rekap_medis?->anamnesa }}
-                                                            </div>
-                                                            <!--end::User-->
-                                                        </div>
-                                                        <!--end::Description-->
-                                                    </div>
-                                                    <!--end::Timeline heading-->
-                                                </div>
-                                                <!--end::Timeline content-->
-                                            </div>
-                                            <div class="timeline-item">
-                                                <!--begin::Timeline line-->
-                                                {{-- <div class="timeline-line"></div> --}}
-                                                <!--end::Timeline line-->
-
-                                                <!--begin::Timeline icon-->
-                                                <div class="timeline-icon me-4">
-                                                    <i class="ki-duotone ki-bandage fs-2 text-gray-500">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                    </i>
-                                                </div>
-                                                <!--end::Timeline icon-->
-
-                                                <!--begin::Timeline content-->
-                                                <div class="timeline-content mb-10 mt-n2">
-                                                    <!--begin::Timeline heading-->
-                                                    <div class="overflow-auto pe-2">
-                                                        <!--begin::Title-->
-                                                        <div class="fs-7 text-muted  fw-semibold mb-2">
-                                                            Diagnosa
-                                                        </div>
-                                                        <!--end::Title-->
-
-                                                        <!--begin::Description-->
-                                                        <div class="d-flex align-items-center mt-1 fs-6">
-                                                            <!--begin::Info-->
-                                                            <div class="me-2 fs-6"> {{ $detail_rekap_medis?->diagnosa }}
-                                                            </div>
-                                                            <!--end::User-->
-                                                        </div>
-                                                        <!--end::Description-->
-                                                    </div>
-                                                    <!--end::Timeline heading-->
-                                                </div>
-                                                <!--end::Timeline content-->
-                                            </div>
-                                            <div class="timeline-item">
-                                                <!--begin::Timeline line-->
-                                                {{-- <div class="timeline-line"></div> --}}
-                                                <!--end::Timeline line-->
-
-                                                <!--begin::Timeline icon-->
-                                                <div class="timeline-icon me-4">
-                                                    <i class="ki-duotone ki-capsule fs-2 text-gray-500">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                    </i>
-                                                </div>
-                                                <!--end::Timeline icon-->
-
-                                                <!--begin::Timeline content-->
-                                                <div class="timeline-content mb-10 mt-n2">
-                                                    <!--begin::Timeline heading-->
-                                                    <div class="overflow-auto pe-2">
-                                                        <!--begin::Title-->
-                                                        <div class="fs-7 text-muted  fw-semibold mb-2">
-                                                            Terapi Obat
-                                                        </div>
-                                                        <!--end::Title-->
-
-                                                        <!--begin::Description-->
-                                                        <div class="d-flex align-items-center mt-1 fs-6">
-                                                            <!--begin::Info-->
-                                                            <div class="me-2 fs-6">
-                                                                @if ($terapi_obat && json_decode($terapi_obat))
-                                                                    @foreach (json_decode($terapi_obat) as $to)
-                                                                        @foreach ($obat as $o)
-                                                                            @if ($o->id == $to->obat)
-                                                                                {{ $o->nama_obat }}
-                                                                            @endif
-                                                                        @endforeach
-                                                                    @endforeach
-                                                                @endif
-
-                                                            </div>
-                                                            <!--end::User-->
-                                                        </div>
-                                                        <!--end::Description-->
-                                                    </div>
-                                                    <!--end::Timeline heading-->
-                                                </div>
-                                                <!--end::Timeline content-->
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h6 class="card-title">Riwayat Kunjungan</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="col-md-12">
-                                            <table id="tbl-riwayat"
-                                                class="table align-middle table-hover table-striped table-row-dashed  gy-5 gs-7 rounded">
+                                    <div class="card-body pt-0">
+                                        @if(count($soap_icdx) > 0 || count($detail_rekap_medis_all) > 0)
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                                                 <thead>
-                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th>Jenis Rawat</th>
-                                                        <th>Jenis Bayar</th>
-                                                        <th>Kunjungan</th>
-                                                        <th class="d-none">Nama Poli / Spesialis</th>
-                                                        <th class="d-none">Dokter</th>
-                                                        <th>Tgl. Masuk</th>
-                                                        <th>Tgl. Pulang</th>
-                                                        <th>Status</th>
+                                                    <tr class="fw-bold text-muted bg-light">
+                                                        <th class="ps-4 rounded-start min-w-50px">Kode ICD-10</th>
+                                                        <th class="pe-4 rounded-end min-w-100px text-end">Tanggal</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody class="fs-7">
-
+                                                <tbody>
+                                                     @foreach ($soap_icdx as $icd)
+                                                        <tr>
+                                                            <td class="ps-4"><span class="badge badge-light-danger fw-bolder px-3 py-2">{{ $icd->icd10 }}</span></td>
+                                                            <td class="text-end text-muted pe-4 fw-semibold">{{ date('d M Y', strtotime($icd->tglmasuk)) }}</td>
+                                                        </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
                                         </div>
+                                        @else
+                                            <div class="d-flex flex-column align-items-center justify-content-center py-10">
+                                                <i class="ki-outline ki-document text-gray-300 fs-4x mb-3"></i>
+                                                <div class="text-gray-400 fw-bold">Belum ada riwayat ICD-10</div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- TAB 2: Profil Lengkap -->
+                    <div class="tab-pane fade" id="kt_tab_profile" role="tabpanel">
+                        <div class="row g-5 g-xl-8">
+                             <div class="col-xl-6">
+                                <div class="card card-flush h-100 shadow-sm">
+                                    <div class="card-header pt-5">
+                                        <h3 class="card-title fw-bold text-dark"><i class="ki-outline ki-profile-circle fs-2 me-2 text-primary"></i> Data Demografis</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-profile">
+                                            <tr><td>Tempat Lahir</td><td>{{ $pasien->tempat_lahir }}</td></tr>
+                                            <tr><td>Tanggal Lahir</td><td>{{ date('d M Y', strtotime($pasien->tgllahir)) }}</td></tr>
+                                            <tr><td>Agama</td><td>{{ $pasien->agama->agama ?? '-' }}</td></tr>
+                                            <tr><td>Status Nikah</td><td>{{ $pasien->status_pernikahan ?? '-' }}</td></tr> <!-- Assumption on field name -->
+                                            <tr><td>Pendidikan</td><td>{{ $pasien->pendidikan->pendidikan ?? '-' }}</td></tr>
+                                            <tr><td>Pekerjaan</td><td>{{ $pasien->pekerjaan->pekerjaan ?? '-' }}</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                             </div>
+                             <div class="col-xl-6">
+                                <div class="card card-flush h-100 shadow-sm">
+                                    <div class="card-header pt-5">
+                                        <h3 class="card-title fw-bold text-dark"><i class="ki-outline ki-map fs-2 me-2 text-primary"></i> Kontak & Alamat</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-profile">
+                                            <tr><td>No HP</td><td>{{ $pasien->nohp }}</td></tr>
+                                            <tr><td>Email</td><td>{{ $pasien->email ?? '-' }}</td></tr>
+                                            <tr><td>Alamat</td><td>{{ $pasien->alamat?->alamat ?? '-' }}</td></tr>
+                                            <tr><td>Kelurahan</td><td>{{ $pasien->alamat?->kelurahan ?? '-' }}</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                             </div>
+                              <div class="col-xl-6">
+                                <div class="card card-flush h-100 shadow-sm">
+                                    <div class="card-header pt-5">
+                                        <h3 class="card-title fw-bold text-dark"><i class="ki-outline ki-award fs-2 me-2 text-primary"></i> Data Kepangkatan</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-profile">
+                                             <tr><td>Kesatuan</td><td>{{ $pasien->kesatuan ?? '-' }}</td></tr>
+                                             <tr><td>Pangkat</td><td>{{ $pasien->pangkat ?? '-' }}</td></tr>
+                                             <tr><td>NRP</td><td>{{ $pasien->nrp ?? '-' }}</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                             </div>
+                              <div class="col-xl-6">
+                                <div class="card card-flush h-100 shadow-sm">
+                                    <div class="card-header pt-5">
+                                        <h3 class="card-title fw-bold text-dark"><i class="ki-outline ki-people fs-2 me-2 text-primary"></i> Penanggung Jawab</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-profile">
+                                             <tr><td>Nama</td><td>{{ $pasien->penanggung_jawab ?? '-' }}</td></tr>
+                                             <tr><td>Hubungan</td><td>{{ $pasien->hubungan_pj ?? '-' }}</td></tr>
+                                             <tr><td>No Telp</td><td>{{ $pasien->nohp_penanggungjawab ?? '-' }}</td></tr>
+                                             <tr><td>Alamat</td><td>{{ $pasien->alamat_penanggunjawab ?? '-' }}</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: Riwayat Kunjungan (The Big Table) -->
+                    <div class="tab-pane fade" id="kt_tab_history" role="tabpanel">
+                        <div class="card card-flush shadow-sm">
+                            <div class="card-header pt-5">
+                                <h3 class="card-title fw-bold">Semua Riwayat Kunjungan</h3>
+                                <div class="card-toolbar">
+                                    <button class="btn btn-sm btn-light-success me-2"><i class="ki-outline ki-file-down fs-4"></i> Export Excel</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="tbl-riwayat" class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                                        <thead>
+                                            <tr class="fw-bold text-muted bg-light">
+                                                <th class="ps-4 rounded-start min-w-100px">Jenis</th>
+                                                <th class="min-w-100px">Pembayaran</th>
+                                                <th class="min-w-150px">Poli / Dokter</th>
+                                                <th class="min-w-100px">Masuk</th>
+                                                <th class="min-w-100px">Pulang</th>
+                                                <th class="pe-4 rounded-end min-w-100px">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- DataTables Server Side -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: Penunjang -->
+                    <div class="tab-pane fade" id="kt_tab_penunjang" role="tabpanel">
+                        <div class="card card-flush shadow-sm">
+                            <div class="card-header pt-5">
+                                <h3 class="card-title fw-bold">Riwayat Lab & Radiologi</h3>
+                            </div>
+                            <div class="card-body">
+                                 <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                                    <thead>
+                                        <tr class="fw-bold text-muted bg-light">
+                                            <th class="ps-4 rounded-start">Jenis Pemeriksaan</th>
+                                            <th>Kategori</th>
+                                            <th>Tanggal</th>
+                                            <th class="text-end pe-4 rounded-end">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                         @foreach ($penunjang as $p)
+                                            @if ($p->pemeriksaan_penunjang != 'null')
+                                                <tr>
+                                                    <td class="ps-4 fw-bold text-gray-800">{{ $p->pemeriksaan_penunjang }}</td>
+                                                     <td>
+                                                        @if ($p->jenis_penunjang == 'Radiologi')
+                                                            <span class="badge badge-light-danger fw-bold">{{ $p->jenis_penunjang }}</span>
+                                                        @elseif($p->jenis_penunjang == 'Lab')
+                                                            <span class="badge badge-light-warning fw-bold">{{ $p->jenis_penunjang }}</span>
+                                                        @else
+                                                            <span class="badge badge-light-info fw-bold">{{ $p->jenis_penunjang }}</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-muted">{{ date('d M Y H:i', strtotime($p->created_at)) }}</td>
+                                                    <td class="text-end pe-4">
+                                                        <button class="btn btn-icon btn-sm btn-light-primary"><i class="ki-outline ki-eye fs-4"></i></button>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                        @if(count($penunjang) == 0)
+                                            <tr><td colspan="4" class="text-center text-muted py-5">
+                                                <i class="ki-outline ki-folder text-gray-300 fs-3x d-block mb-3"></i>
+                                                Tidak ada data penunjang
+                                            </td></tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modals -->
     <div class="modal fade" tabindex="-1" id="modal-dokter">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -643,179 +567,137 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Cetak Label -->
+    <div class="modal fade" tabindex="-1" id="modalCetakLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Cetak Label Pasien</h3>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ki-outline ki-cross fs-1"></i>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('pasien.cetak-label', $pasien->id) }}" method="GET" target="_blank">
+                        <div class="mb-5">
+                            <label class="form-label required">Jumlah Copy</label>
+                            <input type="number" name="copies" class="form-control" value="3" min="1" max="10">
+                            <div class="form-text">Jumlah stiker yang akan dicetak.</div>
+                        </div>
+                        <div class="mb-5">
+                            <label class="form-label">Ukuran Label</label>
+                            <select name="size" class="form-select">
+                                <option value="60x40">Label Medis (60x40mm)</option>
+                                <option value="standard">Standard (50x30mm)</option>
+                            </select>
+                            <div class="form-text">Pastikan printer label sudah dikonfigurasi ke ukuran kertas 60mm x 40mm.</div>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-light me-2" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary" onclick="$('#modalCetakLabel').modal('hide')">
+                                <i class="ki-outline ki-printer fs-2 me-1"></i> Cetak Sekarang
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
 @section('js')
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
-    <script>
-
-        function promptPassword() {
-            document.getElementById('kt_app_content').classList.add('blur-background');
-            Swal.fire({
-                title: 'Enter your password',
-                input: 'password',
-                inputAttributes: {
-                    autocapitalize: 'off',
-                    required: 'true'
-                },
-                showCancelButton: false,
-                confirmButtonText: 'Submit',
-                showLoaderOnConfirm: true,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                preConfirm: (password) => {
-                    if (!password) {
-                        Swal.showValidationMessage('Password is required');
-                        return false;
-                    } else {
-                        // Here you can add your AJAX request to send the password to the server
-                        return new Promise((resolve) => {
-                            $.ajax({
-                                url: '{{ route('pasien.check-password') }}',
-                                type: 'POST',
-                                data: {
-                                    _token: '{{ csrf_token() }}',
-                                    password: password,
-                                    pasien_id: "{{ $pasien->id }}"
-                                },
-                                success: function(response) {
-                                    console.log(response);
-                                    if (response.status === 'success') {
-                                        resolve(password);
-                                    } else {
-                                        Swal.showValidationMessage('Incorrect password');
-                                        resolve(false);
-                                    }
-                                },
-                                error: function() {
-                                    Swal.showValidationMessage('Request failed');
-                                    resolve(false);
-                                }
-                            });
-                        });
-                    }
-                }
-            }).then((result) => {
-                document.getElementById('kt_app_content').classList.remove('blur-background');
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: `Password submitted`
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
+<script>
+    // Password Prompt Logic (Security)
+    function promptPassword() {
+        document.getElementById('kt_app_content').classList.add('blur-background');
+        Swal.fire({
+            title: 'Verifikasi Identitas',
+            text: 'Masukkan kode akses / password anda',
+            icon: 'info',
+            input: 'password',
+            inputAttributes: { autocapitalize: 'off', required: 'true' },
+            showCancelButton: false,
+            confirmButtonText: 'Buka Data',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            customClass: { confirmButton: "btn btn-primary" },
+            preConfirm: (password) => {
+                if (!password) { Swal.showValidationMessage('Password wajib diisi'); return false; }
+                return new Promise((resolve) => {
+                    $.ajax({
+                        url: '{{ route('pasien.check-password') }}',
+                        type: 'POST',
+                        data: { _token: '{{ csrf_token() }}', password: password, pasien_id: "{{ $pasien->id }}" },
+                        success: function(response) {
+                            if (response.status === 'success') resolve(password);
+                            else { Swal.showValidationMessage('Password salah / Akses ditolak'); resolve(false); }
+                        },
+                        error: function() { Swal.showValidationMessage('Terjadi kesalahan server'); resolve(false); }
                     });
-                } else {
-                    // Reopen the prompt if the user tries to close it without submitting a password
-                    promptPassword();
-                }
-            });
-        }
-
-        // Call the function to prompt for password on page load
-        if ({!! $cek_credential !!} < 1) {
-            promptPassword();
-        }
-
-        $(function() {
-            $("#tbl-riwayat").DataTable({
-                "language": {
-                    "lengthMenu": "Show _MENU_",
-                },
-                "dom": "<'row'" +
-                    "<'col-sm-6 d-flex align-items-center justify-conten-start'l>" +
-                    "<'col-sm-6 d-flex align-items-center justify-content-end'f>" +
-                    ">" +
-
-                    "<'table-responsive'tr>" +
-
-                    "<'row'" +
-                    "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
-                    "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
-                    ">",
-                processing: true,
-                serverSide: true,
-                search: {
-                    return: true
-                },
-                ajax: '{{ url()->current() }}',
-                columns: [{
-                        data: 'jenis',
-                        name: 'rawat_jenis.jenis'
-                    },
-                    {
-                        data: 'bayar',
-                        name: 'rawat_bayar.bayar',
-                        render: function(data, type, row) {
-                            var sep = row.no_sep != null ?
-                                `<br><span class="badge badge-dark" style="cursor:pointer;" onclick="handleSepClick('${row.no_sep}')">${row.no_sep}</span>` :
-                                ``;
-                            return data + sep;
-                        }
-                    },
-                    {
-                        data: 'poli_dokter', // gunakan data gabungan untuk tampilan
-                        name: 'poli_dokter',
-                        render: function(data, type, row) {
-                            return `<a>${row.nama_dokter}</a><br> <span style="cursor-pointer" class="badge badge-primary">${row.poli}</span>`;
-                        }
-                    },
-                    {
-                        data: 'poli',
-                        name: 'poli.poli',
-                        visible: false, // sembunyikan kolom ini dari tampilan
-                        searchable: true // aktifkan pencarian pada kolom ini
-                    },
-                    {
-                        data: 'nama_dokter',
-                        name: 'dokter.nama_dokter',
-                        visible: false, // sembunyikan kolom ini dari tampilan
-                        searchable: true // aktifkan pencarian pada kolom ini
-                    },
-                    {
-                        data: 'tglmasuk',
-                        name: 'tglmasuk',
-                        render: function(data, type, row) {
-                            if (row.tglmasuk) {
-                                var datetime = row.tglmasuk.split(' ');
-                                return datetime[0] + '<br>' + datetime[1];
-                            } else {
-                                return '';
-                            }
-                        }
-                    },
-                    {
-                        data: 'tglpulang',
-                        name: 'tglpulang',
-                        render: function(data, type, row) {
-                            if (row.tglpulang) {
-                                var datetime = row.tglpulang.split(' ');
-                                return datetime[0] + '<br>' + datetime[1];
-                            } else {
-                                return '';
-                            }
-                        }
-                    },
-                    {
-                        data: 'status',
-                        name: 'rawat_status.status'
-                    }
-                ]
-            });
+                });
+            }
+        }).then((result) => {
+            document.getElementById('kt_app_content').classList.remove('blur-background');
+            if (result.isConfirmed) { Swal.fire({ icon:'success', title: 'Akses Diberikan', timer: 1000, showConfirmButton: false }); }
+            else promptPassword();
         });
+    }
 
-        function handleSepClick(sep) {
-            // alert("SEP clicked: " + sep);
-            $.ajax({
-                url: '{{ route('show-sep', '') }}' + '/' + sep,
-                type: 'GET',
-               
-                success: function(response) {
-                    $.unblockUI();
-                    $('#modal-hasil').html(response);
-                    $('#modal-dokter').modal('show');
-                },
-                error: function(xhr, status, error) {
-                    $.unblockUI();
-                    toastr.error(xhr.responseJSON.message || error);
-                }
-            });
-        }
-    </script>
+    if ({!! $cek_credential !!} < 1) { promptPassword(); }
+
+    // DataTable Riwayat
+    $(function() {
+        $("#tbl-riwayat").DataTable({
+            language: {
+                zeroRecords: "<div class='text-center py-5'>Tidak ada riwayat kunjungan</div>",
+                processing: "Memuat data...",
+                search: "",
+                searchPlaceholder: "Cari riwayat...",
+                paginate: { first: "First", last: "Last", next: "Next", previous: "Prev" }
+            },
+            processing: true,
+            serverSide: true,
+            ordering: false,
+            ajax: '{{ url()->current() }}',
+            columns: [
+                { data: 'jenis', name: 'rawat_jenis.jenis', render: function(data) { return `<span class="badge badge-light-primary fw-bold px-3 py-2">${data}</span>`; } },
+                { data: 'bayar', name: 'rawat_bayar.bayar', render: function(data, type, row) { 
+                    let badge = data.includes('BPJS') ? 'badge-light-success text-success' : 'badge-light-info text-info';
+                    let sepLink = row.no_sep ? `<div class="mt-2"><a href="javascript:void(0)" onclick="handleSepClick('${row.no_sep}')" class="badge badge-outline badge-primary hover-elevate-up" style="cursor:pointer"><i class="ki-outline ki-file fs-7 me-1"></i> ${row.no_sep}</a></div>` : '';
+                    return `<span class="badge ${badge} fw-bolder">${data}</span>${sepLink}`; 
+                }},
+                { data: 'poli_dokter', name: 'poli_dokter', render: function(data, type, row) {
+                    return `<div class="d-flex flex-column"><a href="#" class="fw-bold text-gray-800 text-hover-primary fs-6">${row.nama_dokter}</a><span class="text-muted fw-semibold fs-7">${row.poli}</span></div>`;
+                }},
+                { data: 'tglmasuk', name: 'tglmasuk' },
+                { data: 'tglpulang', name: 'tglpulang' },
+                { data: 'status', name: 'rawat_status.status', render: function(data) {
+                     let color = 'success';
+                     if(data && data.toLowerCase().includes('rawat')) color = 'warning';
+                     if(data && data.toLowerCase().includes('rujuk')) color = 'danger';
+                     return `<span class="badge badge-light-${color} fw-bold px-3">${data}</span>`;
+                }}
+            ]
+        });
+    });
+
+    function handleSepClick(sep) {
+        $.blockUI({ message: '<div class="d-flex align-items-center justify-content-center py-3"><div class="spinner-border text-primary me-3"></div> Loading Data SEP...</div>', css: { backgroundColor: 'transparent', border:'none', color: '#fff' } });
+        $.ajax({
+            url: '{{ route('show-sep', '') }}' + '/' + sep,
+            type: 'GET',
+            success: function(response) {
+                $.unblockUI();
+                $('#modal-hasil').html(response);
+                $('#modal-dokter').modal('show');
+            },
+            error: function(xhr) {
+                $.unblockUI();
+                toastr.error('Gagal memuat SEP');
+            }
+        });
+    }
+</script>
 @endsection

@@ -11,8 +11,7 @@ use App\Models\RekapMedis\Kategori;
 use App\Models\RekapMedis\DetailRekapMedis;
 use App\Models\Pasien\Pasien;
 use App\Models\Rawat;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
+use App\Traits\LogsActivity;
 use Auth;
 
 class RekapMedis extends Model

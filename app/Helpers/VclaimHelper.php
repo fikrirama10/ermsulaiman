@@ -13,6 +13,7 @@ use App\Models\Pasien\Pasien;
 use App\Models\Gizi\AsuhanGizi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Services\Bpjs\VclaimLoggingService;
 
 class VclaimHelper
 {
@@ -167,13 +168,19 @@ class VclaimHelper
     #get peserta BPJS
     public static function getPesertaBPJS($noKartu, $tgl)
     {
+        $start = microtime(true);
+        $url_req = '';
         try {
             $helper = new VclaimHelper();
             $token = $helper->getToken();
+            $url_req = $helper->url . '/Peserta/nokartu/' . $noKartu . '/tglSEP/' . $tgl;
 
             $response = Http::withHeaders($token['signature'])
                 ->withOptions(["verify" => $token['ssl']])
-                ->get($helper->url . '/Peserta/nokartu/' . $noKartu . '/tglSEP/' . $tgl);
+                ->get($url_req);
+
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            VclaimLoggingService::log($url_req, 'GET', $response->body(), $response->status(), $duration, 'Get Peserta BPJS');
 
             if ($response['metaData']['code'] == '200') {
                 $data_response = VclaimHelper::stringDecrypt($token['key'], $response['response']);
@@ -184,7 +191,8 @@ class VclaimHelper
                 return $response['metaData'];
             }
         } catch (\Exception $e) {
-            // Handle exception, log or rethrow as needed
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            VclaimLoggingService::log($url_req, 'GET', $e->getMessage(), '500', $duration, 'Get Peserta BPJS Error');
             return [
                 'error' => $e->getMessage(),
             ];
@@ -193,13 +201,19 @@ class VclaimHelper
     #get peserta NIK
     public static function getPesertaNIK($nik, $tgl)
     {
+        $start = microtime(true);
+        $url_req = '';
         try {
             $helper = new VclaimHelper();
             $token = $helper->getToken();
+            $url_req = $helper->url . '/Peserta/nik/' . $nik . '/tglSEP/' . $tgl;
 
             $response = Http::withHeaders($token['signature'])
                 ->withOptions(["verify" => $token['ssl']])
-                ->get($helper->url . '/Peserta/nik/' . $nik . '/tglSEP/' . $tgl);
+                ->get($url_req);
+            
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            VclaimLoggingService::log($url_req, 'GET', $response->body(), $response->status(), $duration, 'Get Peserta NIK');
 
             if ($response['metaData']['code'] == '200') {
                 $data_response = VclaimHelper::stringDecrypt($token['key'], $response['response']);
@@ -210,7 +224,8 @@ class VclaimHelper
                 return $response['metaData'];
             }
         } catch (\Exception $e) {
-            // Handle exception, log or rethrow as needed
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            VclaimLoggingService::log($url_req, 'GET', $e->getMessage(), '500', $duration, 'Get Peserta NIK Error');
             return [
                 'error' => $e->getMessage(),
             ];
@@ -224,13 +239,19 @@ class VclaimHelper
     }
     public static function getDokter($jenis_layanan, $tglPelayanan, $spesialis)
     {
+        $start = microtime(true);
+        $url_req = '';
         try {
             $helper = new VclaimHelper();
             $token = $helper->getToken();
+            $url_req = $helper->url . '/referensi/dokter/pelayanan/'.$jenis_layanan.'/tglPelayanan/'.$tglPelayanan.'/Spesialis/'.$spesialis;
 
             $response = Http::withHeaders($token['signature'])
                 ->withOptions(["verify" => $token['ssl']])
-                ->get($helper->url . '/referensi/dokter/pelayanan/'.$jenis_layanan.'/tglPelayanan/'.$tglPelayanan.'/Spesialis/'.$spesialis);
+                ->get($url_req);
+
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            VclaimLoggingService::log($url_req, 'GET', $response->body(), $response->status(), $duration, 'Get Referensi Dokter');
 
             if ($response['metaData']['code'] == '200') {
                 $data_response = VclaimHelper::stringDecrypt($token['key'], $response['response']);
@@ -241,7 +262,8 @@ class VclaimHelper
                 return $response['metaData'];
             }
         } catch (\Exception $e) {
-            // Handle exception, log or rethrow as needed
+             $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            VclaimLoggingService::log($url_req, 'GET', $e->getMessage(), '500', $duration, 'Get Referensi Dokter Error');
             return [
                 'error' => $e->getMessage(),
             ];

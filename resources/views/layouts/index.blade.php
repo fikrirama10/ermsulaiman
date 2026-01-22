@@ -22,6 +22,147 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--end::Global Stylesheets Bundle-->
+    <style>
+        /* Helper Menu Styles */
+        .helper-menu {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 100;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .helper-menu:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .helper-menu.position-top-left {
+            top: 80px;
+            left: 20px;
+            right: auto;
+        }
+
+        .helper-menu.position-top-right {
+            top: 80px;
+            right: 20px;
+            left: auto;
+        }
+
+        .helper-menu.position-bottom-left {
+            top: auto;
+            bottom: 20px;
+            left: 20px;
+            right: auto;
+        }
+
+        .helper-menu.position-bottom-right {
+            top: auto;
+            bottom: 20px;
+            right: 20px;
+            left: auto;
+        }
+
+        .helper-menu.position-middle-left {
+            top: 50%;
+            left: 20px;
+            right: auto;
+            transform: translateY(-50%);
+        }
+
+        .helper-menu.position-middle-right {
+            top: 50%;
+            right: 20px;
+            left: auto;
+            transform: translateY(-50%);
+        }
+
+        .helper-toggle {
+            background: none;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            color: #009ef7;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 4px;
+        }
+
+        .helper-toggle:hover {
+            background-color: #f1faff;
+        }
+
+        .helper-toggle span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .helper-items {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .helper-menu.show .helper-items {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .helper-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: #5e6278;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            white-space: nowrap;
+        }
+
+        .helper-item:hover {
+            background-color: #f1faff;
+            color: #009ef7;
+            transform: translateX(4px);
+        }
+
+        .helper-item svg {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .helper-item span {
+            white-space: nowrap;
+        }
+
+        .helper-divider {
+            height: 1px;
+            background-color: #f1f5f9;
+            margin: 8px 0;
+        }
+
+        .helper-label {
+            font-size: 0.65rem;
+            color: #a1a5b7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            padding: 8px 12px 4px;
+        }
+    </style>
     @yield('css')
 </head>
 <!--end::Head-->
@@ -107,6 +248,42 @@
 
         // Jalankan pertama kali
         updateDateTime();
+
+        // Helper Menu Toggle
+        let helperMenuOpen = false;
+
+        function toggleHelperMenu() {
+            const menu = document.getElementById('helperMenu');
+            if (!menu) return;
+
+            const btn = menu.querySelector('.helper-toggle svg');
+
+            helperMenuOpen = !helperMenuOpen;
+
+            if (helperMenuOpen) {
+                menu.classList.add('show');
+                // Change to X icon
+                btn.innerHTML = `
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                `;
+            } else {
+                menu.classList.remove('show');
+                // Change back to hamburger icon
+                btn.innerHTML = `
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                `;
+            }
+        }
+
+        // Close helper menu when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.helper-menu').length && helperMenuOpen) {
+                toggleHelperMenu();
+            }
+        });
 
     </script>
     <!--end::Global Javascript Bundle-->

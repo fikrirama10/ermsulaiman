@@ -11,6 +11,7 @@ use App\Models\Pasien\Pasien;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\SatusehatAuthHelper;
 use Illuminate\Support\Facades\Http;
+use App\Services\Satusehat\SatusehatLoggingService;
 
 class SatusehatResourceHelper
 {
@@ -25,39 +26,64 @@ class SatusehatResourceHelper
     #Practitioner
     #NIK
     public static function practitioner_nik($nik){
-        $get_token = SatusehatAuthHelper::generate_token();
-        $token = $get_token['access_token'];
-        $url = env('PROD_BASE_URL_SS');
-        // return $url;
-        $dokter = Dokter::where('nik',$nik)->first();
-        $response = Http::withOptions(["verify" => SatusehatAuthHelper::ssl()])
-        ->withHeaders([
-            'Authorization' => 'Bearer '.$token,
-        ])
-        ->get($url.'/Practitioner?identifier=https://fhir.kemkes.go.id/id/nik|'.$nik);
-        // if($dokter)
-        if($response['total'] > 0){
-            if($dokter){
-                $dokter->kode_ihs = $response['entry'][0]['resource']['id'];
-                $dokter->save();
+        $start = microtime(true);
+        try {
+            $get_token = SatusehatAuthHelper::generate_token();
+            $token = $get_token['access_token'];
+            $url = env('PROD_BASE_URL_SS');
+            $full_url = $url.'/Practitioner?identifier=https://fhir.kemkes.go.id/id/nik|'.$nik;
+            
+            $dokter = Dokter::where('nik',$nik)->first();
+            $response = Http::withOptions(["verify" => SatusehatAuthHelper::ssl()])
+            ->withHeaders([
+                'Authorization' => 'Bearer '.$token,
+            ])
+            ->get($full_url);
+
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            SatusehatLoggingService::log($full_url, 'GET', $response->body(), $response->status(), $duration, 'Practitioner By NIK');
+
+            // if($dokter)
+            if(isset($response['total']) && $response['total'] > 0){
+                if($dokter){
+                    $dokter->kode_ihs = $response['entry'][0]['resource']['id'];
+                    $dokter->save();
+                }
             }
+            return $response->json();
+        } catch (\Exception $e) {
+             $duration = round((microtime(true) - $start) * 1000) . 'ms';
+             SatusehatLoggingService::log(env('PROD_BASE_URL_SS').'/Practitioner', 'GET', $e->getMessage(), '500', $duration, 'Practitioner By NIK Error');
+             return ['error' => $e->getMessage()];
         }
-        return $response->json();
     }
 
     #Search Name, Gender, Birthdate
     public static function practitioner_search($name, $gender, $birthdate){
-        $get_token = SatusehatAuthHelper::generate_token();
-        $token = $get_token['access_token'];
-        $url = env('PROD_BASE_URL_SS');
-        // return $url;
-        $response = Http::withOptions(["verify" => SatusehatAuthHelper::ssl()])
-        ->withHeaders([
-            'Authorization' => 'Bearer '.$token,
-        ])
-        ->get($url.'/Practitioner?name='.$name.'&gender='.$gender.'&birthdate='.$birthdate);
+        $start = microtime(true);
+        $full_url = '';
+        try{
+            $get_token = SatusehatAuthHelper::generate_token();
+            $token = $get_token['access_token'];
+            $url = env('PROD_BASE_URL_SS');
+            $full_url = $url.'/Practitioner?name='.$name.'&gender='.$gender.'&birthdate='.$birthdate;
 
-        return $response->json();
+            // return $url;
+            $response = Http::withOptions(["verify" => SatusehatAuthHelper::ssl()])
+            ->withHeaders([
+                'Authorization' => 'Bearer '.$token,
+            ])
+            ->get($full_url);
+            
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            SatusehatLoggingService::log($full_url, 'GET', $response->body(), $response->status(), $duration, 'Practitioner Search');
+
+            return $response->json();
+        } catch(\Exception $e) {
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            SatusehatLoggingService::log($full_url, 'GET', $e->getMessage(), '500', $duration, 'Practitioner Search Error');
+            return ['error' => $e->getMessage()];
+        }
     }
 
     #Practitioner - By ID

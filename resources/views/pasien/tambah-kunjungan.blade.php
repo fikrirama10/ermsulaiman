@@ -94,7 +94,7 @@
                                         </div>
                                     </div>
                                     @endif
-                                   
+
                                     <!--begin::Label-->
                                     <label class="col-lg-4 fw-semibold text-muted">Nama Lengkap</label>
                                     <!--end::Label-->
@@ -487,14 +487,14 @@
                     <div class="alert alert-dismissible bg-light-success border border-success border-3 d-flex flex-column flex-sm-row w-100 p-5 mb-10">
                         <!--begin::Icon-->
                         <i class="ki-duotone ki-pencil fs-2hx text-success me-4 mb-5 mb-sm-0"><span class="path1"></span><span class="path2"></span></i>
-    
+
                         <!--begin::Content-->
                         <div class="d-flex flex-column pe-0 pe-sm-10">
                             <h5 class="mb-1">General Consent sudah disetujui</h5>
                             <span>Pasien / Keluarga pasien sudah menyetujui general consent</span>
                         </div>
                         <!--end::Content-->
-    
+
                         <!--begin::Close-->
                         <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
                             <i class="ki-duotone ki-cross fs-1 text-success"><span class="path1"></span><span class="path2"></span></i>                    </button>
@@ -504,7 +504,7 @@
                     @else
                     <button type="button" class="btn btn-primary" id="btn-setuju-consent">Setuju</button>
                     @endif
-                    
+
                 </div>
             </div>
         </div>
@@ -524,252 +524,465 @@
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
     <script>
-        //forminsert
-        $(document).ready(function() {
+        // ==================== UTILITY FUNCTIONS ====================
+
+        // Block UI dengan loading message
+        const showLoading = (message = 'Loading ...') => {
+            $.blockUI({
+                message: `<i class="fa fa-spinner fa-spin"></i> ${message}`,
+                css: {
+                    border: 'none',
+                    padding: '15px',
+                    backgroundColor: '#000',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .5,
+                    color: '#fff'
+                }
+            });
+        };
+
+        // Block UI untuk elemen tertentu
+        const showElementLoading = (selector, message = 'Menyimpan Data ...') => {
+            $(selector).block({
+                message: `<i class="fa fa-spinner fa-spin"></i> ${message}`,
+                css: {
+                    border: 'none',
+                    padding: '15px',
+                    backgroundColor: '#000',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .5,
+                    color: '#fff'
+                }
+            });
+        };
+
+        // Hide loading
+        const hideLoading = () => $.unblockUI();
+        const hideElementLoading = (selector) => $(selector).unblock();
+
+        // Setup button indicator
+        const setButtonLoading = (button, isLoading) => {
+            if (isLoading) {
+                button.setAttribute('data-kt-indicator', 'on');
+                button.disabled = true;
+            } else {
+                button.removeAttribute('data-kt-indicator');
+                button.disabled = false;
+            }
+        };
+
+        // Konfirmasi simpan data dengan SweetAlert
+        const confirmSave = (title = 'Simpan Data', text = 'Apakah Anda yakin simpan data?') => {
+            return Swal.fire({
+                title: title,
+                text: text,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Simpan Data',
+                cancelButtonText: 'Tidak'
+            });
+        };
+
+        // Generic AJAX request handler
+        const ajaxRequest = (options) => {
+            return $.ajax({
+                type: options.method || 'GET',
+                url: options.url,
+                data: options.data || {},
+                beforeSend: options.beforeSend || (() => showLoading(options.loadingMessage)),
+                success: options.success,
+                error: (xhr, status, error) => {
+                    hideLoading();
+                    const errorMessage = xhr.responseJSON?.message || error;
+                    toastr.error(errorMessage);
+                    if (options.error) options.error(xhr, status, error);
+                }
+            });
+        };
+
+        // HTML untuk General Consent Success Alert
+        const getConsentSuccessAlert = () => {
+            return `<div class="alert alert-dismissible bg-light-success border border-success border-3 d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+                <i class="ki-duotone ki-pencil fs-2hx text-success me-4 mb-5 mb-sm-0">
+                    <span class="path1"></span><span class="path2"></span>
+                </i>
+                <div class="d-flex flex-column pe-0 pe-sm-10">
+                    <h5 class="mb-1">General Consent sudah disetujui</h5>
+                    <span>Pasien / Keluarga pasien sudah menyetujui general consent</span>
+                </div>
+                <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
+                    <i class="ki-duotone ki-cross fs-1 text-success"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>`;
+        };
+
+        // ==================== FORM VALIDATION SETUP ====================
+
+        const setupFormValidation = () => {
             const form_consent = document.getElementById('form-consent');
             const form = document.getElementById('formInputKunjungan');
-            var validator_consent = FormValidation.formValidation(
-                form_consent, {
-                    fields: {
-                        'penanggung_jawab': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Nama Penanggung Jawab harus diisi'
-                                }
-                            }
-                        },
-                    },
-                    plugins: {
-                        trigger: new FormValidation.plugins.Trigger(),
-                        bootstrap: new FormValidation.plugins.Bootstrap5({
-                            rowSelector: '.fv-row',
-                            eleInvalidClass: '',
-                            eleValidClass: ''
-                        })
-                    }
+
+            const validationConfig = {
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
                 }
-            );
+            };
 
-            var validator = FormValidation.formValidation(
-                form, {
-                    fields: {
-                        'icdx': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'icdx Harus diisi'
-                                }
-                            }
-                        },
-                        'no_surat': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'no_surat Harus diisi'
-                                }
-                            }
-                        },
-                        'txtnmdpjp': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'txtnmdpjp Harus diisi'
-                                }
-                            }
-                        },
-                        'status_kecelakaan': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'status_kecelakaan Harus diisi'
-                                }
-                            }
-                        },
-                        'tglmasuk': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Tgl Masuk Harus diisi'
-                                }
-                            }
-                        },
-                        'penanggung': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Penanggung Harus diisi'
-                                }
-                            }
-                        },
-                        'jenis_rawat': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Jenis Rawat Harus diisi'
-                                }
-                            }
-                        },
-                        'idpoli': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Poliklinik Harus diisi'
-                                }
-                            }
-                        },
-                        'dokter': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Dokter Harus diisi'
-                                }
-                            }
-                        },
-                    },
-
-                    plugins: {
-                        trigger: new FormValidation.plugins.Trigger(),
-                        bootstrap: new FormValidation.plugins.Bootstrap5({
-                            rowSelector: '.fv-row',
-                            eleInvalidClass: '',
-                            eleValidClass: ''
-                        })
+            const validator_consent = FormValidation.formValidation(form_consent, {
+                fields: {
+                    'penanggung_jawab': {
+                        validators: {
+                            notEmpty: { message: 'Nama Penanggung Jawab harus diisi' }
+                        }
                     }
-                }
-            );
+                },
+                ...validationConfig
+            });
 
+            const validator = FormValidation.formValidation(form, {
+                fields: {
+                    'icdx': {
+                        validators: { notEmpty: { message: 'icdx Harus diisi' } }
+                    },
+                    'no_surat': {
+                        validators: { notEmpty: { message: 'no_surat Harus diisi' } }
+                    },
+                    'txtnmdpjp': {
+                        validators: { notEmpty: { message: 'txtnmdpjp Harus diisi' } }
+                    },
+                    'status_kecelakaan': {
+                        validators: { notEmpty: { message: 'status_kecelakaan Harus diisi' } }
+                    },
+                    'tglmasuk': {
+                        validators: { notEmpty: { message: 'Tgl Masuk Harus diisi' } }
+                    },
+                    'penanggung': {
+                        validators: { notEmpty: { message: 'Penanggung Harus diisi' } }
+                    },
+                    'jenis_rawat': {
+                        validators: { notEmpty: { message: 'Jenis Rawat Harus diisi' } }
+                    },
+                    'idpoli': {
+                        validators: { notEmpty: { message: 'Poliklinik Harus diisi' } }
+                    },
+                    'dokter': {
+                        validators: { notEmpty: { message: 'Dokter Harus diisi' } }
+                    }
+                },
+                ...validationConfig
+            });
+
+            return { validator_consent, validator, form_consent, form };
+        };
+
+        // ==================== CONSENT FORM HANDLER ====================
+
+        const handleConsentSubmit = (validator_consent, form_consent) => {
             const submitConsent = document.getElementById('btn-setuju-consent');
+
             submitConsent.addEventListener('click', function(e) {
-                // Prevent default button action
                 e.preventDefault();
 
-                // Validate form before submit
-                if (validator_consent) {
-                    validator_consent.validate().then(function(status) {
-                        console.log('validated!');
+                if (!validator_consent) return;
 
-                        if (status == 'Valid') {
-                            Swal.fire({
-                                title: 'Simpan Data General Consent',
-                                text: "Apakah Anda yakin simpan data ? ",
-                                icon: 'info',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: 'Ya, Simpan Data',
-                                cancelButtonText: 'Tidak'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    submitButton.setAttribute(
-                                        'data-kt-indicator',
-                                        'on');
+                validator_consent.validate().then(function(status) {
+                    if (status !== 'Valid') return;
 
-                                    // Disable button to avoid multiple click
-                                    submitButton.disabled = true;
+                    confirmSave('Simpan Data General Consent').then((result) => {
+                        if (!result.isConfirmed) return;
 
-                                    // Simulate form submission. For more info check the plugin's official documentation: https://sweetalert2.github.io/
+                        const formData = $(form_consent).serialize();
+                        const url = form_consent.getAttribute('action');
+                        const method = form_consent.getAttribute('method');
 
-                                    // var formData = form.closest('form');
-                                    var formDataFix2 = $(form_consent).serialize();
-                                 
-                                    var url = form_consent.getAttribute('action');
-                                    var method = form_consent.getAttribute('method');
-                                    $.ajax({
-                                        type: method,
-                                        url: url, // Replace with your server endpoint
-                                        data: formDataFix2,
-                                        beforeSend: function() {
-                                            $('#kt_block_ui_4_target_consent').block({
-                                                message: '<i class="fa fa-spinner fa-spin"></i> Menyimpan Data ...',
-                                                css: {
-                                                    border: 'none',
-                                                    padding: '15px',
-                                                    backgroundColor: '#000',
-                                                    '-webkit-border-radius': '10px',
-                                                    '-moz-border-radius': '10px',
-                                                    opacity: .5,
-                                                    color: '#fff'
-                                                }
-                                            });
-                                        },
-                                        success: function(response) {
-                                            // if (response.error) {
-                                            //     toastr.error(response.error);
-                                            //     return false
-                                            // }
-                                            // $.unblockUI();
-                                            // submitButton.disabled =false;
-                                            if (response.status == 'success') {
-                                                $('#kt_block_ui_4_target_consent').unblock()
-                                                $('#btn-setuju-consent').addClass('d-none');
-                                                $('#general_concent').modal('hide');
-                                                $('#consent').html(` <div class="alert alert-dismissible bg-light-success border border-success border-3 d-flex flex-column flex-sm-row w-100 p-5 mb-10">
-                        <!--begin::Icon-->
-                        <i class="ki-duotone ki-pencil fs-2hx text-success me-4 mb-5 mb-sm-0"><span class="path1"></span><span class="path2"></span></i>
-    
-                        <!--begin::Content-->
-                        <div class="d-flex flex-column pe-0 pe-sm-10">
-                            <h5 class="mb-1">General Consent sudah disetujui</h5>
-                            <span>Pasien / Keluarga pasien sudah menyetujui general consent</span>
-                        </div>
-                        <!--end::Content-->
-    
-                        <!--begin::Close-->
-                        <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
-                            <i class="ki-duotone ki-cross fs-1 text-success"><span class="path1"></span><span class="path2"></span></i>                    </button>
-                        <!--end::Close-->
-                    </div>`);
+                        ajaxRequest({
+                            method: method,
+                            url: url,
+                            data: formData,
+                            beforeSend: () => showElementLoading('#kt_block_ui_4_target_consent', 'Menyimpan Data ...'),
+                            success: (response) => {
+                                hideElementLoading('#kt_block_ui_4_target_consent');
 
-                                            }
-                                            toastr.success(response.message);
-                                            
-                                            console.log(response);
-                                        },
-                                        error: function(error) {
-                                            $('#kt_block_ui_4_target_consent').unblock();
-                                            toastr.success(error);
-                                            console.log('Error submitting form:',error);
-                                        }
-                                    });
+                                if (response.status === 'success') {
+                                    $('#btn-setuju-consent').addClass('d-none');
+                                    $('#general_concent').modal('hide');
+                                    $('#consent').html(getConsentSuccessAlert());
                                 }
-                            });
-                        }
+
+                                toastr.success(response.message);
+                            },
+                            error: (xhr, status, error) => {
+                                hideElementLoading('#kt_block_ui_4_target_consent');
+                                console.error('Error submitting consent:', error);
+                            }
+                        });
+                    });
+                });
+            });
+        };
+
+        // ==================== SEP WIZARD FUNCTIONS ====================
+
+        // Prompt untuk tujuan kunjungan
+        const showTujuanKunjunganPrompt = () => {
+            return Swal.fire({
+                title: 'Apa tujuan kunjungan ini?',
+                html: `<select id="firstSelect" class="form-select">
+                    <option value="0" data-value="" disabled selected>-- Apa tujuan kunjungan ini? --</option>
+                    <option value="1" data-value="Prosedur">Prosedur</option>
+                    <option value="2" data-value="Konsul Dokter">Konsul Dokter</option>
+                </select>`,
+                preConfirm: () => {
+                    const selectedValue = $('#firstSelect').val();
+                    const selectedText = $('#firstSelect option:selected').data('value');
+                    if (!selectedValue) {
+                        Swal.showValidationMessage('Please select an option');
+                    }
+                    return { selectedValue, selectedText };
+                }
+            });
+        };
+
+        // Prompt untuk alasan tidak selesai
+        const showAlasanTidakSelesaiPrompt = () => {
+            return Swal.fire({
+                title: 'Mengapa pelayanan ini tidak diselesaikan pada hari yang sama sebelumnya?',
+                html: `<select id="secondSelect" class="form-select">
+                    <option value="" disabled selected>-- Mengapa pelayanan ini tidak diselesaikan pada hari yang sama sebelumnya? --</option>
+                    <option value="1">Poli spesialis tidak tersedia pada hari sebelumnya</option>
+                    <option value="2">Jam Poli telah berakhir pada hari sebelumnya</option>
+                    <option value="3">Dokter Spesialis yang dimaksud tidak praktek pada hari sebelumnya</option>
+                    <option value="4">Atas Instruksi RS</option>
+                    <option value="5">Tujuan Kontrol</option>
+                </select>`,
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                preConfirm: () => {
+                    const selectedValue = $('#secondSelect').val();
+                    if (!selectedValue) {
+                        Swal.showValidationMessage('Please select an option');
+                    }
+                    return selectedValue;
+                }
+            });
+        };
+
+        // Prompt untuk prosedur berkelanjutan
+        const showProsedurBerkelanjutanPrompt = () => {
+            return Swal.fire({
+                title: 'Pilih Prosedur Berkelanjutan',
+                html: `<select id="prosedur" name="prosedur" class="form-control">
+                    <option value="">-- Prosedur Berkelanjutan --</option>
+                    <option value="1">Radioterapi</option>
+                    <option value="2">Kemoterapi</option>
+                    <option value="3">Rehabilitasi Medik</option>
+                    <option value="4">Rehabilitasi Psikososial</option>
+                    <option value="5">Transfusi Darah</option>
+                    <option value="6">Pelayanan Gigi</option>
+                    <option value="12">HEMODIALISA</option>
+                </select>`,
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                preConfirm: () => {
+                    const selectedValue = $('#prosedur').val();
+                    if (!selectedValue) {
+                        Swal.showValidationMessage('Please select an option');
+                    }
+                    return selectedValue;
+                }
+            });
+        };
+
+        // Prompt untuk prosedur tidak berkelanjutan
+        const showProsedurTidakBerkelanjutanPrompt = () => {
+            return Swal.fire({
+                title: 'Pilih Prosedur Tidak Berkelanjutan',
+                html: `<select id="nonprosedur" name="nonprosedur" class="form-control">
+                    <option value="">-- Prosedur tidak berkelanjutan --</option>
+                    <option value="7">Laboratorium</option>
+                    <option value="8">USG</option>
+                    <option value="9">Farmasi</option>
+                    <option value="10">Lain-Lain</option>
+                    <option value="11">MRI</option>
+                </select>`,
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                preConfirm: () => {
+                    const selectedValue = $('#nonprosedur').val();
+                    if (!selectedValue) {
+                        Swal.showValidationMessage('Please select an option');
+                    }
+                    return selectedValue;
+                }
+            });
+        };
+
+        // Prompt untuk berkelanjutan ya/tidak
+        const showBerkelanjutanPrompt = (selections) => {
+            return Swal.fire({
+                title: 'Apakah Kunjungan ini untuk prosedur dan terapi berkelanjutan?',
+                html: `<button id="yesButton" class="swal2-confirm swal2-styled" style="display: inline-block; margin-right: 10px;">Ya</button>
+                    <button id="noButton" class="swal2-cancel swal2-styled" style="display: inline-block;">Tidak</button>`,
+                showCancelButton: false,
+                showConfirmButton: false,
+                didRender: () => {
+                    $('#yesButton').on('click', () => {
+                        selections.prosedur = 1;
+                        Swal.close();
+                        showProsedurBerkelanjutanPrompt().then((result) => {
+                            if (result.isConfirmed) {
+                                selections.prosedurBerkelanjutan = result.value;
+                                return submitFormData(selections);
+                            }
+                        });
+                    });
+
+                    $('#noButton').on('click', () => {
+                        selections.prosedur = 0;
+                        Swal.close();
+                        showProsedurTidakBerkelanjutanPrompt().then((result) => {
+                            if (result.isConfirmed) {
+                                selections.prosedurTidakBerkelanjutan = result.value;
+                                return submitFormData(selections);
+                            }
+                        });
                     });
                 }
             });
+        };
 
+        // Submit form data dengan selections
+        const submitFormData = (selections = {}) => {
+            const form = document.getElementById('formInputKunjungan');
             const submitButton = document.getElementById('button-simpan');
-            submitButton.addEventListener(
-                'click',
-                function(e) {
-                    // Prevent default button action
-                    var no_surat = $('#no_surat').val();
-                    var is_rujukan = $('#is_rujukan').val();
 
-                    e.preventDefault();
+            return confirmSave().then((result) => {
+                if (!result.isConfirmed) return;
 
-                    // Validate form before submit
-                    if (validator) {
-                        validator.validate().then(function(status) {
-                            console.log('validated!');
+                setButtonLoading(submitButton, true);
 
-                            if (status == 'Valid') {
+                let formData = $(form).serialize();
 
-                                if (is_rujukan) {
-                                    let selections = {
-                                        tujuanKunjungan: '',
-                                        alasanTidakSelesai: '',
-                                        prosedur: '',
-                                        prosedurBerkelanjutan: '',
-                                        prosedurTidakBerkelanjutan: ''
-                                    };
-                                    if (no_surat) {
-                                        Swal.fire({
-                                            title: 'Apa tujuan kunjungan ini?',
-                                            html: '<select id="firstSelect" class="form-select">' +
-                                                '<option value="0" data-value="" disabled selected>-- Apa tujuan kunjungan ini? --</option>' +
-                                                '<option value="1" data-value="Prosedur">Prosedur</option>' +
-                                                '<option value="2" data-value="Konsul Dokter">Konsul Dokter</option>' +
-                                                '</select>',
-                                            preConfirm: () => {
-                                                const selectedValue = $('#firstSelect')
-                                                    .val();
-                                                const selectedText = $(
-                                                        '#firstSelect option:selected')
-                                                    .data(
-                                                        'value');
-                                                if (!selectedValue) {
+                // Tambahkan selections jika ada
+                if (Object.keys(selections).length > 0) {
+                    formData += `&tujuanKunjungan=${selections.tujuanKunjungan || ''}`;
+                    formData += `&alasanTidakSelesai=${selections.alasanTidakSelesai || ''}`;
+                    formData += `&prosedur=${selections.prosedur || ''}`;
+                    formData += `&prosedurTidakBerkelanjutan=${selections.prosedurTidakBerkelanjutan || ''}`;
+                    formData += `&prosedurBerkelanjutan=${selections.prosedurBerkelanjutan || ''}`;
+                }
+
+                const url = form.getAttribute('action');
+                const method = form.getAttribute('method');
+
+                ajaxRequest({
+                    method: method,
+                    url: url,
+                    data: formData,
+                    loadingMessage: 'Mengirim Data ...',
+                    success: (response) => {
+                        hideLoading();
+                        setButtonLoading(submitButton, false);
+
+                        if (response.status === 'failed') {
+                            toastr.error(response.message);
+                            return;
+                        }
+
+                        if (response.error) {
+                            toastr.error(response.error);
+                            return;
+                        }
+
+                        toastr.success(response.message);
+                    },
+                    error: () => {
+                        setButtonLoading(submitButton, false);
+                    }
+                });
+            });
+        };
+
+        // ==================== MAIN FORM HANDLER ====================
+
+        const handleMainFormSubmit = (validator) => {
+            const submitButton = document.getElementById('button-simpan');
+
+            submitButton.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                if (!validator) return;
+
+                validator.validate().then(function(status) {
+                    if (status !== 'Valid') return;
+
+                    const no_surat = $('#no_surat').val();
+                    const is_rujukan = $('#is_rujukan').val();
+
+                    if (is_rujukan) {
+                        handleRujukanFlow(no_surat);
+                    } else {
+                        submitFormData();
+                    }
+                });
+            });
+        };
+
+        // Handle alur rujukan dengan wizard
+        const handleRujukanFlow = (no_surat) => {
+            const selections = {
+                tujuanKunjungan: '',
+                alasanTidakSelesai: '',
+                prosedur: '',
+                prosedurBerkelanjutan: '',
+                prosedurTidakBerkelanjutan: ''
+            };
+
+            if (no_surat) {
+                // Dengan surat rujukan
+                showTujuanKunjunganPrompt().then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    selections.tujuanKunjungan = result.value.selectedValue;
+
+                    if (result.value.selectedValue == 2) {
+                        // Konsul Dokter
+                        showAlasanTidakSelesaiPrompt().then((result2) => {
+                            if (result2.isConfirmed) {
+                                selections.alasanTidakSelesai = result2.value;
+                                submitFormData(selections);
+                            }
+                        });
+                    } else {
+                        // Prosedur
+                        showBerkelanjutanPrompt(selections);
+                    }
+                });
+            } else {
+                // Tanpa surat rujukan
+                showAlasanTidakSelesaiPrompt().then((result) => {
+                    if (result.isConfirmed) {
+                        selections.tujuanKunjungan = 0;
+                        selections.alasanTidakSelesai = result.value;
+                        submitFormData(selections);
+                    }
+                });
+            }
+        };
+
+        // ==================== EVENT HANDLERS ====================
+
+        // Handler untuk SEP Manual
+        const handleSepManual = () => {
                                                     Swal.showValidationMessage(
                                                         'Please select an option');
                                                 }
@@ -1011,12 +1224,12 @@
                                             cancelButtonText: 'Tidak'
                                         }).then((result) => {
                                             if (result.isConfirmed) {
-                                                submitButton.setAttribute(
+                                                submitButton2.setAttribute(
                                                     'data-kt-indicator',
                                                     'on');
 
                                                 // Disable button to avoid multiple click
-                                                submitButton.disabled = true;
+                                                submitButton2.disabled = true;
 
                                                 // Simulate form submission. For more info check the plugin's official documentation: https://sweetalert2.github.io/
 
@@ -1060,7 +1273,7 @@
                                                                 .error);
                                                         }
                                                         $.unblockUI();
-                                                        submitButton.disabled =
+                                                        submitButton2.disabled =
                                                             false;
                                                         if (response.status ==
                                                             'failed') {
@@ -1086,7 +1299,7 @@
                                                         // window.location =
                                                         //     "{{ route('pasien.rekammedis_detail', $pasien->id) }}"
                                                         }
-                                                       
+
                                                     },
                                                     error: function(error) {
                                                         $.unblockUI();
@@ -1113,9 +1326,6 @@
                                     }
 
                                 } else {
-
-
-
                                     Swal.fire({
                                         title: 'Simpan Data',
                                         text: "Apakah Anda yakin simpan data ? ",
@@ -1127,11 +1337,11 @@
                                         cancelButtonText: 'Tidak'
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            submitButton.setAttribute('data-kt-indicator',
+                                            submitButton2.setAttribute('data-kt-indicator',
                                                 'on');
 
                                             // Disable button to avoid multiple click
-                                            submitButton.disabled = true;
+                                            submitButton2.disabled = true;
 
                                             // Simulate form submission. For more info check the plugin's official documentation: https://sweetalert2.github.io/
 
@@ -1159,7 +1369,7 @@
                                                 },
                                                 success: function(response) {
                                                     $.unblockUI();
-                                                    submitButton.disabled =
+                                                    submitButton2.disabled =
                                                         false;
                                                     if (response.status ==
                                                         'failed') {
@@ -1198,6 +1408,7 @@
                         });
                     }
                 });
+            });
         });
 
         $('#btn-sep-manual').on('click', function() {
