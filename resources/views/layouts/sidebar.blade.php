@@ -66,6 +66,19 @@
                     <!--end:Menu link-->
                 </div>
                 <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ Request::is('pendaftaran') || Request::is('pendaftaran/*') ? 'active' : '' }}"
+                        href="{{ route('pendaftaran.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-calendar-add fs-2"></i>
+                        </span>
+                        <span class="menu-title">Pendaftaran</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
                 {{-- @canany(['dokter', 'perawat', 'rekammedis']) --}}
                 <!--begin:Menu item-->
                 @can('rekammedis')

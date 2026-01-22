@@ -35,7 +35,8 @@ use App\Helpers\Satusehat\Resource\PatientHelper;
 use App\Helpers\Satusehat\Resource\LocationHelper;
 use App\Http\Controllers\LaporanOperasiController;
 use App\Helpers\Satusehat\Resource\EncounterHelper;
-use App\Http\Controllers\DetailRekapMedisController;
+
+use App\Http\Controllers\GlobalSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -591,7 +592,20 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
         Route::get('/gelang/{id}', [App\Http\Controllers\PasienCetakController::class, 'cetakGelang'])->name('pasien.cetak-gelang');
     });
 
+    # Pendaftaran Module
+    Route::group(['prefix' => 'pendaftaran', 'as' => 'pendaftaran.'], function () {
+        Route::get('/', [App\Http\Controllers\PendaftaranController::class, 'index'])->name('index');
+        Route::get('/data', [App\Http\Controllers\PendaftaranController::class, 'data'])->name('data');
+        Route::get('/create', [App\Http\Controllers\PendaftaranController::class, 'create'])->name('create');
+        Route::post('/store', [App\Http\Controllers\PendaftaranController::class, 'store'])->name('store');
+        Route::get('/search-pasien', [App\Http\Controllers\PendaftaranController::class, 'searchPasien'])->name('search-pasien');
+        Route::get('/get-dokter/{id_poli}', [App\Http\Controllers\PendaftaranController::class, 'getDokterByPoli'])->name('get-dokter');
+        Route::post('/batal/{id}', [App\Http\Controllers\PendaftaranController::class, 'batal'])->name('batal');
+    });
+
     //operasi
+    Route::get('/global-search', [GlobalSearchController::class, 'search'])->name('global.search');
+
     Route::prefix('/bhp')->middleware('auth')->group(function () {
         Route::get('/', [MasterBhpController::class, 'index'])->name('index.bhp');
         Route::get('/create', [MasterBhpController::class, 'create'])->name('create.bhp');
