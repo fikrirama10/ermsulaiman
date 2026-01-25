@@ -230,7 +230,7 @@
 
     // Simple keyboard shortcut for search (/)
     document.addEventListener('keydown', function(event) {
-        if (event.key === '/') {
+        if (event.key === '//') {
             const searchInput = document.getElementById('global_search_input');
             if (searchInput && document.activeElement !== searchInput) {
                 event.preventDefault(); // Prevent '/' character input
