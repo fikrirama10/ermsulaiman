@@ -1,9 +1,8 @@
-version: "3.9"
 services:
   app:
     build:
       args:
-        user: rsau-sulaiman
+        user: server-rsau
         uid: 1000
       context: ./
       dockerfile: Dockerfile
@@ -15,34 +14,28 @@ services:
       - ./:/var/www
       - ./php.ini:/usr/local/etc/php/php.ini
     networks:
-      - sulaiman-net
-
+      - rsau-net
   nginx:
     image: nginx:alpine
     container_name: rsau-sulaiman-nginx
     restart: unless-stopped
     ports:
-      - 8022:80
+      - 8014:80
     volumes:
       - ./:/var/www
       - ./nginx:/etc/nginx/conf.d/
     networks:
-      - sulaiman-net
-  # db:
-  #     image: mariadb:10.5
-  #     container_name: db-sulaiman-erm
-  #     restart: unless-stopped
-  #     environment:
-  #         MYSQL_ROOT_PASSWORD: iniP@assword
-  #         MYSQL_DATABASE: rama
-  #         MYSQL_USER: root
-  #         MYSQL_PASSWORD: iniP@assword
-  #     volumes:
-  #         - ./db_data:/var/lib/mysql
-  #     networks:
-  #         - sulaiman-net
-  #     ports:
-  #         - "8023:3306"
+      - rsau-net
+
+  # supervisor:
+  #   container_name: kominfo-simp3-supervisor
+  #   networks:
+  #       - kominfo-net
+  #   depends_on:
+  #       - app
+  #       - nginx
+  #   command: supervisord
+
 networks:
-  sulaiman-net:
+  rsau-net:
     driver: bridge
