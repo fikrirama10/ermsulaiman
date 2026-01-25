@@ -1,346 +1,267 @@
 @extends('layouts.index')
-@section('css')
+
+@section('custom-style')
+<link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+<style>
+    .nav-tabs-custom .nav-item .nav-link {
+        border: none;
+        color: #495057;
+        font-weight: 600;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+    .nav-tabs-custom .nav-item .nav-link.active {
+        color: #556ee6;
+        background-color: #fff;
+        border-bottom: 3px solid #556ee6;
+    }
+    .badge-soft-primary { color: #556ee6; background-color: rgba(85,110,230,.18); font-weight: 600; }
+    .badge-soft-danger { color: #f46a6a; background-color: rgba(244,106,106,.18); font-weight: 600; }
+    .badge-soft-success { color: #34c38f; background-color: rgba(52,195,143,.18); font-weight: 600; }
+    
+    /* Compact table styling */
+    .table-compact th, .table-compact td {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+    .table-compact thead th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .queue-number {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+    .patient-name {
+        font-weight: 600;
+        color: #495057;
+    }
+</style>
 @endsection
+
 @section('content')
     @if ($total_antrian > 0)
         <audio autoplay>
             <source src="{{ asset('assets/media/FGTP7RQ-notification.mp3') }}" type="audio/mp3">
         </audio>
     @endif
-    <div id="playOnHover" class="d-flex flex-column flex-column-fluid">
-        <!--begin::Toolbar-->
-        <div id="kt_app_toolbar" class="app-toolbar pt-7 pt-lg-10">
-            <!--begin::Toolbar container-->
-            <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
-                <!--begin::Toolbar wrapper-->
-                <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
-                    <!--begin::Page title-->
-                    <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                        <!--begin::Title-->
-                        <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">
-                            Antrian
-                            Resep</h1>
-                        <!--end::Title-->
-                        <!--begin::Breadcrumb-->
-                        <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
-                            <!--begin::Item-->
-                            <li class="breadcrumb-item text-muted">
-                                <a href="#" class="text-muted text-hover-primary">Menu</a>
-                            </li>
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <li class="breadcrumb-item">
-                                <span class="bullet bg-gray-400 w-5px h-2px"></span>
-                            </li>
-                            <!--end::Item-->
-                            <!--begin::Item-->
-                            <li class="breadcrumb-item text-muted">Antrian Resep</li>
-                            <!--end::Item-->
-                        </ul>
-                        <!--end::Breadcrumb-->
-                    </div>
-                    <!--end::Page title-->
+
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Antrian Resep Farmasi</h4>
+                <div class="page-title-right">
+                     <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Farmasi</a></li>
+                        <li class="breadcrumb-item active">Antrian Resep</li>
+                    </ol>
                 </div>
-                <!--end::Toolbar wrapper-->
             </div>
-            <!--end::Toolbar container-->
         </div>
-        <!--end::Toolbar-->
-        <!--begin::Content-->
-        <div id="kt_app_content" class="app-content flex-column-fluid">
-            <!--begin::Content container-->
-            <div id="kt_app_content_container" class="app-container container-fluid">
-                <!--begin::FAQ card-->
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card card-flush bg-light-info h-xl-100">
-                            <div class="card-body pt-0">
-                                <!--begin::Content-->
-                                <div class="d-flex flex-stack my-5">
-                                    <span class="text-gray-500 fs-7 fw-bold">ANTRIAN RAWAT JALAN</span>
+    </div>
 
-                                    {{-- <span class="text-gray-500 fw-bold fs-7">PASIEN</span> --}}
-                                </div>
-                                <!--end::Content-->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
 
-                                @foreach ($resep_rajal as $rr)
-                                    <!--begin::Item-->
-                                    @php
-                                        $cek_rawat = App\Models\Rawat::where('id', $rr->idrawat)->first();
-                                    @endphp
-                                    @if ($cek_rawat)
-                                        <a href="{{ route('farmasi.status-rajal', $rr->idrawat) }}">
-                                            <div class="d-flex text-end">
-                                                <!--begin::Wrapper-->
-                                                <div class="d-flex align-items-center">
-                                                    <!--begin::Icon-->
+                    <!-- Nav Tabs -->
+                    <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#rajal" role="tab">
+                                <span class="d-none d-sm-block">
+                                    <i class="bx bx-clinic mr-1"></i> Rawat Jalan 
+                                    <span class="badge badge-pill badge-primary ml-1">{{ count($resep_rajal) }}</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#ugd" role="tab">
+                                <span class="d-none d-sm-block">
+                                    <i class="bx bx-first-aid mr-1"></i> UGD 
+                                    <span class="badge badge-pill badge-danger ml-1">{{ count($resep_ugd) }}</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#ranap" role="tab">
+                                <span class="d-none d-sm-block">
+                                    <i class="bx bx-building-house mr-1"></i> Rawat Inap 
+                                    <span class="badge badge-pill badge-success ml-1">{{ count($resep_ranap) }}</span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
 
-                                                    <span class="fs-2x fw-bold d-block text-gray-800 me-5 mb-2 lh-1 ">RJ -
-                                                        {{ $rr->no_antrian }}</span>
-                                                    <!--end::Icon-->
-
-                                                    <!--begin::Section-->
-                                                    <div class="">
-                                                        <a href="{{ route('farmasi.status-rajal', $rr->idrawat) }}"
-                                                            class="text-gray-800 text-hover-primary fs-3 fw-bold lh-0">{{ $rr->pasien?->nama_pasien }}</a>
-
-                                                        <span class="text-gray-500 fw-semibold d-block fs-7">No RM:
-                                                            {{ $rr->no_rm }}</span>
-                                                        <span class="text-gray-500 fw-semibold d-block fs-7">Poli :
-                                                            {{ $rr->rawat?->poli?->poli }}</span>
-                                                        <span class="text-gray-500 fw-semibold d-block fs-7">Dokter :
-                                                            {{ $rr->rawat?->dokter?->nama_dokter }}</span>
-                                                    </div>
-                                                    <!--end::Section-->
-                                                </div>
-                                            </div>
-                                        </a>
-                                    @endif
-                                    <!--end::Item-->
-
-                                    <!--begin::Separator-->
-                                    <div class="separator separator-dashed my-4"></div>
-                                    <!--end::Separator-->
-                                @endforeach
-
-
-
-
-                            </div>
-                            <!--end::Body-->
+                    <!-- Tab Content -->
+                    <div class="tab-content p-3">
+                        
+                        <!-- Tab Rawat Jalan -->
+                        <div class="tab-pane active" id="rajal" role="tabpanel">
+                            <table id="table-rajal" class="table table-bordered table-hover table-compact dt-responsive nowrap" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th width="10%">No. Antrian</th>
+                                        <th width="12%">No. RM</th>
+                                        <th width="25%">Nama Pasien</th>
+                                        <th width="20%">Poliklinik</th>
+                                        <th width="20%">Dokter</th>
+                                        <th width="13%">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($resep_rajal as $rr)
+                                        @php $cek_rawat = App\Models\Rawat::find($rr->idrawat); @endphp
+                                        @if ($cek_rawat)
+                                        <tr>
+                                            <td class="text-center">
+                                                <span class="badge badge-soft-primary queue-number">{{ $rr->no_antrian }}</span>
+                                            </td>
+                                            <td>{{ $rr->no_rm }}</td>
+                                            <td class="patient-name">{{ $rr->pasien?->nama_pasien }}</td>
+                                            <td>{{ $rr->rawat?->poli?->poli }}</td>
+                                            <td><small>{{ $rr->rawat?->dokter?->nama_dokter }}</small></td>
+                                            <td class="text-center">
+                                                <a href="{{ route('farmasi.status-rajal', $rr->idrawat) }}" class="btn btn-primary btn-sm">
+                                                    <i class="bx bx-show-alt"></i> Proses
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                        {{-- <div class="card">
-                            <div class="card-header">
-                                <div class="card-title">
-                                    <h5 class="card-title">Rawat Jalan</h5>
-                                </div>
-                            </div>
-                            <!--begin::Body-->
-                            <div class="card-body">
-                                @foreach ($resep_rajal as $rr)
-                                    <a href="{{ route('farmasi.status-rajal', $rr->idrawat) }}">
-                                        <div class="rounded border mb-2 bg-light-primary">
-                                            <div class="row p-2">
-                                                <!--begin::Label-->
-                                                <label class="col-md-4 fw-semibold text-muted">No RM</label>
-                                                <div class="col-md-8">
-                                                    <span class="md-bold fs-6 text-gray-800">{{ $rr->no_rm }}</span>
-                                                </div>
-                                                <!--end::Col-->
-                                            </div>
-                                            <div class="row p-2">
-                                                <label class="col-md-4 fw-semibold text-muted">Poliklinik</label>
-                                                <div class="col-md-8">
-                                                    <span
-                                                        class="md-bold fs-6 text-gray-800">{{ $rr->rawat->poli->poli }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="row p-2">
-                                                <label class="col-md-4 fw-semibold text-muted">Dokter</label>
-                                                <div class="col-md-8">
-                                                    <span
-                                                        class="md-bold fs-6 text-gray-800">{{ $rr->rawat->dokter->nama_dokter }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                @endforeach
 
-                            </div>
-                            <!--end::Body-->
-                        </div> --}}
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card card-flush bg-light-danger h-xl-100">
-                                <div class="card-body pt-0">
-                                    <!--begin::Content-->
-                                    <div class="d-flex flex-stack my-5">
-                                        <span class="text-gray-500 fs-7 fw-bold">ANTRIAN UGD</span>
-
-                                        {{-- <span class="text-gray-500 fw-bold fs-7">PASIEN</span> --}}
-                                    </div>
-                                    <!--end::Content-->
-
+                        <!-- Tab UGD -->
+                        <div class="tab-pane" id="ugd" role="tabpanel">
+                            <table id="table-ugd" class="table table-bordered table-hover table-compact dt-responsive nowrap" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th width="10%">No. Antrian</th>
+                                        <th width="12%">No. RM</th>
+                                        <th width="25%">Nama Pasien</th>
+                                        <th width="20%">Unit</th>
+                                        <th width="20%">Dokter</th>
+                                        <th width="13%">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                     @foreach ($resep_ugd as $rr)
-                                        @php
-                                            $cek_rawat = App\Models\Rawat::where('id', $rr->idrawat)->first();
-                                        @endphp
+                                        @php $cek_rawat = App\Models\Rawat::find($rr->idrawat); @endphp
                                         @if ($cek_rawat)
-                                            <!--begin::Item-->
-                                            <a href="{{ route('farmasi.status-rajal', $rr->idrawat) }}">
-                                                <div class="d-flex text-end">
-                                                    <!--begin::Wrapper-->
-                                                    <div class="d-flex align-items-center">
-                                                        <!--begin::Icon-->
-
-                                                        <span
-                                                            class="fs-2x fw-bold d-block text-gray-800 me-5 mb-2 lh-1 ">UGD
-                                                            -
-                                                            {{ $rr->no_antrian }}</span>
-                                                        <!--end::Icon-->
-
-                                                        <!--begin::Section-->
-                                                        <div class="">
-                                                            <a href="{{ route('farmasi.status-rajal', $rr->idrawat) }}"
-                                                                class="text-gray-800 text-hover-primary fs-3 fw-bold lh-0">{{ $rr->pasien?->nama_pasien }}</a>
-
-                                                            <span class="text-gray-500 fw-semibold d-block fs-7">No RM:
-                                                                {{ $rr->no_rm }}</span>
-                                                            <span class="text-gray-500 fw-semibold d-block fs-7">Poli :
-                                                                {{ $rr->rawat->poli->poli }}</span>
-                                                            <span class="text-gray-500 fw-semibold d-block fs-7">Dokter :
-                                                                {{ $rr->rawat->dokter->nama_dokter }}</span>
-                                                        </div>
-                                                        <!--end::Section-->
-                                                    </div>
-                                                </div>
-                                            </a>
+                                        <tr>
+                                            <td class="text-center">
+                                                <span class="badge badge-soft-danger queue-number">{{ $rr->no_antrian }}</span>
+                                            </td>
+                                            <td>{{ $rr->no_rm }}</td>
+                                            <td class="patient-name">{{ $rr->pasien?->nama_pasien }}</td>
+                                            <td>UGD</td>
+                                            <td><small>{{ $rr->rawat?->dokter?->nama_dokter }}</small></td>
+                                            <td class="text-center">
+                                                <a href="{{ route('farmasi.status-rajal', $rr->idrawat) }}" class="btn btn-danger btn-sm">
+                                                    <i class="bx bx-show-alt"></i> Proses
+                                                </a>
+                                            </td>
+                                        </tr>
                                         @endif
-                                        <!--end::Item-->
-
-                                        <!--begin::Separator-->
-                                        <div class="separator separator-dashed my-4"></div>
-                                        <!--end::Separator-->
                                     @endforeach
-
-
-
-
-                                </div>
-                                <!--end::Body-->
-                            </div>
-                            <!--end::Body-->
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card card-flush bg-light-success h-xl-100">
-                                <div class="card-body pt-0">
-                                    <!--begin::Content-->
-                                    <div class="d-flex flex-stack my-5">
-                                        <span class="text-gray-500 fs-7 fw-bold">ANTRIAN RAWAT INAP</span>
 
-                                        {{-- <span class="text-gray-500 fw-bold fs-7">PASIEN</span> --}}
-                                    </div>
-                                    <!--end::Content-->
-
+                        <!-- Tab Ranap -->
+                        <div class="tab-pane" id="ranap" role="tabpanel">
+                            <table id="table-ranap" class="table table-bordered table-hover table-compact dt-responsive nowrap" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th width="10%">No. Antrian</th>
+                                        <th width="12%">No. RM</th>
+                                        <th width="25%">Nama Pasien</th>
+                                        <th width="20%">Ruangan</th>
+                                        <th width="20%">Dokter</th>
+                                        <th width="13%">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                     @foreach ($resep_ranap as $rr)
-                                        <!--begin::Item-->
-                                        @php
-                                            $cek_rawat = App\Models\Rawat::where('id', $rr->idrawat)->first();
-                                        @endphp
+                                        @php $cek_rawat = App\Models\Rawat::find($rr->idrawat); @endphp
                                         @if ($cek_rawat)
-                                        <a href="{{ route('farmasi.status-ranap', $rr->idrawat) }}">
-                                            <div class="d-flex text-end">
-                                                <!--begin::Wrapper-->
-                                                <div class="d-flex align-items-center">
-                                                    <!--begin::Icon-->
-
-                                                    <span class="fs-2x fw-bold d-block text-gray-800 me-5 mb-2 lh-1 ">RI -
-                                                        {{ $rr->no_antrian }}</span>
-                                                    <!--end::Icon-->
-
-                                                    <!--begin::Section-->
-                                                    <div class="">
-                                                        <a href="{{ route('farmasi.status-ranap', $rr->idrawat) }}"
-                                                            class="text-gray-800 text-hover-primary fs-3 fw-bold lh-0">{{ $rr->pasien?->nama_pasien }}</a>
-
-                                                        <span class="text-gray-500 fw-semibold d-block fs-7">No RM:
-                                                            {{ $rr->no_rm }}</span>
-                                                        <span class="text-gray-500 fw-semibold d-block fs-7">Ruangan :
-                                                            {{ $rr->rawat->ruangan->nama_ruangan }}</span>
-                                                        <span class="text-gray-500 fw-semibold d-block fs-7">Dokter :
-                                                            {{ $rr->rawat->dokter->nama_dokter }}</span>
-                                                    </div>
-                                                    <!--end::Section-->
-                                                </div>
-                                            </div>
-                                        </a>
+                                        <tr>
+                                            <td class="text-center">
+                                                <span class="badge badge-soft-success queue-number">{{ $rr->no_antrian }}</span>
+                                            </td>
+                                            <td>{{ $rr->no_rm }}</td>
+                                            <td class="patient-name">{{ $rr->pasien?->nama_pasien }}</td>
+                                            <td>{{ $rr->rawat?->ruangan?->nama_ruangan ?? 'N/A' }}</td>
+                                            <td><small>{{ $rr->rawat?->dokter?->nama_dokter }}</small></td>
+                                            <td class="text-center">
+                                                <a href="{{ route('farmasi.status-ranap', $rr->idrawat) }}" class="btn btn-success btn-sm">
+                                                    <i class="bx bx-show-alt"></i> Proses
+                                                </a>
+                                            </td>
+                                        </tr>
                                         @endif
-                                        <!--end::Item-->
-
-                                        <!--begin::Separator-->
-                                        <div class="separator separator-dashed my-4"></div>
-                                        <!--end::Separator-->
                                     @endforeach
-
-
-
-
-                                </div>
-                                <!--end::Body-->
-                            </div>
-                            <!--end::Body-->
+                                </tbody>
+                            </table>
                         </div>
-                        {{-- <div class="card">
-                            <div class="card-header">
-                                <div class="card-title">
-                                    <h5 class="card-title">Ranap</h5>
-                                </div>
-                            </div>
-                            <!--begin::Body-->
-                            <div class="card-body">
-                                @foreach ($resep_ranap as $rr)
-                                    <a href="{{ route('farmasi.status-ranap', $rr->idrawat) }}">
-                                        <div class="rounded border mb-2 bg-light-info">
-                                            <div class="row p-2">
-                                                <!--begin::Label-->
-                                                <label class="col-md-4 fw-semibold text-muted">No RM</label>
-                                                <div class="col-md-8">
-                                                    <span class="md-bold fs-6 text-gray-800">{{ $rr->no_rm }}</span>
-                                                </div>
-                                                <!--end::Col-->
-                                            </div>
-                                            <div class="row p-2">
-                                                <!--begin::Label-->
-                                                <label class="col-md-4 fw-semibold text-muted">Pasien</label>
-                                                <div class="col-md-8">
-                                                    <span
-                                                        class="md-bold fs-6 text-gray-800">{{ $rr->pasien?->nama_pasien }}</span>
-                                                </div>
-                                                <!--end::Col-->
-                                            </div>
-                                            <div class="row p-2">
-                                                <!--begin::Label-->
-                                                <label class="col-md-4 fw-semibold text-muted">Ruangan</label>
-                                                <div class="col-md-8">
-                                                    <span
-                                                        class="md-bold fs-6 text-gray-800">{{ $rr->rawat->ruangan->nama_ruangan }}</span>
-                                                </div>
-                                                <!--end::Col-->
-                                            </div>
-                                            <div class="row p-2">
-                                                <label class="col-md-4 fw-semibold text-muted">Dokter</label>
-                                                <div class="col-md-8">
-                                                    <span
-                                                        class="md-bold fs-6 text-gray-800">{{ $rr->rawat->dokter->nama_dokter }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                @endforeach
-                            </div>
-                            <!--end::Body-->
-                        </div> --}}
                     </div>
-                </div>
 
-                <!--end::FAQ card-->
+                </div>
             </div>
-            <!--end::Content container-->
         </div>
-        <!--end::Content-->
     </div>
 @endsection
-@section('js')
-    <script>
-        @if ($total_antrian > 0)
-            window.onload = function() {
-                var audioContext = new(window.AudioContext || window.webkitAudioContext)();
-            }
-        @endif
 
-      
-    </script>
+@section('script')
+<script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        // Common DataTable options
+        var dtOptions = {
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
+                },
+                emptyTable: "Tidak ada data antrian",
+                zeroRecords: "Tidak ada data yang sesuai"
+            },
+            order: [] // No default sort
+        };
+
+        // Initialize DataTables
+        $('#table-rajal').DataTable(dtOptions);
+        $('#table-ugd').DataTable(dtOptions);
+        $('#table-ranap').DataTable(dtOptions);
+
+        // Audio context for notification
+        @if ($total_antrian > 0)
+            var audioContext = new(window.AudioContext || window.webkitAudioContext)();
+        @endif
+        
+        // Auto refresh every 30 seconds
+        setTimeout(function(){
+           window.location.reload();
+        }, 30000);
+    });
+</script>
 @endsection

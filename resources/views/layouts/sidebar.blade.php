@@ -5,12 +5,13 @@
         <!--begin::Logo-->
         <div class=" d-flex flex-stack d-lg-flex bg-white rounded p-5">
             <a href="{{ url('/dashboard')}}" class="app-sidebar-logo">
-                <img alt="Logo" src="{{ asset('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png') }}"
+                {{-- <img alt="Logo" src="{{ asset('assets/img/ragariksa.png') }}"
                     class="h-40px d-none d-sm-inline app-sidebar-logo-default theme-light-show me-1" />
                 <img alt="Logo" src="{{ asset('assets/media/logos/demo38-dark.svg') }}"
-                    class="h-20px h-lg-25px theme-dark-show" />
+                    class="h-20px h-lg-25px theme-dark-show" /> --}}
 
-                <span class="fw-bold fs-6 text-success ">E-REKAMMEDIS</span>
+                <img alt="Logo" src="{{ asset('assets/img/ragariksa-text-tg.png') }}"
+                    class="h-40px d-none d-sm-inline" style="width:100%" />
             </a>
             <!--end::Logo-->
             <!--begin::Sidebar toggle-->
@@ -75,6 +76,19 @@
                             <i class="ki-outline ki-calendar-add fs-2"></i>
                         </span>
                         <span class="menu-title">Pendaftaran</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ Request::is('billing') || Request::is('billing/*') ? 'active' : '' }}"
+                        href="{{ route('billing.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-bill fs-2"></i>
+                        </span>
+                        <span class="menu-title">Billing & Journey</span>
                     </a>
                     <!--end:Menu link-->
                 </div>
@@ -602,6 +616,22 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">Obat Obatan</span>
+                                </a>
+                                <!--end:Menu link-->
+                            </div>
+                            <!--end:Menu item-->
+                        </div>
+                        <div class="menu-sub menu-sub-accordion">
+                            <!--begin:Menu item-->
+                            <div class="menu-item">
+                                <!--begin:Menu link-->
+
+                                <a class="menu-link {{ Request::is('penjualan-obat') || Request::is('penjualan-obat/*') ? 'active' : '' }}"
+                                    href="{{ route('penjualan-obat.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Penjualan Obat</span>
                                 </a>
                                 <!--end:Menu link-->
                             </div>

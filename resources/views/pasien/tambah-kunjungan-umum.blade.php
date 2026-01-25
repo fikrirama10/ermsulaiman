@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="d-flex align-items-center gap-2 gap-lg-3">
-                       
+
                     </div>
                     <!--end::Page title-->
                 </div>
@@ -59,7 +59,8 @@
                                 <div class="form-group row">
                                     <label for="nomor_rekam_medis" class="col-sm-4 col-form-label">Nomor Rekam Medis</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="nomor_rekam_medis" name="nomor_rekam_medis">
+                                        <input type="text" class="form-control" id="nomor_rekam_medis"
+                                            name="nomor_rekam_medis">
                                     </div>
                                 </div>
                                 <div class="form-group row">

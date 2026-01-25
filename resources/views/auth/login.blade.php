@@ -68,13 +68,13 @@
     <div class="d-flex flex-column flex-root" id="kt_app_root">
         <!--begin::Authentication - Sign-in -->
         <div class="d-flex flex-column flex-column-fluid flex-center py-10">
-            
+
             <!--begin::Card-->
             <div class="login-card w-lg-500px p-10 p-lg-15 mx-auto animate__animated animate__fadeInUp">
                 <!--begin::Form-->
                 <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" action="{{ url('/login') }}" method="POST">
                     @csrf
-                    
+
                     <!--begin::Header-->
                     <div class="text-center mb-10">
                         <!--begin::Logo-->
@@ -82,7 +82,7 @@
                             <img alt="Logo" src="{{ asset('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png') }}" class="h-100px" />
                         </div>
                         <!--end::Logo-->
-                        
+
                         <h1 class="text-dark fw-bolder mb-3 fs-2">E-Rekam Medis</h1>
                         <div class="text-gray-500 fw-semibold fs-6">RSAU dr. Norman T Lubis</div>
                     </div>
@@ -118,6 +118,9 @@
                     <!--begin::Footer-->
                     <div class="text-center text-gray-500 fs-7">
                         &copy; {{ date('Y') }} RSAU dr. Norman T Lubis. <br/>All rights reserved.
+                        <br>
+                        <hr>
+                        <img  class="h-30px" style="width:30%"  src="{{ asset('assets/img/ragariksa-text-tg.png') }}" alt="">
                     </div>
                     <!--end::Footer-->
 

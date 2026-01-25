@@ -1,6 +1,172 @@
 @extends('layouts.index')
+
 @section('css')
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bs-body-font-family: 'Inter', sans-serif !important;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif !important;
+            background-color: #f3f6f9;
+        }
+
+        /* Metronic-like Card Styling with Modern Touch */
+        .card.modern-card {
+            border: 0;
+            box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02);
+            background-color: #ffffff;
+            border-radius: 8px; /* Slightly smaller radius */
+            margin-bottom: 16px; /* Reduced margin */
+        }
+
+        .card.modern-card .card-header {
+            border-bottom: 1px solid #eff2f5;
+            padding: 1rem 1.5rem; /* Reduced padding */
+            min-height: 50px; /* Reduced height */
+        }
+
+        .card.modern-card .card-title {
+            font-weight: 600;
+            font-size: 1rem; /* Slightly smaller title */
+            color: #181c32;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .card.modern-card .card-body {
+            padding: 1.5rem; /* Reduced padding */
+        }
+
+        /* Section Icons */
+        .card-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px; /* Smaller icon container */
+            height: 28px;
+            border-radius: 6px;
+            background-color: rgba(0, 158, 247, 0.1);
+            color: #009ef7;
+            margin-right: 10px;
+        }
+        
+        .card-icon i {
+            font-size: 1.1rem !important; /* Smaller icon */
+        }
+
+        /* Form Controls - Compact Look */
+        .form-control, .form-select {
+            border: 1px solid #e1e3ea;
+            border-radius: 6px;
+            padding: 0.55rem 0.75rem; /* Reduced padding */
+            font-size: 0.9rem; /* Slightly smaller font */
+            font-weight: 500;
+            color: #5e6278;
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+            min-height: auto; /* Allow smaller height */
+        }
+
+        .form-control-lg {
+            font-size: 0.95rem !important;
+            padding: 0.65rem 1rem !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #009ef7;
+            box-shadow: 0 0 0 2px rgba(0, 158, 247, 0.1);
+            background-color: #ffffff;
+        }
+
+        .form-check.form-check-custom {
+             margin-top: 0.25rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.8rem; /* Smaller label */
+            color: #3f4254;
+            margin-bottom: 0.25rem; /* Tighter label spacing */
+        }
+
+        .required::after {
+            content: "*";
+            color: #f1416c;
+            font-weight: bold;
+            margin-left: 3px;
+        }
+
+        /* Pill Gender Selector - Compact */
+        .gender-selector {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .gender-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 8px 15px; /* Compact padding */
+            border: 1px solid #e1e3ea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #7e8299;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .gender-option label i {
+            margin-right: 6px;
+            font-size: 1rem;
+        }
+
+         /* RM Display Compact */
+        .rm-box {
+            background: #f8f9fa;
+            border: 1px dashed #009ef7;
+            border-radius: 6px;
+            padding: 0.75rem;
+        }
+        
+        .rm-box .rm-value {
+            font-family: 'Courier New', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #009ef7;
+            letter-spacing: 1px;
+        }
+        
+        /* Sticky Action Bar Compact */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            background: white;
+            padding: 10px 25px; /* Reduced padding */
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            z-index: 999;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid #eff2f5;
+        }
+
+        /* Adjust content margin for sticky footer */
+        #kt_app_content {
+            margin-bottom: 60px;
+        }
+
+    </style>
 @endsection
+
 @section('content')
     <div class="d-flex flex-column flex-column-fluid">
         <!--begin::Toolbar-->
@@ -8,13 +174,15 @@
             <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
                 <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
                     <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                        <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Tambah Pasien</h1>
+                        <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">
+                            Pendaftaran Pasien
+                        </h1>
                         <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
                             <li class="breadcrumb-item text-muted">
-                                <a href="{{ route('pasien.index') }}" class="text-muted text-hover-primary">Pasien</a>
+                                <a href="{{ route('pasien.index') }}" class="text-muted text-hover-primary">Database Pasien</a>
                             </li>
                             <li class="breadcrumb-item"><span class="bullet bg-gray-400 w-5px h-2px"></span></li>
-                            <li class="breadcrumb-item text-muted">Tambah Baru</li>
+                            <li class="breadcrumb-item text-muted">Formulir Pendaftaran</li>
                         </ul>
                     </div>
                 </div>
@@ -25,276 +193,299 @@
         <!--begin::Content-->
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
-                
+
                 <form method="POST" id="form-create" action="{{ route('pasien.post-tambah-pasien') }}">
                     @csrf
                     
-                    <!-- Card: Identitas Utama (Top Section) -->
-                    <div class="card mb-5 mb-xl-10">
-                        <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_profile_details" aria-expanded="true" aria-controls="kt_account_profile_details">
-                            <div class="card-title m-0">
-                                <h3 class="fw-bold m-0">Identitas Utama</h3>
+                    <!-- SECTION: SEARCH & RM -->
+                    <div class="row g-3 mb-3">
+                         <div class="col-md-8">
+                             <div class="card modern-card h-100">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <span class="card-icon"><i class="bi bi-search fs-3"></i></span>
+                                        <span class="d-flex flex-column">
+                                            <span class="fw-bold fs-7">Pencarian Data (Integrasi)</span>
+                                            <span class="text-muted fs-8 fw-normal">Cari data via NIK Dukcapil atau BPJS</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                             <label class="form-label">Cari NIK (KTP)</label>
+                                             <div class="input-group input-group-sm">
+                                                <input type="text" class="form-control" name="nik" id="nik" placeholder="16 Digit NIK"/>
+                                                <button class="btn btn-primary btn-sm" type="button" id="btn-cari-nik"><i class="bi bi-search"></i></button>
+                                             </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Cari No. Kartu BPJS</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="text" class="form-control" name="bpjs" id="bpjs" placeholder="13 Digit No Kartu"/>
+                                                <button class="btn btn-success btn-sm" type="button" id="btn-cari-bpjs"><i class="bi bi-search"></i></button>
+                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                         </div>
+                         <div class="col-md-4">
+                            <div class="card modern-card h-100 bg-light-primary border-primary border-dashed">
+                                <div class="card-body d-flex flex-row justify-content-between align-items-center p-4">
+                                    <div>
+                                        <span class="text-gray-600 fs-8 fw-bold text-uppercase d-block mb-1">No. Rekam Medis</span>
+                                        <h2 class="text-primary fs-2 fw-bolder m-0" id="display-rm">{{ $kodepasien }}</h2>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-icon btn-light btn-active-light-primary" id="btn-edit-rm" title="Ubah Manual">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <input type="hidden" name='no_rm' value="{{ $kodepasien }}" id='pasien-kodepasien' required />
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+
+                    <!-- SECTION: DATA UTAMA -->
+                    <div class="card modern-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon"><i class="bi bi-person-lines-fill fs-3"></i></span>
+                                <span>Identitas Utama Pasien</span>
                             </div>
                         </div>
-                        <div id="kt_account_profile_details" class="collapse show">
-                            <div class="card-body border-top p-9">
-                                <!-- Row 1: Search & Auto-fill -->
-                                <div class="row mb-8 p-5 bg-light-primary rounded border border-primary border-dashed">
-                                    <div class="col-lg-6 mb-4 mb-lg-0">
-                                        <label class="form-label fs-6 fw-bold mb-3">Pencarian Capil (NIK)</label>
-                                        <div class="input-group">
-                                            <input type="text" name='nik' id='nik' class="form-control form-control-solid" placeholder="Masukkan NIK KTP"/>
-                                            <button class="btn btn-primary" type="button" id="btn-cari-nik"><i class="ki-outline ki-magnifier fs-2"></i> Cari NIK</button>
+                        <div class="card-body">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label required">Nama Lengkap</label>
+                                    <input type="text" name="nama_pasien" id="nama_pasien" class="form-control form-control-sm" placeholder="Sesuai KTP / Identitas" required/>
+                                </div>
+                                <div class="col-md-6">
+                                     <label class="form-label required">Jenis Kelamin</label>
+                                     <div class="gender-selector">
+                                        <div class="gender-option">
+                                            <input type="radio" name="jenis_kelamin" id="gender_l" value="L" required>
+                                            <label for="gender_l"><i class="bi bi-gender-male"></i> Laki-laki</label>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <label class="form-label fs-6 fw-bold mb-3">Pencarian BPJS</label>
-                                        <div class="input-group">
-                                            <input type="text" name='bpjs' id='bpjs' class="form-control form-control-solid" placeholder="Masukkan No Kartu BPJS"/>
-                                            <button class="btn btn-success" type="button" id="btn-cari-bpjs"><i class="ki-outline ki-magnifier fs-2"></i> Cari BPJS</button>
+                                        <div class="gender-option">
+                                            <input type="radio" name="jenis_kelamin" id="gender_p" value="P" required>
+                                            <label for="gender_p"><i class="bi bi-gender-female"></i> Perempuan</label>
                                         </div>
+                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label required">Tempat Lahir</label>
+                                    <input type="text" name="tempat_lahir" class="form-control form-control-sm" placeholder="Kota Kelahiran" required/>
+                                </div>
+                                <div class="col-md-4">
+                                     <label class="form-label required">Tanggal Lahir</label>
+                                     <input class="form-control form-control-sm" name="tgl_lahir" id="tgl_lahir" placeholder="YYYY-MM-DD" required/>
+                                     <div class="form-check form-check-custom form-check-solid mt-1">
+                                        <input class="form-check-input h-15px w-15px" type="checkbox" name="baru_lahir" value="1" id="checkBaruLahir"/>
+                                        <label class="form-check-label text-gray-600 fs-8" for="checkBaruLahir">
+                                            Bayi Baru Lahir (Newborn)
+                                        </label>
                                     </div>
                                 </div>
-
-                                <!-- Row 2: No RM & Nama -->
-                                <div class="row mb-6">
-                                    <div class="col-lg-4">
-                                        <label class="form-label required fw-bold fs-6">No Rekam Medis</label>
-                                        <div class="input-group">
-                                            <input type="text" readonly name='no_rm' value="{{ $kodepasien }}" class="form-control form-control-solid" id='pasien-kodepasien' required />
-                                            <button class="btn btn-warning btn-icon" type="button" id="btn-edit-rm" title="Edit Manual"><i class="ki-outline ki-pencil fs-2"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-8">
-                                        <label class="form-label required fw-bold fs-6">Nama Lengkap</label>
-                                        <input type="text" name="nama_pasien" id="nama_pasien" class="form-control form-control-lg form-control-solid" placeholder="Nama Pasien sesuai KTP" required />
-                                    </div>
+                                <div class="col-md-4">
+                                     <label class="form-label required">Golongan Darah</label>
+                                     <select name="golongan_darah" class="form-select form-select-sm" required>
+                                        <option value="">Pilih...</option>
+                                        @foreach ($gol_darah as $gl)
+                                            <option value="{{ $gl->id }}">{{ $gl->golongan_darah }}</option>
+                                        @endforeach
+                                     </select>
                                 </div>
+                            </div>
 
-                                <!-- Row 3: TTL & JK -->
-                                <div class="row mb-6">
-                                    <div class="col-lg-4">
-                                        <label class="form-label required fw-bold fs-6">Tempat Lahir</label>
-                                        <input type="text" name="tempat_lahir" class="form-control form-control-solid" required />
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <label class="form-label required fw-bold fs-6">Tanggal Lahir</label>
-                                         <div class="input-group">
-                                            <input class="form-control form-control-solid" name='tgl_lahir' id='tgl_lahir' placeholder="YYYY-MM-DD" />
-                                            <span class="input-group-text">
-                                                <i class="ki-outline ki-calendar fs-2"></i>
-                                            </span>
-                                        </div>
-                                        <div class="form-check mt-2">
-                                            <input class="form-check-input" type="checkbox" name='baru_lahir' value="1" id="checkBaruLahir" />
-                                            <label class="form-check-label text-gray-600" for="checkBaruLahir">Bayi Baru Lahir?</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2">
-                                        <label class="form-label required fw-bold fs-6">Jenis Kelamin</label>
-                                        <select name="jenis_kelamin" id="jenis_kelamin" class="form-select form-select-solid" required>
-                                            <option value="">Pilih</option>
-                                            <option value="L">Laki-Laki</option>
-                                            <option value="P">Perempuan</option>
-                                        </select>
-                                    </div>
-                                     <div class="col-lg-2">
-                                        <label class="form-label required fw-bold fs-6">Gol Darah</label>
-                                        <select name="golongan_darah" class="form-select form-select-solid" required>
-                                            <option value="">Pilih</option>
-                                            @foreach ($gol_darah as $gl)
-                                                <option value="{{ $gl->id }}">{{ $gl->golongan_darah }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                            <div class="separator my-4"></div>
+                            
+                            <!-- Sub-Section: Kontak & Alamat -->
+                            <h5 class="text-dark fw-bold mb-3"><i class="bi bi-geo-alt me-2 text-primary"></i> Kontak & Domisili</h5>
+                            
+                            <div class="row g-3 mb-3">
+                                 <div class="col-md-6">
+                                     <label class="form-label required">Nomor Handphone / WA</label>
+                                     <input type="text" name="no_hp" id="no_hp" class="form-control form-control-sm" placeholder="Contoh: 081234567890" required/>
+                                 </div>
+                                 <div class="col-md-6">
+                                     <label class="form-label required">Email</label>
+                                     <input type="email" name="email" id="email" class="form-control form-control-sm" placeholder="email@domain.com" required/>
+                                 </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label required">Kelurahan / Desa</label>
+                                    <select class="form-select form-select-sm" name="id_kel" id='id_kel' data-control="select2" data-placeholder="Ketik minimal 3 karakter..." required>
+                                        <option></option>
+                                    </select>
                                 </div>
+                            </div>
 
-                                <!-- Row 4: Data Sosial -->
-                                <div class="row mb-6">
-                                    <div class="col-lg-3">
-                                        <label class="form-label required fw-bold fs-6">Agama</label>
-                                        <select name="id_agama" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Agama" required>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-label required">Alamat Lengkap</label>
+                                    <textarea name="alamat" id="alamat" class="form-control form-control-sm" rows="2" placeholder="Nama Jalan, No. Rumah, RT/RW" required></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- SECTION: Data Sosial & Tambahan -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                             <div class="card modern-card h-100">
+                                 <div class="card-header">
+                                     <div class="card-title">
+                                        <span class="card-icon"><i class="bi bi-folder2-open fs-3"></i></span>
+                                        <span>Data Sosial</span>
+                                     </div>
+                                 </div>
+                                 <div class="card-body">
+                                     <div class="mb-3">
+                                         <label class="form-label required">Agama</label>
+                                         <select name="id_agama" class="form-select form-select-sm" data-placeholder="Pilih Agama" data-control="select2" required>
                                             <option></option>
                                             @foreach ($data_agama as $da)
                                                 <option value="{{ $da->id }}">{{ $da->agama }}</option>
                                             @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <label class="form-label required fw-bold fs-6">Etnis / Suku</label>
-                                        <select name="id_etnis" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Etnis" required>
+                                         </select>
+                                     </div>
+                                     <div class="mb-3">
+                                         <label class="form-label required">Etnis / Suku</label>
+                                         <select name="id_etnis" class="form-select form-select-sm" data-placeholder="Pilih Etnis / Suku" data-control="select2" required>
                                             <option></option>
                                             @foreach ($data_etnis as $de)
                                                 <option value="{{ $de->id }}">{{ $de->etnis }}</option>
                                             @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <label class="form-label required fw-bold fs-6">Pendidikan</label>
-                                         <select name="id_pendidikan" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Pendidikan" required>
+                                         </select>
+                                     </div>
+                                     <div class="mb-3">
+                                         <label class="form-label required">Pendidikan Terakhir</label>
+                                         <select name="id_pendidikan" class="form-select form-select-sm" data-placeholder="Pilih Pendidikan Terakhir" data-control="select2" required>
                                             <option></option>
                                             @foreach ($data_pendidikan as $dp)
                                                 <option value="{{ $dp->id }}">{{ $dp->pendidikan }}</option>
                                             @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <label class="form-label required fw-bold fs-6">Status Pernikahan</label>
-                                        <select name="id_hubungan_pernikakan" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Status" required>
+                                         </select>
+                                     </div>
+                                     <div class="mb-3">
+                                         <label class="form-label required">Status Pernikahan</label>
+                                         <select name="id_hubungan_pernikakan" class="form-select form-select-sm" data-placeholder="Pilih Status Pernikahan" data-control="select2" required>
                                             <option></option>
                                             @foreach ($data_hubungan as $dh)
                                                 <option value="{{ $dh->id }}">{{ $dh->hubungan }}</option>
                                             @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row g-5">
-                        <!-- Col Left: Kontak & Alamat -->
-                        <div class="col-md-6">
-                            <div class="card h-100">
-                                <div class="card-header">
-                                    <h3 class="card-title fw-bold">Kontak & Alamat</h3>
-                                </div>
-                                <div class="card-body p-9">
-                                    <div class="row mb-5">
-                                        <div class="col-md-6">
-                                            <label class="form-label required fw-bold fs-6">No HP / WhatsApp</label>
-                                            <input type="text" name="no_hp" id="no_hp" class="form-control form-control-solid" placeholder="08..." required />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label required fw-bold fs-6">Email</label>
-                                            <input type="email" name="email" id="email" class="form-control form-control-solid" placeholder="nama@email.com" required />
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-5">
-                                        <label class="form-label required fw-bold fs-6">Kelurahan</label>
-                                        <select class="form-select form-select-solid" name="id_kel" id='id_kel' data-control="select2" data-placeholder="Cari Kelurahan..." required>
-                                            <option></option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="mb-5">
-                                        <label class="form-label required fw-bold fs-6">Alamat Lengkap</label>
-                                        <textarea name="alamat" id="alamat" class="form-control form-control-solid" rows="3" required></textarea>
-                                        <div class="form-text">Isi nama jalan, RT/RW, dan No. Rumah.</div>
-                                    </div>
-                                </div>
-                            </div>
+                                         </select>
+                                     </div>
+                                 </div>
+                             </div>
                         </div>
 
-                        <!-- Col Right: Pekerjaan & Lainnya -->
                         <div class="col-md-6">
-                            <div class="card h-100">
+                            <div class="card modern-card h-100">
                                 <div class="card-header">
-                                    <h3 class="card-title fw-bold">Pekerjaan & Data Tambahan</h3>
+                                    <div class="card-title">
+                                        <span class="card-icon"><i class="bi bi-briefcase fs-3"></i></span>
+                                        <span>Pekerjaan & Data Lain</span>
+                                    </div>
                                 </div>
-                                <div class="card-body p-9">
-                                   <div class="mb-5">
-                                        <label class="form-label required fw-bold fs-6">Pekerjaan</label>
-                                        <select name="id_pekerjaan" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Pekerjaan" required>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label required">Pekerjaan</label>
+                                        <select name="id_pekerjaan" class="form-select form-select-sm" data-placeholder="Pilih Pekerjaan" data-control="select2" required>
                                             <option></option>
                                             @foreach ($data_pekerjaan as $dp)
                                                 <option value="{{ $dp->id }}">{{ $dp->pekerjaan }}</option>
                                             @endforeach
                                         </select>
-                                   </div>
-
-                                   <div class="row mb-5">
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold fs-6">NRP / NIP</label>
-                                            <input type="text" name="nrp" class="form-control form-control-solid" placeholder="Optional" />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold fs-6">Pangkat / Golongan</label>
-                                            <input type="text" name="pangkat" class="form-control form-control-solid" placeholder="Optional" />
-                                        </div>
-                                   </div>
-
-                                   <div class="mb-5">
-                                        <label class="form-label fw-bold fs-6">Kesatuan / Instansi</label>
-                                        <input type="text" name="kesatuan" class="form-control form-control-solid" placeholder="Optional" />
-                                   </div>
-
-                                   <div class="row mb-5">
-                                        <div class="col-md-6">
-                                            <label class="form-label required fw-bold fs-6">Status Pasien</label>
-                                            <select name="status_pasien" class="form-select form-select-solid" required>
+                                    </div>
+                                    <div class="row g-2 mb-3">
+                                         <div class="col-md-6">
+                                            <label class="form-label">NRP / NIP</label>
+                                            <input type="text" name="nrp" class="form-control form-control-sm" placeholder="Opsional"/>
+                                         </div>
+                                         <div class="col-md-6">
+                                            <label class="form-label">Pangkat</label>
+                                            <input type="text" name="pangkat" class="form-control form-control-sm" placeholder="Opsional"/>
+                                         </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Kesatuan / Instansi</label>
+                                        <input type="text" name="kesatuan" class="form-control form-control-sm" placeholder="Opsional"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label required">Status Pasien</label>
+                                        <div class="input-group input-group-sm">
+                                            <select name="status_pasien" class="form-select form-select-sm" required>
                                                 @foreach ($data_status as $ds)
                                                     <option value="{{ $ds->id }}">{{ $ds->d_status }}</option>
                                                 @endforeach
                                             </select>
-                                             <div class="form-check mt-2">
-                                                <input class="form-check-input" type="checkbox" name='pasien_lama' value="1" id="checkPasienLama" />
-                                                <label class="form-check-label text-gray-600" for="checkPasienLama">Pasien Lama?</label>
+                                            <div class="input-group-text">
+                                                <input class="form-check-input mt-0" type="checkbox" name='pasien_lama' value="1" id="checkPasienLama" aria-label="Pasien Lama">
+                                                <label class="ms-2 mb-0 fs-8" for="checkPasienLama">Lama</label>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold fs-6">Info Kepesertaan BPJS</label>
-                                            <input type="text" readonly name="kepesertaan_bpjs" id="kepesertaan_bpjs" class="form-control form-control-solid" />
-                                        </div>
-                                   </div>
-                                    
-                                     <div class="mb-5">
-                                        <label class="form-label required fw-bold fs-6">Hambatan Komunikasi</label>
-                                        <select name="id_hambatan" class="form-select form-select-solid" data-placeholder="Pilih Hambatan">
-                                             @foreach ($data_hambatan as $dh)
-                                                <option value="{{ $dh->id }}">{{ $dh->hambatan }}</option>
-                                            @endforeach
-                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Card: Penanggung Jawab -->
-                     <div class="card mt-5 mb-5 mb-xl-10">
-                        <div class="card-header">
-                             <div class="card-title m-0">
-                                <h3 class="fw-bold m-0">Penanggung Jawab Pasien</h3>
-                            </div>
-                        </div>
-                        <div class="card-body p-9">
-                            <div class="row mb-5">
-                                <div class="col-md-4">
-                                     <label class="form-label required fw-bold fs-6">Nama Penanggung Jawab</label>
-                                     <input type="text" name="penanggung_jawab" class="form-control form-control-solid" required />
-                                </div>
-                                <div class="col-md-4">
-                                     <label class="form-label required fw-bold fs-6">Hubungan dengan Pasien</label>
-                                     <select name="hubungan" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Hubungan" required>
+                    
+                    <!-- SECTION: Penanggung Jawab -->
+                    <div class="card modern-card mt-3">
+                         <div class="card-header">
+                             <div class="card-title">
+                                 <span class="card-icon"><i class="bi bi-people fs-3"></i></span>
+                                 <span>Penanggung Jawab</span>
+                             </div>
+                         </div>
+                         <div class="card-body">
+                             <div class="row g-3 mb-3">
+                                 <div class="col-md-6">
+                                     <label class="form-label required">Nama Penanggung Jawab</label>
+                                     <input type="text" name="penanggung_jawab" class="form-control form-control-sm" required/>
+                                 </div>
+                                 <div class="col-md-6">
+                                     <label class="form-label required">Hubungan</label>
+                                     <select name="hubungan" class="form-select form-select-sm" data-placeholder="Pilih Hubungan" data-control="select2" required>
                                          <option></option>
                                          @foreach ($pasien_penanggungjawab as $dh)
                                             <option value="{{ $dh->id }}">{{ $dh->penaggungjawab }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label required fw-bold fs-6">No Telp / HP</label>
-                                    <input type="text" name="no_tlp_penanggung_jawab" class="form-control form-control-solid" required />
-                                </div>
-                            </div>
-                             <div class="row">
-                                <div class="col-md-12">
-                                     <label class="form-label required fw-bold fs-6">Alamat Penanggung Jawab</label>
-                                     <input type="text" name="alamat_penanggung_jawab" class="form-control form-control-solid" required />
-                                </div>
-                            </div>
-                        </div>
+                                         @endforeach
+                                     </select>
+                                 </div>
+                             </div>
+                             <div class="row g-3">
+                                 <div class="col-md-6">
+                                     <label class="form-label required">No. Telepon / HP</label>
+                                     <input type="text" name="no_tlp_penanggung_jawab" class="form-control form-control-sm" required/>
+                                 </div>
+                                 <div class="col-md-6">
+                                     <label class="form-label required">Alamat Penanggung Jawab</label>
+                                     <input type="text" name="alamat_penanggung_jawab" class="form-control form-control-sm" required/>
+                                 </div>
+                             </div>
+                         </div>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="card border-0 bg-transparent">
-                          <div class="card-body p-0 d-flex justify-content-end gap-2">
-                             <a href="{{ route('pasien.index') }}" class="btn btn-light-secondary btn-active-light-primary">Batal</a>
-                             <button type="button" id='button-tambah' class="btn btn-primary"><i class="ki-outline ki-check-circle fs-2"></i> Simpan Data Pasien</button>
-                        </div>
+                    <!-- SPACE UNTUK ACTION BAR -->
+                    <div style="height: 60px;"></div>
+
+                    <!-- ACTION BAR -->
+                    <div class="action-bar">
+                        <a href="{{ route('pasien.index') }}" class="btn btn-light btn-active-light-primary">Batal</a>
+                        <button type="button" id='button-tambah' class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Simpan Data Pasien
+                        </button>
                     </div>
+
                 </form>
 
             </div>
@@ -303,300 +494,161 @@
 @endsection
 
 @section('js')
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
     <script>
         const form = document.getElementById('form-create');
+        
+        // Setup FormValidation
         var validator = FormValidation.formValidation(
             form, {
                 fields: {
-                    nama_pasien: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi' },
-                            stringLength: { max: 255 }
-                        }
-                    },
-                     no_rm: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi'
-                            }
-                        }
-                    },
-                    jenis_kelamin: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    golongan_darah: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                     tempat_lahir: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                     tgl_lahir: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    id_agama: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    id_etnis: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    id_pendidikan: {
-                        validators: {
-                            notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    id_hubungan_pernikakan: {
-                        validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    no_hp: {
-                        validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    email: {
-                        validators: {
-                             notEmpty: { message: 'Wajib diisi' },
-                             emailAddress: { message: 'Format email tidak valid' }
-                        }
-                    },
-                    id_kel: {
-                        validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    alamat: {
-                        validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    id_pekerjaan: {
-                        validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    penanggung_jawab: {
-                        validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    hubungan: {
-                        validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    no_tlp_penanggung_jawab: {
-                         validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    },
-                    alamat_penanggung_jawab: {
-                         validators: {
-                             notEmpty: { message: 'Wajib diisi' }
-                        }
-                    }
+                    nama_pasien: { validators: { notEmpty: { message: 'Nama harus diisi' } } },
+                    no_rm: { validators: { notEmpty: { message: 'No RM harus diisi' } } },
+                    jenis_kelamin: { validators: { notEmpty: { message: 'Pilih jenis kelamin' } } },
+                    golongan_darah: { validators: { notEmpty: { message: 'Pilih golongan darah' } } },
+                    tempat_lahir: { validators: { notEmpty: { message: 'Tempat lahir harus diisi' } } },
+                    tgl_lahir: { validators: { notEmpty: { message: 'Tgl lahir harus diisi' } } },
+                    id_agama: { validators: { notEmpty: { message: 'Agama harus dipilih' } } },
+                    id_etnis: { validators: { notEmpty: { message: 'Etnis harus dipilih' } } },
+                    id_pendidikan: { validators: { notEmpty: { message: 'Pendidikan harus dipilih' } } },
+                    id_hubungan_pernikakan: { validators: { notEmpty: { message: 'Status pernikahan harus dipilih' } } },
+                    no_hp: { validators: { notEmpty: { message: 'No HP harus diisi' } } },
+                    email: { validators: { notEmpty: { message: 'Email harus diisi' }, emailAddress: { message: 'Format email salah' } } },
+                    id_kel: { validators: { notEmpty: { message: 'Kelurahan harus dipilih' } } },
+                    alamat: { validators: { notEmpty: { message: 'Alamat harus diisi' } } },
+                    id_pekerjaan: { validators: { notEmpty: { message: 'Pekerjaan harus dipilih' } } },
+                    penanggung_jawab: { validators: { notEmpty: { message: 'Nama PJ harus diisi' } } },
+                    hubungan: { validators: { notEmpty: { message: 'Hubungan harus dipilih' } } },
+                    no_tlp_penanggung_jawab: { validators: { notEmpty: { message: 'No Tlp PJ harus diisi' } } },
+                    alamat_penanggung_jawab: { validators: { notEmpty: { message: 'Alamat PJ harus diisi' } } }
                 },
 
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
                     bootstrap: new FormValidation.plugins.Bootstrap5({
-                        rowSelector: '.row',
-                        eleInvalidClass: '',
-                        eleValidClass: ''
+                        rowSelector: '.input-group, .row > .col-md-6, .row > .col-md-4, .row > .col-md-12, .mb-4',
+                        eleInvalidClass: 'is-invalid',
+                        eleValidClass: 'is-valid'
                     })
                 }
             }
         );
 
-        // Revalidate Select2
-        $(form.querySelectorAll('.form-select')).each(function() {
-            $(this).on('change', function() {
-                validator.revalidateField($(this).attr('name'));
+        // Revalidate Select2 & Radios on change
+        $(form).find('select').on('change', function() {
+            validator.revalidateField($(this).attr('name'));
+        });
+        $(form).find('input[type="radio"]').on('change', function() {
+            validator.revalidateField($(this).attr('name'));
+        });
+
+        // Submit Action
+        $('#button-tambah').on('click', function(e) {
+            e.preventDefault();
+            validator.validate().then(function(status) {
+                if (status == 'Valid') {
+                    Swal.fire({
+                        title: 'Simpan Data?',
+                        text: "Pastikan data yang diinput sudah benar.",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Simpan',
+                        cancelButtonText: 'Batal',
+                        customClass: { confirmButton: "btn btn-primary", cancelButton: "btn btn-light" }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                             form.submit();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        text: "Mohon lengkapi kolom yang bertanda merah.",
+                        icon: "error",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, Cek Lagi",
+                        customClass: { confirmButton: "btn btn-primary" }
+                    });
+                }
             });
         });
 
-        // Submit Button Logic
-        const submitButton = document.getElementById('button-tambah');
-        submitButton.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            if (validator) {
-                validator.validate().then(function(status) {
-                    if (status == 'Valid') {
-                        submitButton.setAttribute('data-kt-indicator', 'on');
-                        submitButton.disabled = true;
-
-                        setTimeout(function() {
-                            submitButton.removeAttribute('data-kt-indicator');
-                            submitButton.disabled = false;
-
-                           Swal.fire({
-                                text: "Data pasien berhasil disimpan!",
-                                icon: "success",
-                                buttonsStyling: false,
-                                confirmButtonText: "Ok, Siap!",
-                                customClass: {
-                                    confirmButton: "btn btn-primary"
-                                }
-                            }).then(function (result) {
-                                if (result.isConfirmed) {
-                                    form.submit();
-                                }
-                            });
-                             form.submit(); 
-                        }, 1000);
-                    } else {
-                        Swal.fire({
-                            text: "Mohon lengkapi data yang wajib diisi.",
-                            icon: "error",
-                            buttonsStyling: false,
-                            confirmButtonText: "Ok",
-                            customClass: {
-                                confirmButton: "btn btn-primary"
-                            }
-                        });
-                    }
-                });
-            }
+        // Edit RM
+        $('#btn-edit-rm').on('click', function() {
+             Swal.fire({
+                title: 'Edit No. Rekam Medis',
+                input: 'text',
+                inputValue: $('#pasien-kodepasien').val(),
+                showCancelButton: true,
+                confirmButtonText: 'Update'
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    $('#pasien-kodepasien').val(result.value);
+                    $('#display-rm').text(result.value);
+                }
+            });
         });
 
-        // JS Logic for Search NIK/BPJS
-        $(document).on('click', '#btn-edit-rm', function() {
-            $('#pasien-kodepasien').prop('readonly', false);
-            $('#pasien-kodepasien').val('P-');
-            $('#pasien-kodepasien').focus();
-            $('#pasien-kodepasien').removeClass('form-control-solid');
-            $(this).attr("id", "auto-rm");
-             $(this).html('<i class="ki-outline ki-check fs-2"></i>');
-             $(this).attr("title", "Simpan No RM Manual");
-             $(this).removeClass("btn-warning").addClass("btn-success");
-        });
-
-        $(document).on('click', '#auto-rm', function() {
-            $('#pasien-kodepasien').prop('readonly', true);
-             // Logic to restore original RM if needed, or keep edited
-            // $('#pasien-kodepasien').val('{{ $kodepasien }}');
-            $('#pasien-kodepasien').addClass('form-control-solid');
-            $(this).attr("id", "btn-edit-rm");
-             $(this).html('<i class="ki-outline ki-pencil fs-2"></i>');
-             $(this).attr("title", "Edit Manual");
-             $(this).removeClass("btn-success").addClass("btn-warning");
-        });
-
-        // Search NIK
-        $(document).on('click', '#btn-cari-nik', function() {
-            var nik = $('#nik').val();
-            if (!nik) {
-                toastr.error('Harap isi NIK');
-                return;
-            }
-            performSearch(nik, 'nik');
-        });
-
-        // Search BPJS
-        $(document).on('click', '#btn-cari-bpjs', function() {
-            var bpjs = $('#bpjs').val();
-            if (!bpjs) {
-                toastr.error('Harap isi Nomor BPJS');
-                return;
-            }
-            performSearch(bpjs, 'bpjs');
-        });
-
-        function performSearch(value, type) {
-             $.ajax({
+        // Search Handlers
+        function performSearch(val, type) {
+            if(!val) { toastr.error('Input tidak boleh kosong'); return; }
+            
+            $.blockUI({ message: '<div class="p-3">Sedang mencari data...</div>' });
+            
+            $.ajax({
                 url: "{{ route('pasien.get-by-nik') }}",
                 type: 'GET',
-                data: {
-                    nik: value,
-                    jenis: type
-                },
-                beforeSend: function() {
-                    $.blockUI({ message: '<div class="d-flex align-items-center justify-content-center"><div class="spinner-border text-primary me-3"></div> Loading Data...</div>' });
-                },
-                success: function(data) {
+                data: { nik: val, jenis: type },
+                success: function(res) {
                     $.unblockUI();
-                    if (data.status == true) {
-                        toastr.success(data.message);
-                        populateForm(data.data.peserta);
+                    if(res.status) {
+                        toastr.success('Data ditemukan!');
+                        fillData(res.data.peserta);
                     } else {
-                        toastr.error(data.message);
+                        toastr.error(res.message);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function() {
                     $.unblockUI();
-                    toastr.error('Terjadi kesalahan: ' + error);
+                    toastr.error('Gagal menghubungi server');
                 }
             });
         }
 
-        function populateForm(data) {
+        function fillData(data) {
             $('#nik').val(data.nik);
             $('#bpjs').val(data.noKartu);
             $('#nama_pasien').val(data.nama);
-            $('#jenis_kelamin').val(data.sex).trigger('change');
             $('#tgl_lahir').val(data.tglLahir);
             $('#no_hp').val(data.mr.noTelepon);
             
-             // Handle RM if exists
-            if (data.mr.noMR) {
-                 $('#pasien-kodepasien').val("P-" + data.mr.noMR);
-            }
-             
-            // Handle Info BPJS
-            if (data.jenisPeserta) {
-                 $('#kepesertaan_bpjs').val(data.jenisPeserta.keterangan);
-            }
+            if(data.sex == 'L') $('#gender_l').prop('checked', true);
+            else $('#gender_p').prop('checked', true);
+            
+            // Revalidate filled fields
+            validator.revalidateField('nama_pasien');
+            validator.revalidateField('tgl_lahir');
         }
 
-        // Initialize Plugins
-        $(function() {
-             $("#id_kel").select2({
-                ajax: {
-                    url: " {{ route('pasien.cari-kelurahan') }}",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return { q: params.term };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: data.result.map(function(item) {
-                                return { id: item.id, text: item.text };
-                            })
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 3,
-                placeholder: 'Ketik Nama Kelurahan...'
-            });
+        $('#btn-cari-nik').click(() => performSearch($('#nik').val(), 'nik'));
+        $('#btn-cari-bpjs').click(() => performSearch($('#bpjs').val(), 'bpjs'));
 
-            $("#tgl_lahir").flatpickr({
-                maxDate: "today"
-            });
+        // Init Plugins
+        $("#tgl_lahir").flatpickr({ maxDate: "today", dateFormat: "Y-m-d" });
+        
+        $("#id_kel").select2({
+            ajax: {
+                url: " {{ route('pasien.cari-kelurahan') }}",
+                dataType: 'json',
+                delay: 250,
+                data: params => ({ q: params.term }),
+                processResults: data => ({ results: data.result.map(x => ({id: x.id, text: x.text})) })
+            },
+            minimumInputLength: 3
         });
-
-        // Flash Messages
-        @if (session('gagal'))
-            Swal.fire({ text: '{{ session('gagal') }}', icon: "error", buttonsStyling: false, confirmButtonText: "Ok", customClass: { confirmButton: "btn btn-primary" } });
-        @endif
-        @if (session('berhasil'))
-            Swal.fire({ text: '{{ session('berhasil') }}', icon: "success", buttonsStyling: false, confirmButtonText: "Ok", customClass: { confirmButton: "btn btn-primary" } });
-        @endif
+        
+        // Show server alerts
+        @if(session('berhasil')) Swal.fire('Berhasil', '{{ session('berhasil') }}', 'success'); @endif
+        @if(session('gagal')) Swal.fire('Gagal', '{{ session('gagal') }}', 'error'); @endif
 
     </script>
 @endsection

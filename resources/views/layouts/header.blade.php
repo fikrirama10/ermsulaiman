@@ -30,7 +30,7 @@
 
         <!--begin::Navbar-->
         <div class="app-navbar flex-lg-grow-1" id="kt_app_header_navbar">
-            
+
             <!-- Global Search Bar -->
             <div class="app-navbar-item d-flex align-items-stretch flex-lg-grow-1">
                 <div class="d-flex align-items-center w-100 mw-lg-400px">
@@ -38,16 +38,16 @@
                         <span class="position-absolute top-50 translate-middle-y ms-4">
                             <i class="bi bi-search text-gray-500 fs-3"></i>
                         </span>
-                        <input type="text" class="form-control form-control-solid ps-12 border-0 bg-light-secondary" 
-                               name="search" id="global_search_input" placeholder="Cari Pasien / Menu..." 
+                        <input type="text" class="form-control form-control-solid ps-12 border-0 bg-light-secondary"
+                               name="search" id="global_search_input" placeholder="Cari Pasien / Menu..."
                                data-kt-search-element="input" autocomplete="off">
                         <!-- Search Shortcut Hint -->
                         <div class="position-absolute top-50 end-0 translate-middle-y me-2">
                              <span class="badge badge-light-secondary text-muted border">/</span>
                         </div>
-                        
+
                         <!-- Search Results Dropdown -->
-                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-100" 
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-100"
                              id="global_search_results" style="position: absolute; top: 100%; left: 0; z-index: 105;">
                             <!-- Results will be injected here -->
                         </div>
@@ -65,7 +65,7 @@
 
             <!-- Quick Actions (Grid) -->
             <div class="app-navbar-item ms-1 ms-md-3">
-                <div class="btn btn-icon btn-custom btn-active-light-primary w-35px h-35px w-md-40px h-md-40px" 
+                <div class="btn btn-icon btn-custom btn-active-light-primary w-35px h-35px w-md-40px h-md-40px"
                      data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
                     <i class="bi bi-grid-3x3-gap fs-2"></i>
                 </div>
@@ -110,7 +110,7 @@
 
             <!-- Notifications -->
             <div class="app-navbar-item ms-1 ms-md-3">
-                <div class="btn btn-icon btn-custom btn-active-light-primary w-35px h-35px w-md-40px h-md-40px position-relative" 
+                <div class="btn btn-icon btn-custom btn-active-light-primary w-35px h-35px w-md-40px h-md-40px position-relative"
                      data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
                     <i class="bi bi-bell fs-2"></i>
                     <span class="position-absolute top-0 start-100 translate-middle badge badge-circle badge-danger w-15px h-15px ms-n4 mt-3">3</span>
@@ -145,12 +145,12 @@
 
             <!-- User Menu -->
             <div class="app-navbar-item ms-1 ms-md-3" id="kt_header_user_menu_toggle">
-                <div class="cursor-pointer symbol symbol-35px symbol-md-45px border border-gray-300 border-dashed p-1 bg-light" 
+                <div class="cursor-pointer symbol symbol-35px symbol-md-45px border border-gray-300 border-dashed p-1 bg-light"
                      data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
                      <!-- Use Auth User Image if available, else generic -->
                     <img src="{{ asset('assets/media/avatars/blank.png') }}" class="rounded-circle" alt="user" />
                 </div>
-                
+
                 <!-- Use existing User Menu Structure but refined -->
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" data-kt-menu="true">
                     <div class="menu-item px-3">
@@ -168,6 +168,22 @@
                     <div class="separator my-2"></div>
                     <div class="menu-item px-5">
                         <a href="#" class="menu-link px-5">Profil Saya</a>
+                    </div>
+                    <div class="menu-item px-5">
+                        <a href="{{ route('two-factor.index') }}" class="menu-link px-5">
+                            <span class="menu-icon">
+                                <i class="ki-duotone ki-shield-tick fs-4 me-1">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </span>
+                            <span class="menu-text">Two-Factor Authentication</span>
+                            @if(auth()->user()->hasTwoFactorEnabled())
+                                <span class="menu-badge">
+                                    <span class="badge badge-success badge-circle fw-bold fs-8">✓</span>
+                                </span>
+                            @endif
+                        </a>
                     </div>
                     <div class="menu-item px-5">
                         <a href="#" class="menu-link px-5">
@@ -199,14 +215,14 @@
         const now = new Date();
         const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':');
         const dateString = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        
+
         const clockEl = document.getElementById('header_clock');
         const dateEl = document.getElementById('header_date');
-        
+
         if(clockEl) clockEl.textContent = timeString;
         if(dateEl) dateEl.textContent = dateString;
     }
-    
+
     // Update every second
     setInterval(updateHeaderClock, 1000);
     // Initial call

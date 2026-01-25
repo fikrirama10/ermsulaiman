@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Dashboard API Test</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+                background: #f5f5f5;
+            }
+            .endpoint {
+                background: white;
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .endpoint h3 {
+                margin: 0 0 10px 0;
+                color: #333;
+            }
+            .status {
+                display: inline-block;
+                padding: 5px 10px;
+                border-radius: 3px;
+                font-weight: bold;
+            }
+            .status.success {
+                background: #4caf50;
+                color: white;
+            }
+            .status.error {
+                background: #f44336;
+                color: white;
+            }
+            .status.loading {
+                background: #ff9800;
+                color: white;
+            }
+            .response {
+                background: #f9f9f9;
+                padding: 10px;
+                border-radius: 3px;
+                margin-top: 10px;
+                font-family: monospace;
+                font-size: 12px;
+                max-height: 200px;
+                overflow: auto;
+            }
+            button {
+                background: #2196f3;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 3px;
+                cursor: pointer;
+                margin-right: 5px;
+            }
+            button:hover {
+                background: #1976d2;
+            }
+            .test-all {
+                background: #4caf50;
+                margin-bottom: 20px;
+            }
+            .test-all:hover {
+                background: #45a049;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Dashboard API Test</h1>
+        <button class="test-all" onclick="testAll()">Test All Endpoints</button>
+
+        <div class="endpoint" id="statistics">
+            <h3>1. Statistics</h3>
+            <span class="status loading">Not Tested</span>
+            <button
+                onclick="testEndpoint('statistics', '/dashboard/statistics')"
+            >
+                Test
+            </button>
+            <div class="response" style="display: none"></div>
+        </div>
+
+        <div class="endpoint" id="kunjungan-bulanan">
+            <h3>2. Kunjungan Bulanan</h3>
+            <span class="status loading">Not Tested</span>
+            <button
+                onclick="
+                    testEndpoint(
+                        'kunjungan-bulanan',
+                        '/dashboard/kunjungan-bulanan',
+                    )
+                "
+            >
+                Test
+            </button>
+            <div class="response" style="display: none"></div>
+        </div>
+
+        <div class="endpoint" id="kunjungan-poli">
+            <h3>3. Kunjungan Per Poli</h3>
+            <span class="status loading">Not Tested</span>
+            <button
+                onclick="
+                    testEndpoint('kunjungan-poli', '/dashboard/kunjungan-poli')
+                "
+            >
+                Test
+            </button>
+            <div class="response" style="display: none"></div>
+        </div>
+
+        <div class="endpoint" id="demografi-gender">
+            <h3>4. Demografi Gender</h3>
+            <span class="status loading">Not Tested</span>
+            <button
+                onclick="
+                    testEndpoint(
+                        'demografi-gender',
+                        '/dashboard/demografi-gender',
+                    )
+                "
+            >
+                Test
+            </button>
+            <div class="response" style="display: none"></div>
+        </div>
+
+        <div class="endpoint" id="demografi-usia">
+            <h3>5. Demografi Usia</h3>
+            <span class="status loading">Not Tested</span>
+            <button
+                onclick="
+                    testEndpoint('demografi-usia', '/dashboard/demografi-usia')
+                "
+            >
+                Test
+            </button>
+            <div class="response" style="display: none"></div>
+        </div>
+
+        <div class="endpoint" id="cara-bayar">
+            <h3>6. Cara Bayar</h3>
+            <span class="status loading">Not Tested</span>
+            <button
+                onclick="testEndpoint('cara-bayar', '/dashboard/cara-bayar')"
+            >
+                Test
+            </button>
+            <div class="response" style="display: none"></div>
+        </div>
+
+        <div class="endpoint" id="top-diagnosa">
+            <h3>7. Top Diagnosa</h3>
+            <span class="status loading">Not Tested</span>
+            <button
+                onclick="
+                    testEndpoint('top-diagnosa', '/dashboard/top-diagnosa')
+                "
+            >
+                Test
+            </button>
+            <div class="response" style="display: none"></div>
+        </div>
+
+        <div class="endpoint" id="bed-availability">
+            <h3>8. Bed Availability</h3>
+            <span class="status loading">Not Tested</span>
+            <button
+                onclick="
+                    testEndpoint(
+                        'bed-availability',
+                        '/dashboard/bed-availability',
+                    )
+                "
+            >
+                Test
+            </button>
+            <div class="response" style="display: none"></div>
+        </div>
+
+        <script>
+            function testEndpoint(id, url) {
+                const container = document.getElementById(id);
+                const statusEl = container.querySelector(".status");
+                const responseEl = container.querySelector(".response");
+
+                statusEl.textContent = "Testing...";
+                statusEl.className = "status loading";
+                responseEl.style.display = "none";
+
+                fetch(url)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        statusEl.textContent = "Success ✓";
+                        statusEl.className = "status success";
+                        responseEl.textContent = JSON.stringify(data, null, 2);
+                        responseEl.style.display = "block";
+                    })
+                    .catch((error) => {
+                        statusEl.textContent = "Error ✗";
+                        statusEl.className = "status error";
+                        responseEl.textContent = "Error: " + error.message;
+                        responseEl.style.display = "block";
+                    });
+            }
+
+            function testAll() {
+                const endpoints = [
+                    ["statistics", "/dashboard/statistics"],
+                    ["kunjungan-bulanan", "/dashboard/kunjungan-bulanan"],
+                    ["kunjungan-poli", "/dashboard/kunjungan-poli"],
+                    ["demografi-gender", "/dashboard/demografi-gender"],
+                    ["demografi-usia", "/dashboard/demografi-usia"],
+                    ["cara-bayar", "/dashboard/cara-bayar"],
+                    ["top-diagnosa", "/dashboard/top-diagnosa"],
+                    ["bed-availability", "/dashboard/bed-availability"],
+                ];
+
+                endpoints.forEach(([id, url], index) => {
+                    setTimeout(() => {
+                        testEndpoint(id, url);
+                    }, index * 500);
+                });
+            }
+        </script>
+    </body>
+</html>

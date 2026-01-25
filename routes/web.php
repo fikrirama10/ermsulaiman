@@ -13,6 +13,8 @@ use App\Helpers\SatusehatPasienHelper;
 use App\Helpers\SatusehatKondisiHelper;
 use App\Helpers\SatusehatResourceHelper;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\DetailRekapMedisController;
+use App\Http\Controllers\PenjualanObatController;
 use App\Http\Controllers\GiziController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasienController;
@@ -37,6 +39,7 @@ use App\Http\Controllers\LaporanOperasiController;
 use App\Helpers\Satusehat\Resource\EncounterHelper;
 
 use App\Http\Controllers\GlobalSearchController;
+use App\Http\Controllers\PatientJourneyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -319,14 +322,39 @@ Route::get('/signature/{consid}/{secretkey}/', function ($consid, $secretkey) {
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
+//Two Factor Authentication
+Route::middleware('guest')->group(function () {
+    Route::get('/two-factor-challenge', [App\Http\Controllers\TwoFactorController::class, 'showChallenge'])->name('two-factor.challenge');
+    Route::post('/two-factor-challenge', [App\Http\Controllers\TwoFactorController::class, 'verifyChallenge'])->name('two-factor.verify');
+});
+
+Route::middleware(['auth', 'two-factor'])->group(function () {
+    Route::prefix('profile/two-factor')->name('two-factor.')->group(function () {
+        Route::get('/', [App\Http\Controllers\TwoFactorController::class, 'index'])->name('index');
+        Route::get('/enable', [App\Http\Controllers\TwoFactorController::class, 'enable'])->name('enable');
+        Route::post('/confirm', [App\Http\Controllers\TwoFactorController::class, 'confirm'])->name('confirm');
+        Route::get('/recovery-codes', [App\Http\Controllers\TwoFactorController::class, 'showRecoveryCodes'])->name('recovery-codes');
+        Route::post('/regenerate-codes', [App\Http\Controllers\TwoFactorController::class, 'regenerateRecoveryCodes'])->name('regenerate-codes');
+        Route::delete('/disable', [App\Http\Controllers\TwoFactorController::class, 'disable'])->name('disable');
+    });
+});
+
 Route::get('/index', function () {
     return view('layouts.index');
 })->middleware('auth');
 
-//Dasboard
-Route::prefix('dashboard')->middleware('auth')->group(function () {
-    Route::get('/', [DashboardController::class, 'index']);
-})->name('dashboard');
+//Dashboard
+Route::prefix('dashboard')->middleware(['auth', 'two-factor'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/statistics', [DashboardController::class, 'getStatistics'])->name('dashboard.statistics');
+    Route::get('/kunjungan-bulanan', [DashboardController::class, 'getKunjunganBulanan'])->name('dashboard.kunjungan-bulanan');
+    Route::get('/kunjungan-poli', [DashboardController::class, 'getKunjunganPerPoli'])->name('dashboard.kunjungan-poli');
+    Route::get('/demografi-gender', [DashboardController::class, 'getDemografiGender'])->name('dashboard.demografi-gender');
+    Route::get('/demografi-usia', [DashboardController::class, 'getDemografiUsia'])->name('dashboard.demografi-usia');
+    Route::get('/cara-bayar', [DashboardController::class, 'getCaraBayar'])->name('dashboard.cara-bayar');
+    Route::get('/top-diagnosa', [DashboardController::class, 'getTopDiagnosa'])->name('dashboard.top-diagnosa');
+    Route::get('/bed-availability', [DashboardController::class, 'getBedAvailability'])->name('dashboard.bed-availability');
+});
 
 //Data Master
 Route::prefix('data-master')->middleware('auth')->group(function () {
@@ -661,6 +689,17 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
         Route::post('/store/skrining-gizi', [GiziController::class, 'storeSkrining'])->name('store.skrining-gizi');
         Route::post('/store/diit', [GiziController::class, 'storeDiit'])->name('store.diit');
     });
+
+    // Penjualan Obat (Direct Purchase)
+    Route::prefix('penjualan-obat')->middleware('auth')->as('penjualan-obat.')->group(function () {
+        Route::get('/', [PenjualanObatController::class, 'index'])->name('index');
+        Route::get('/create', [PenjualanObatController::class, 'create'])->name('create');
+        Route::post('/store', [PenjualanObatController::class, 'store'])->name('store');
+        Route::get('/{id}', [PenjualanObatController::class, 'show'])->name('show');
+        Route::get('/{id}/cetak', [PenjualanObatController::class, 'cetak'])->name('cetak');
+        Route::get('/ajax/search-rawat', [App\Http\Controllers\PenjualanObatController::class, 'searchRawat'])->name('search-rawat');
+        Route::get('/ajax/search-obat', [App\Http\Controllers\PenjualanObatController::class, 'searchObat'])->name('search-obat');
+    });
 })->middleware('auth');
 
 // Management Dokter Routes
@@ -704,4 +743,15 @@ Route::prefix('ajax')->middleware('auth')->group(function () {
     Route::get('bed/edit', [RuanganBedController::class, 'edit'])->name('edit.ruangan-bed-ajax');
     Route::get('get-dokter', [TemplateController::class, 'getDokter'])->name('get-dokter.ajax');
     Route::get('get-perawat', [TemplateController::class, 'getPerawat'])->name('get-perawat.ajax');
+});
+
+// Billing & Patient Journey
+Route::prefix('billing')->middleware('auth')->group(function () {
+    Route::get('/', [PatientJourneyController::class, 'index'])->name('billing.index');
+    Route::get('/data', [PatientJourneyController::class, 'data'])->name('billing.data');
+    Route::get('/cetak/{idkunjungan}', [PatientJourneyController::class, 'cetakBilling'])->name('billing.cetak');
+    Route::get('/visit/{idkunjungan}', [PatientJourneyController::class, 'show'])->name('billing.show');
+    Route::post('/add-tindakan', [PatientJourneyController::class, 'addTindakan'])->name('billing.add-tindakan');
+    Route::delete('/delete-tindakan/{id}', [PatientJourneyController::class, 'deleteTindakan'])->name('billing.delete-tindakan');
+    Route::post('/finish/{idkunjungan}', [PatientJourneyController::class, 'finishBilling'])->name('billing.finish');
 });

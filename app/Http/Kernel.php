@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'dokter' => \App\Http\Middleware\Dokter::class,
         'perawat' => \App\Http\Middleware\Perawat::class,
         'rekammedis' => \App\Http\Middleware\Rekammedis::class,
+        'two-factor' => \App\Http\Middleware\TwoFactorAuthentication::class,
     ];
 }
