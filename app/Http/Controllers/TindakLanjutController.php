@@ -86,7 +86,6 @@ class TindakLanjutController extends Controller
             DB::commit();
             return redirect(route('rekam-medis-poli', $id))
                 ->with('berhasil', 'Data tindak lanjut berhasil disimpan');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error saving tindak lanjut: ' . $e->getMessage());
@@ -158,7 +157,6 @@ class TindakLanjutController extends Controller
             DB::commit();
             return redirect(route('rekam-medis-poli', $rawat->id))
                 ->with('berhasil', 'Data tindak lanjut berhasil diperbarui');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error updating tindak lanjut: ' . $e->getMessage());
@@ -183,7 +181,6 @@ class TindakLanjutController extends Controller
             DB::commit();
             return redirect(route('rekam-medis-poli', $rawat->id))
                 ->with('berhasil', 'Data tindak lanjut berhasil dihapus');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error deleting tindak lanjut: ' . $e->getMessage());
@@ -215,7 +212,6 @@ class TindakLanjutController extends Controller
             }
 
             return response()->json(['error' => 'Tipe tindak lanjut tidak valid'], 400);
-
         } catch (\Exception $e) {
             Log::error('Error loading partial view: ' . $e->getMessage());
             return response()->json(['error' => 'Terjadi kesalahan'], 500);

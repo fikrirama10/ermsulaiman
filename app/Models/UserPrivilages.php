@@ -18,4 +18,15 @@ class UserPrivilages extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * Get all menus accessible by this role
+     */
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class, 'role_menu_permissions', 'role_id', 'menu_id')
+            ->withPivot('can_view')
+            ->wherePivot('can_view', true)
+            ->withTimestamps();
+    }
 }

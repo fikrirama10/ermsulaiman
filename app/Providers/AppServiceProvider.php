@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,13 +24,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if(env('APP_ENV') == 'production'){
+        if (env('APP_ENV') == 'production') {
             URL::forceScheme('https');
             URL::forceRootUrl(Config::get('app.url'));
         }
         config(['app.locale' => 'id']);
         setlocale(LC_ALL, 'IND');
         \Carbon\Carbon::setLocale('id');
+
+        // Register sidebar menu composer
+        View::composer('layouts.sidebar', \App\Http\View\Composers\MenuComposer::class);
 
         Gate::define('direktur', function (User $user) {
             return $user->idpriv === 2;

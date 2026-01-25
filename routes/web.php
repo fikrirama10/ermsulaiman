@@ -40,6 +40,7 @@ use App\Helpers\Satusehat\Resource\EncounterHelper;
 
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\PatientJourneyController;
+use App\Http\Controllers\RoleMenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,20 @@ use App\Http\Controllers\PatientJourneyController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+// Admin Routes - Role & Menu Management
+Route::prefix('admin')->middleware('auth')->as('admin.')->group(function () {
+    Route::prefix('roles')->as('roles.')->group(function () {
+        Route::get('/', [RoleMenuController::class, 'index'])->name('index');
+        Route::get('/{roleId}/menus', [RoleMenuController::class, 'editMenus'])->name('edit-menus');
+        Route::post('/{roleId}/menus', [RoleMenuController::class, 'updateMenus'])->name('update-menus');
+
+        // API endpoints
+        Route::get('/{roleId}/menus/json', [RoleMenuController::class, 'getMenusForRole'])->name('menus-json');
+        Route::get('/menus/all', [RoleMenuController::class, 'getAllMenus'])->name('all-menus');
+    });
+});
+
 
 #SS
 Route::get('/generate-token-ss', function () {
@@ -266,9 +281,10 @@ Route::get('/obat-tes', function () {
 });
 
 Route::get('/faskes', function (Request $request) {
+
     // $current_time = round(microtime(true) * 1000);
     // echo $current_time;
-    return VclaimHelper::getlist_taks($request->kode);
+    return VclaimHelper::getFaskes($request->q);
 })->name('list-faskes');
 Route::get('/update-task', function (Request $request) {
     $current_time = round(microtime(true) * 1000);
@@ -286,7 +302,7 @@ Route::get('/sarana-faskes/{id}', function ($id) {
 
 Route::get('/spesialistik-faskes/{id}/{tgl}', function ($id, $tgl) {
     $sarana = VclaimHelper::getFaskesSpesialistik($id, $tgl);
-
+    // return $sarana;
     if (isset($sarana['list'])) {
         foreach ($sarana['list'] as $key => $value) {
             if ($value['kapasitas'] < 1) {
@@ -754,4 +770,46 @@ Route::prefix('billing')->middleware('auth')->group(function () {
     Route::post('/add-tindakan', [PatientJourneyController::class, 'addTindakan'])->name('billing.add-tindakan');
     Route::delete('/delete-tindakan/{id}', [PatientJourneyController::class, 'deleteTindakan'])->name('billing.delete-tindakan');
     Route::post('/finish/{idkunjungan}', [PatientJourneyController::class, 'finishBilling'])->name('billing.finish');
+});
+
+// Partograf (Labor Monitoring)
+Route::prefix('partograf')->middleware(['auth', 'two-factor'])->name('partograf.')->group(function () {
+    Route::get('/', [App\Http\Controllers\PartografController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\PartografController::class, 'create'])->name('create');
+    Route::post('/', [App\Http\Controllers\PartografController::class, 'store'])->name('store');
+    Route::get('/{id}', [App\Http\Controllers\PartografController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [App\Http\Controllers\PartografController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [App\Http\Controllers\PartografController::class, 'update'])->name('update');
+    Route::delete('/{id}', [App\Http\Controllers\PartografController::class, 'destroy'])->name('destroy');
+
+    // API endpoints untuk observasi
+    Route::post('/{id}/progress', [App\Http\Controllers\PartografController::class, 'storeProgress'])->name('progress.store');
+    Route::post('/{id}/contraction', [App\Http\Controllers\PartografController::class, 'storeContraction'])->name('contraction.store');
+    Route::post('/{id}/fetal', [App\Http\Controllers\PartografController::class, 'storeFetalMonitoring'])->name('fetal.store');
+    Route::post('/{id}/vitals', [App\Http\Controllers\PartografController::class, 'storeMaternalVitals'])->name('vitals.store');
+    Route::post('/{id}/urine', [App\Http\Controllers\PartografController::class, 'storeUrine'])->name('urine.store');
+    Route::post('/{id}/medication', [App\Http\Controllers\PartografController::class, 'storeMedication'])->name('medication.store');
+
+    // Chart data & alerts
+    Route::get('/{id}/chart-data', [App\Http\Controllers\PartografController::class, 'getChartData'])->name('chart.data');
+    Route::get('/{id}/check-alerts', [App\Http\Controllers\PartografController::class, 'checkAlerts'])->name('check.alerts');
+
+    // DataTables endpoints
+    Route::get('/{id}/dt/progress', [App\Http\Controllers\PartografController::class, 'dtProgress'])->name('dt.progress');
+    Route::get('/{id}/dt/contraction', [App\Http\Controllers\PartografController::class, 'dtContraction'])->name('dt.contraction');
+    Route::get('/{id}/dt/fetal', [App\Http\Controllers\PartografController::class, 'dtFetal'])->name('dt.fetal');
+    Route::get('/{id}/dt/vitals', [App\Http\Controllers\PartografController::class, 'dtVitals'])->name('dt.vitals');
+    Route::get('/{id}/dt/urine', [App\Http\Controllers\PartografController::class, 'dtUrine'])->name('dt.urine');
+    Route::get('/{id}/dt/medication', [App\Http\Controllers\PartografController::class, 'dtMedication'])->name('dt.medication');
+
+    // Delete endpoints
+    Route::delete('/{laborRecordId}/progress/{id}', [App\Http\Controllers\PartografController::class, 'destroyProgress'])->name('progress.destroy');
+    Route::delete('/{laborRecordId}/contraction/{id}', [App\Http\Controllers\PartografController::class, 'destroyContraction'])->name('contraction.destroy');
+    Route::delete('/{laborRecordId}/fetal/{id}', [App\Http\Controllers\PartografController::class, 'destroyFetal'])->name('fetal.destroy');
+    Route::delete('/{laborRecordId}/vitals/{id}', [App\Http\Controllers\PartografController::class, 'destroyVitals'])->name('vitals.destroy');
+    Route::delete('/{laborRecordId}/urine/{id}', [App\Http\Controllers\PartografController::class, 'destroyUrine'])->name('urine.destroy');
+    Route::delete('/{laborRecordId}/medication/{id}', [App\Http\Controllers\PartografController::class, 'destroyMedication'])->name('medication.destroy');
+
+    // Export
+    Route::get('/{id}/pdf', [App\Http\Controllers\PartografController::class, 'exportPDF'])->name('pdf');
 });

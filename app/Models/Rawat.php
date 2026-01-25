@@ -60,4 +60,17 @@ class Rawat extends Model
     {
         return $this->hasMany(RawatResep::class, 'idrawat', 'id');
     }
+
+    public function laborRecord(): HasOne
+    {
+        return $this->hasOne(\App\Models\Partograf\LaborRecord::class, 'visit_id', 'id');
+    }
+
+    /**
+     * Scope untuk filter kasus persalinan
+     */
+    public function scopeMelahirkan($query)
+    {
+        return $query->where('melahirkan', 1);
+    }
 }

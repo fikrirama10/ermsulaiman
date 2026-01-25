@@ -221,7 +221,7 @@
                                         <div class="col-md-3">
                                             <label class="form-label fw-bold">Tgl.Rujukan</label>
                                             <input type="date" placeholder="Pilih Tgl Rujukan" class="form-control"
-                                                name='tgl_kontrol' id='tgl_kontrol_rujuk'>
+                                                name='tgl_kontrol_rujuk' id='tgl_kontrol_rujuk'>
                                         </div>
                                     </div>
                                     <div class="row mb-5">
@@ -419,6 +419,7 @@
                 url = url.replace(':b_id', langArray[0]);
                 url = url.replace(':p_no', tgl);
                 $.get(url).done(function(data) {
+                    console.log(data);
                     if (data != 0) {
                         $("select#poli_rujuk").html(data);
                     }
