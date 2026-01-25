@@ -20,7 +20,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\FarmasiController;
 use App\Http\Controllers\LaporanController;
-use App\Http\Controllers\DetailRekapMedisController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\DashboardController;
