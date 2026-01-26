@@ -340,7 +340,7 @@
                                         </h3>
                                         <div class="card-toolbar">
                                             <span
-                                                class="badge badge-light-primary fw-bold me-2">{{ $detail_rekap_medis?->tglmasuk ? date('d M Y', strtotime($detail_rekap_medis?->tglmasuk)) : '-' }}</span>
+                                                class="badge badge-light-primary fw-bold me-2">{{ ($detail_rekap_medis && isset($detail_rekap_medis->tglmasuk)) ? date('d M Y', strtotime($detail_rekap_medis->tglmasuk)) : '-' }}</span>
                                         </div>
                                         <div class="card-body">
                                             @if ($detail_rekap_medis)
