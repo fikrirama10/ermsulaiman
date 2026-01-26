@@ -18,9 +18,14 @@ class UserDetail extends Model
     {
         return $this->hasMany(User::class);
     }
-    
+
     public function dokter_detail()
     {
-        return $this->hasOne(Dokter::class,'id','iddokter');
+        return $this->hasOne(Dokter::class, 'id', 'iddokter');
+    }
+
+    public function karyawan_detail()
+    {
+        return $this->hasOne(Karyawan::class, 'id', 'idkaryawan');
     }
 }

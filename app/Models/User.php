@@ -38,6 +38,8 @@ class User extends Authenticatable
     protected $casts = [
         'two_factor_enabled' => 'boolean',
         'two_factor_confirmed_at' => 'datetime',
+        'password_changed_at' => 'datetime',
+        'last_login' => 'datetime',
     ];
 
     public function username()
@@ -60,5 +62,36 @@ class User extends Authenticatable
         return $this->belongsTo(UserPrivilages::class, 'idpriv');
     }
 
+    /**
+     * Check if the user's password has expired (>60 days).
+     */
+    public function passwordExpired(): bool
+    {
+        if (!$this->password_changed_at) {
+            return true; // Consider it expired if never set
+        }
 
+        return now()->diffInDays($this->password_changed_at) >= 60;
+    }
+
+    /**
+     * Get the number of days until password expires.
+     */
+    public function daysUntilPasswordExpiry(): int
+    {
+        if (!$this->password_changed_at) {
+            return 0;
+        }
+
+        $daysSinceChange = now()->diffInDays($this->password_changed_at);
+        return max(0, 60 - $daysSinceChange);
+    }
+
+    /**
+     * Check if password will expire soon (within 7 days).
+     */
+    public function passwordExpiringSoon(): bool
+    {
+        return $this->daysUntilPasswordExpiry() > 0 && $this->daysUntilPasswordExpiry() <= 7;
+    }
 }

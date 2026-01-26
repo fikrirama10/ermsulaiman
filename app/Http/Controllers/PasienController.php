@@ -43,7 +43,7 @@ class PasienController extends Controller
             ->join('rawat', 'rawat.id', '=', 'demo_detail_rekap_medis.idrawat')
             ->where('no_rm', $pasien?->no_rm)
             ->whereIn('rawat.status', [4])
-            ->orderBy('id', 'desc')
+            ->orderBy('demo_detail_rekap_medis.id', 'desc')
             ->first();
         $detail_rekap_medis_all = DB::table('demo_detail_rekap_medis')
             ->select([
@@ -52,7 +52,7 @@ class PasienController extends Controller
             ->join('rawat', 'rawat.id', '=', 'demo_detail_rekap_medis.idrawat')
             ->where('no_rm', $pasien?->no_rm)
             ->whereIn('rawat.status', [4])
-            ->orderBy('id', 'desc')
+            ->orderBy('demo_detail_rekap_medis.id', 'desc')
             ->limit(5)
             ->get();
         // $pfisik = json_decode($detail_rekap_medis->pemeriksaan_fisik);
@@ -64,7 +64,7 @@ class PasienController extends Controller
         // return $pemeriksaan_fisik;
         $soap_icdx = DB::table('soap_rajalicdx')
             ->select([
-                'soap_rajalicdx.'.env('ICDX'),
+                'soap_rajalicdx.' . env('ICDX'),
                 'rawat.tglmasuk',
             ])
             ->join('rawat', 'rawat.id', '=', 'soap_rajalicdx.idrawat')
@@ -107,18 +107,18 @@ class PasienController extends Controller
     public function index(Request $request)
     {
         // return 'a';
-        if (request()->ajax()){
+        if (request()->ajax()) {
             $searchParam = $request->get('search');
             $searchValue = is_array($searchParam) ? ($searchParam['value'] ?? '') : $searchParam;
 
             // Cek apakah ada filter yang diisi
             $hasFilter = $request->get('no_rm') != '' ||
-                         $request->get('nik') != '' ||
-                         $request->get('no_bpjs') != '' ||
-                         $request->get('nama') != '' ||
-                         $request->get('tempat_lahir') != '' ||
-                         $request->get('no_hp') != '' ||
-                         !empty($searchValue);
+                $request->get('nik') != '' ||
+                $request->get('no_bpjs') != '' ||
+                $request->get('nama') != '' ||
+                $request->get('tempat_lahir') != '' ||
+                $request->get('no_hp') != '' ||
+                !empty($searchValue);
 
             // Jika tidak ada filter, return data kosong
             if (!$hasFilter) {
@@ -153,7 +153,7 @@ class PasienController extends Controller
                     if ($request->get('no_hp') != '') {
                         $instance->where('nohp', 'LIKE', '%' . $request->get('no_hp') . '%');
                     }
-                    
+
                     $search = $request->get('search');
                     // DataTables sends search as array ['value' => ..., 'regex' => ...]
                     $keyword = is_array($search) ? ($search['value'] ?? '') : $search;
@@ -199,7 +199,7 @@ class PasienController extends Controller
             ->limit(5)
             ->get();
 
-        $data = $visits->map(function($item) {
+        $data = $visits->map(function ($item) {
             $status = 'Antri';
             $statusClass = 'warning';
             if ($item->status == 4) {
@@ -420,9 +420,9 @@ class PasienController extends Controller
         $poli = Poli::get();
         $cek_finger_print = VclaimSepHelper::get_finger_print($pasien->no_bpjs, date('Y-m-d'));
         // return $cek_finger_print;
-        $cek_general_concent = DB::table('demo_consent')->where('idpasien',$pasien->id)->whereDate('period',date('Y-m-d'))->first();
+        $cek_general_concent = DB::table('demo_consent')->where('idpasien', $pasien->id)->whereDate('period', date('Y-m-d'))->first();
         // return Carbon::();
-        return view('pasien.tambah-kunjungan-clean', compact('pasien', 'poli', 'cek_finger_print','cek_general_concent'));
+        return view('pasien.tambah-kunjungan-clean', compact('pasien', 'poli', 'cek_finger_print', 'cek_general_concent'));
     }
 
     public function check_password(Request $request)
@@ -464,8 +464,8 @@ class PasienController extends Controller
             $data = View::make('pasien.form.rujukan-kunjungan-pertama', compact('request', 'get_rujukan'))->render();
         }
 
-        $get_poli = Poli::where('kode',$get_rujukan['response']['rujukan']['poliRujukan']['kode'])->first();
-        $poli = Poli::where('ket',1)->get();
+        $get_poli = Poli::where('kode', $get_rujukan['response']['rujukan']['poliRujukan']['kode'])->first();
+        $poli = Poli::where('ket', 1)->get();
         $options = '';
         foreach ($poli as $p) {
             $selected = $p->id == $get_poli->id ? 'selected' : '';
@@ -538,36 +538,37 @@ class PasienController extends Controller
             ]);
         }
     }
-    public function post_surat_kotrol(Request $request){
+    public function post_surat_kotrol(Request $request)
+    {
         $dokter = Dokter::find($request->iddokter_kontrol);
         $poli = Poli::find($request->poli_tujuan);
         $data = [
-            "request"=>[
-                'noSEP'=>$request->no_sep,
-                'kodeDokter'=>$dokter->kode_dpjp,
-                'poliKontrol'=>$poli->kode,
-                'tglRencanaKontrol'=>$request->tgl_kontrol,
-                'user'=>auth()->user()->detail->nama,
+            "request" => [
+                'noSEP' => $request->no_sep,
+                'kodeDokter' => $dokter->kode_dpjp,
+                'poliKontrol' => $poli->kode,
+                'tglRencanaKontrol' => $request->tgl_kontrol,
+                'user' => auth()->user()->detail->nama,
             ]
 
         ];
 
         $kontrol = VclaimRencanaKontrolHelper::getInsert($data);
-        if($kontrol['metaData']['code'] == 200){
+        if ($kontrol['metaData']['code'] == 200) {
 
             $response = VclaimRencanaKontrolHelper::getDatabynosurat($kontrol['response']['noSuratKontrol']);
 
             return response()->json([
-                'status'=>'success',
-                'code'=>$kontrol['metaData']['code'],
-                'message'=>$kontrol['metaData']['message'],
-                'data'=>$kontrol['response'],
-                'data_surat'=>$response['response'],
-                'poli'=>$poli->kode,
-                'dokter'=>$dokter->kode_dpjp,
-                'sep_asal'=>$request->no_sep,
+                'status' => 'success',
+                'code' => $kontrol['metaData']['code'],
+                'message' => $kontrol['metaData']['message'],
+                'data' => $kontrol['response'],
+                'data_surat' => $response['response'],
+                'poli' => $poli->kode,
+                'dokter' => $dokter->kode_dpjp,
+                'sep_asal' => $request->no_sep,
             ]);
-        }else{
+        } else {
             return response()->json([
                 'status' => 'failed',
                 'code' => $kontrol['metaData']['code'] ?? 201,
@@ -576,7 +577,8 @@ class PasienController extends Controller
         }
         return $request->all();
     }
-    public function get_jadwal_dokter_kontrol(Request $request){
+    public function get_jadwal_dokter_kontrol(Request $request)
+    {
         $poli = Poli::find($request->poli);
         $date = date('Y-m-d');
 
@@ -674,7 +676,7 @@ class PasienController extends Controller
         $dokter = Dokter::where('kode_dpjp', $request->dokter)->first();
         $data_poli = Poli::where('ket', 1)->get();
         $sep_asal_kontrol = VclaimRencanaKontrolHelper::getDatabysep($request->sep);
-        $text = 'Anda sudah melakukan kunjungan dengan (flaging) prosedur non berkelanjutan (pemeriksaan penunjang) '.$sep_asal_kontrol['response']['poli'].' pada tgl '.$sep_asal_kontrol['response']['tglSep'];
+        $text = 'Anda sudah melakukan kunjungan dengan (flaging) prosedur non berkelanjutan (pemeriksaan penunjang) ' . $sep_asal_kontrol['response']['poli'] . ' pada tgl ' . $sep_asal_kontrol['response']['tglSep'];
         $options = '';
         foreach ($data_poli as $p) {
             $selected = $p->id == $poli->id ? 'selected' : '';
@@ -692,8 +694,8 @@ class PasienController extends Controller
                 'nama_dokter' => $dokter->nama_dokter,
                 'kode_dokter' => $dokter->kode_dpjp,
                 'nama_dpjp' => $dokter->nama_dokter,
-                'poli_option'=>$options,
-                'sep_asal_kontrol'=>$text
+                'poli_option' => $options,
+                'sep_asal_kontrol' => $text
             ]
         ];
     }
@@ -841,10 +843,10 @@ class PasienController extends Controller
                 WsBpjsHelper::post_update_antrean($data_antrian);
             }
             if ($request->sep == 1) {
-                if($request->no_rujukan){
+                if ($request->no_rujukan) {
                     $rujukan = VclaimRujukanHelper::get_rujukan_norujukan($request->no_rujukan);
                     $tanggal = $rujukan['response']['rujukan']['tglKunjungan'];
-                }else{
+                } else {
                     $tanggal = "";
                 }
                 $icdx = explode(" - ", $request->icdx ?? $request->kode);
@@ -899,7 +901,7 @@ class PasienController extends Controller
                                     ]
                                 ]
                             ],
-                            "tujuanKunj" =>$request->tujuanKunjungan ?? 0,
+                            "tujuanKunj" => $request->tujuanKunjungan ?? 0,
                             "flagProcedure" => $request->prosedur ?? "",
                             "kdPenunjang" => $request->prosedurTidakBerkelanjutan ?? "",
                             "assesmentPel" => $request->alasanTidakSelesai ?? "",
@@ -965,23 +967,25 @@ class PasienController extends Controller
     {
         $now = Carbon::now()->format('Y-m-d');
         $threeMonthsAgo = Carbon::now()->subMonths(2)->format('Y-m-d');
-        $getHistoriPelayananPeserta = VclaimMonitoringHelper::getHistoriPelayananPeserta($request->nokartu, $threeMonthsAgo,$now);
+        $getHistoriPelayananPeserta = VclaimMonitoringHelper::getHistoriPelayananPeserta($request->nokartu, $threeMonthsAgo, $now);
 
         return View::make('pasien.form.histori-pasien', compact('getHistoriPelayananPeserta'));
     }
 
-    public function get_sep_kontrol(Request $request){
+    public function get_sep_kontrol(Request $request)
+    {
         $sep = VclaimRencanaKontrolHelper::getDatabysep($request->sep);
-        $split_poli = explode(' - ',$sep['response']['poli']);
-        if($sep['response']['jnsPelayanan'] == 'Rawat Jalan'){
-            $poli = Poli::where('kode',$split_poli[0])->get();
-        }else{
-            $poli = Poli::where('ket',1)->get();
+        $split_poli = explode(' - ', $sep['response']['poli']);
+        if ($sep['response']['jnsPelayanan'] == 'Rawat Jalan') {
+            $poli = Poli::where('kode', $split_poli[0])->get();
+        } else {
+            $poli = Poli::where('ket', 1)->get();
         }
-        return View::make('pasien.form.form-surat-kontrol', compact('sep','poli'));
+        return View::make('pasien.form.form-surat-kontrol', compact('sep', 'poli'));
     }
 
-    public function post_form_consent(Request $request){
+    public function post_form_consent(Request $request)
+    {
         DB::beginTransaction();
 
         try {
@@ -990,13 +994,13 @@ class PasienController extends Controller
             $consent = SatusehatResourceHelper::consent_update($pasien->ihs);
             // return $consent;
             DB::table('demo_consent')->insert([
-                'idpasien'=>$pasien->id,
-                'general_consent'=>$request->general_consent,
-                'created_at'=>date('Y-m-d H:i:s'),
-                'user'=>auth()->user()->id,
-                'penanggung_jawab'=>$request->penanggung_jawab,
-                'period'=>$consent['provision']['period']['start'],
-                'consent_id'=>$consent['id'],
+                'idpasien' => $pasien->id,
+                'general_consent' => $request->general_consent,
+                'created_at' => date('Y-m-d H:i:s'),
+                'user' => auth()->user()->id,
+                'penanggung_jawab' => $request->penanggung_jawab,
+                'period' => $consent['provision']['period']['start'],
+                'consent_id' => $consent['id'],
             ]);
             // return $consent['provision']['period']['start'];
             DB::commit();
@@ -1005,7 +1009,7 @@ class PasienController extends Controller
                 'status' => 'success',
                 'message' => 'Data Berhasil disimpan'
             ]);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'status' => 'failed',

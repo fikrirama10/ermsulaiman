@@ -40,7 +40,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'perawat' => \App\Http\Middleware\Perawat::class,
         'rekammedis' => \App\Http\Middleware\Rekammedis::class,
         'two-factor' => \App\Http\Middleware\TwoFactorAuthentication::class,
+        'check.password.expiry' => \App\Http\Middleware\CheckPasswordExpiry::class,
     ];
 }

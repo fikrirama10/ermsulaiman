@@ -41,6 +41,7 @@ use App\Helpers\Satusehat\Resource\EncounterHelper;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\PatientJourneyController;
 use App\Http\Controllers\RoleMenuController;
+use App\Http\Controllers\Auth\PasswordChangeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +54,13 @@ use App\Http\Controllers\RoleMenuController;
 |
 */
 
-// Admin Routes - Role & Menu Management
+// Password Change Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/password/change', [PasswordChangeController::class, 'showChangeForm'])->name('password.change');
+    Route::post('/password/change', [PasswordChangeController::class, 'update'])->name('password.update');
+});
+
+// Admin Routes module & Menu Management
 Route::prefix('admin')->middleware('auth')->as('admin.')->group(function () {
     Route::prefix('roles')->as('roles.')->group(function () {
         Route::get('/', [RoleMenuController::class, 'index'])->name('index');
@@ -716,7 +723,33 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
         Route::get('/ajax/search-rawat', [App\Http\Controllers\PenjualanObatController::class, 'searchRawat'])->name('search-rawat');
         Route::get('/ajax/search-obat', [App\Http\Controllers\PenjualanObatController::class, 'searchObat'])->name('search-obat');
     });
-})->middleware('auth');
+});
+
+// Management Karyawan Routes
+Route::prefix('karyawan')->middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\KaryawanController::class, 'index'])->name('karyawan.index');
+    Route::get('/edit/{id}', [App\Http\Controllers\KaryawanController::class, 'edit'])->name('karyawan.edit');
+    Route::post('/store', [App\Http\Controllers\KaryawanController::class, 'store'])->name('karyawan.store');
+    Route::put('/update/{id}', [App\Http\Controllers\KaryawanController::class, 'update'])->name('karyawan.update');
+    Route::post('/toggle/{id}', [App\Http\Controllers\KaryawanController::class, 'toggleStatus'])->name('karyawan.toggle');
+});
+
+// Management Surat & Dokumen Medis
+Route::prefix('surat')->middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\SuratController::class, 'index'])->name('surat.index');
+    Route::get('/create', [App\Http\Controllers\SuratController::class, 'create'])->name('surat.create');
+    Route::post('/store', [App\Http\Controllers\SuratController::class, 'store'])->name('surat.store');
+    Route::get('/print/{id}', [App\Http\Controllers\SuratController::class, 'print'])->name('surat.print');
+    Route::delete('/{id}', [App\Http\Controllers\SuratController::class, 'destroy'])->name('surat.destroy');
+    Route::get('/generate-number', [App\Http\Controllers\SuratController::class, 'generateNumber'])->name('surat.generate-number');
+    Route::get('/search-pasien', [App\Http\Controllers\SuratController::class, 'searchPasien'])->name('surat.search-pasien');
+});
+
+// Settings Routes
+Route::prefix('settings')->middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+    Route::put('/update', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
+});
 
 // Management Dokter Routes
 Route::prefix('dokter')->middleware('auth')->group(function () {
