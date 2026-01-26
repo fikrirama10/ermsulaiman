@@ -147,6 +147,11 @@
                                             <i class="ki-outline ki-arrow-left fs-3"></i> Kembali
                                         </a>
 
+                                        <a href="{{ route('pasien.edit', $pasien->id) }}"
+                                            class="btn btn-sm btn-light-warning btn-active-light-warning me-2">
+                                            <i class="ki-outline ki-pencil fs-3"></i> Edit Data
+                                        </a>
+
                                         <!-- Dropdown Cetak -->
                                         <div class="me-2">
                                             <button class="btn btn-sm btn-light-info btn-active-light-primary"
@@ -340,7 +345,7 @@
                                         </h3>
                                         <div class="card-toolbar">
                                             <span
-                                                class="badge badge-light-primary fw-bold me-2">{{ ($detail_rekap_medis && isset($detail_rekap_medis->tglmasuk)) ? date('d M Y', strtotime($detail_rekap_medis->tglmasuk)) : '-' }}</span>
+                                                class="badge badge-light-primary fw-bold me-2">{{ $detail_rekap_medis && isset($detail_rekap_medis->tglmasuk) ? date('d M Y', strtotime($detail_rekap_medis->tglmasuk)) : '-' }}</span>
                                         </div>
                                         <div class="card-body">
                                             @if ($detail_rekap_medis)
@@ -545,7 +550,7 @@
                                             </tr>
                                             <tr>
                                                 <td>Kelurahan</td>
-                                                <td>{{ $pasien->alamat?->kelurahan ?? '-' }}</td>
+                                                <td>{{ $pasien->alamat->kelurahan->nama ?? '-' }}</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -591,7 +596,7 @@
                                             </tr>
                                             <tr>
                                                 <td>Hubungan</td>
-                                                <td>{{ $pasien->hubungan_pj ?? '-' }}</td>
+                                                <td>{{ $pasien->penanggungJawab->penaggungjawab ?? '-' }}</td>
                                             </tr>
                                             <tr>
                                                 <td>No Telp</td>

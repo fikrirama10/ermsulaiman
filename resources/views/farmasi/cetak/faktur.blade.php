@@ -122,9 +122,9 @@
                                 $total_racik = 0;
                             @endphp
                             @if (count($racik) > 0)
-                                    @php
-                                        $total_racik = 10000 * count($racik);
-                                    @endphp
+                                @php
+                                    $total_racik = 10000 * count($racik);
+                                @endphp
                                 <tr class="border">
                                     <td style="border: 1px solid black;" colspan="3" class="text-end">Total Racik
                                     </td>
@@ -135,7 +135,8 @@
                             @endif
                             <tr class="border">
                                 <td style="border: 1px solid black;" colspan="3" class="text-end">Total Harga</td>
-                                <td style="border: 1px solid black;" class="text-end">Rp.{{ App\Helpers\VclaimHelper::IndoCurr($total+$total_racik) }}
+                                <td style="border: 1px solid black;" class="text-end">
+                                    Rp.{{ App\Helpers\VclaimHelper::IndoCurr($total + $total_racik) }}
                                 </td>
                             </tr>
                         </tbody>
@@ -150,15 +151,15 @@
             <div class="row">
                 <table>
                     <tr>
-                        <td rowspan="3"><img width="40" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/logosiswanto.png'))) !!} ">
+                        <td rowspan="3"><img width="40" src="data:image/png;base64, {!! base64_encode(file_get_contents(public_path('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png'))) !!} ">
                         </td>
-                        <td>FARMASI RSAU dr.SISWANTO</td>
+                        <td>FARMASI RSAU dr.Norman T Lubis</td>
                     </tr>
                     <tr>
-                        <td><i>JL Tentara Pelajar No 1, Malangjiwan, Colomadu</i></td>
+                        <td><i> Jl. Terusan Kopo-Soreang No.461, Lanud Sulaiman</i></td>
                     </tr>
                     <tr>
-                        <td><i>Telepon 0271779112</i></td>
+                        {{-- <td><i>Telepon 0271779112</i></td> --}}
                     </tr>
                 </table>
             </div>

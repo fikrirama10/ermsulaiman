@@ -601,10 +601,13 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
     Route::get('/get-pilih-nomer', [PasienController::class, 'get_pilih_nomer'])->name('get-pilih-nomer');
     Route::get('/get-pilih-dokter/{jenis}', [PasienController::class, 'get_pilih_dokter'])->name('get-pilih-dokter');
     Route::get('/show-sep/{sep}', [PasienController::class, 'show_sep'])->name('show-sep');
+    Route::get('/print-sep-pdf', [PasienController::class, 'print_sep_pdf'])->name('pasien.print-sep-pdf');
     Route::get('/buat-sep-manual', [PasienController::class, 'buat_sep_manual'])->name('buat-sep-manual');
     Route::get('/histori-pelayanan', [PasienController::class, 'get_histori_pasien'])->name('histori-pelayanan');
     Route::get('/data-kontrol-sep', [PasienController::class, 'get_sep_kontrol'])->name('data-kontrol-sep');
     Route::post('/store', [PasienController::class, 'store'])->name('pasien.post-tambah-pasien');
+    Route::get('/edit/{id}', [PasienController::class, 'edit'])->name('pasien.edit');
+    Route::put('/update/{id}', [PasienController::class, 'update'])->name('pasien.update');
     Route::post('/store-kunjungan', [PasienController::class, 'store_kunjungan'])->name('pasien.post-tambah-kunjungan');
     Route::post('/check-password', [PasienController::class, 'check_password'])->name('pasien.check-password');
     Route::post('/post-form-concent', [PasienController::class, 'post_form_consent'])->name('pasien.post-form-concent');

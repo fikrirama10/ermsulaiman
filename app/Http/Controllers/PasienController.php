@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use Svg\Tag\Rect;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Models\Poli;
 use App\Models\Rawat;
@@ -380,6 +381,138 @@ class PasienController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        $pasien = Pasien::with('alamat')->find($id);
+
+        $gol_darah = DB::table('data_golongandarah')->get();
+        $data_status = DB::table('data_status')->get();
+        $data_pekerjaan = DB::table('data_pekerjaan')->get();
+        $pasien_penanggungjawab = DB::table('pasien_penanggungjawab')->get();
+        $data_agama = DB::table('data_agama')->get();
+        $data_etnis = DB::table('data_etnis')->get();
+        $data_pendidikan = DB::table('data_pendidikan')->get();
+        $data_hubungan = DB::table('data_hubungan')->get();
+        $data_hambatan = DB::table('data_hambatan')->get(); // Assuming this is needed as per create method
+
+        // Fetch kelurahan data for select2 pre-selection
+        $kelurahan_text = '';
+        if ($pasien->alamat && $pasien->alamat->idkel) {
+            $kel = DB::table('kelurahan')->where('id_kel', $pasien->alamat->idkel)->first();
+            if ($kel) {
+                $data_kecamatan = DB::table('kecamatan')->where('id_kec', $kel->id_kec)->first();
+                $data_kota = DB::table('kabupaten')->where('id_kab', $data_kecamatan->id_kab)->first();
+                $provinsi = DB::table('provinsi')->where('id_prov', $data_kota->id_prov)->first();
+                $kelurahan_text = $kel->nama . ', ' . $data_kecamatan->nama . ', ' . $data_kota->nama . ', ' . $provinsi->nama;
+            }
+        }
+
+        return view('pasien.edit_pasien', compact(
+            'pasien',
+            'gol_darah',
+            'data_status',
+            'data_pekerjaan',
+            'pasien_penanggungjawab',
+            'data_agama',
+            'data_etnis',
+            'data_pendidikan',
+            'data_hubungan',
+            'data_hambatan',
+            'kelurahan_text'
+        ));
+    }
+
+    public function update(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            // $no_rm = explode('-', $request->no_rm); // RM shouldn't change usually, but if needed logic is here
+
+            // Calculate age if birthdate changed
+            $tanggal = date('Y-m-d H:i:s', strtotime('+7 hour', strtotime(date('Y-m-d H:i:s'))));
+            $date1 = date_create($request->tgl_lahir);
+            $date2 = date_create($tanggal);
+            $diff = date_diff($date1, $date2);
+
+            $updateData = [
+                'nik' => $request->nik,
+                'no_bpjs' => $request->bpjs,
+                'nama_pasien' => $request->nama_pasien,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'idgolongan_darah' => $request->golongan_darah,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tgllahir' => $request->tgl_lahir,
+                'nohp' => $request->no_hp,
+                'email' => $request->email,
+                'status_pasien' => $request->status_pasien,
+                'idagama' => $request->id_agama,
+                'idetnis' => $request->id_etnis,
+                'idpendidikan' => $request->id_pendidikan,
+                'idhubungan' => $request->id_hubungan_pernikakan,
+                'penanggung_jawab' => $request->penanggung_jawab,
+                'idsb_penanggungjawab' => $request->hubungan,
+                'nohp_penanggungjawab' => $request->no_tlp_penanggung_jawab,
+                'alamat_penanggunjawab' => $request->alamat_penanggung_jawab,
+                'pangkat' => $request->pangkat,
+                'kesatuan' => $request->kesatuan,
+                'nrp' => $request->nrp,
+                'idpekerjaan' => $request->id_pekerjaan,
+                'usia_tahun' => $diff->format("%y"),
+                'usia_bulan' => $diff->format("%m"),
+                'usia_hari' => $diff->format("%d"),
+            ];
+
+            // Update Main Pasien Table
+            DB::table('pasien')->where('id', $id)->update($updateData);
+
+            // Update Alamat
+            if ($request->id_kel) {
+                $data_alamat = MakeRequestHelper::get_prov($request->id_kel);
+
+                $alamatData = [
+                    'idprov' => $data_alamat['id_prov'],
+                    'idkab' => $data_alamat['id_kab'],
+                    'idkel' => $data_alamat['id_kel'],
+                    'idkec' => $data_alamat['id_kec'],
+                    'alamat' => $request->alamat,
+                    'updated' => date('Y-m-d H:i:s'),
+                    'user_update' => auth()->user()->id,
+                ];
+
+                // Check if alamat exists, if not insert
+                $cekAlamat = DB::table('pasien_alamat')->where('idpasien', $id)->first();
+                if ($cekAlamat) {
+                    DB::table('pasien_alamat')->where('idpasien', $id)->update($alamatData);
+                } else {
+                    $alamatData['idpasien'] = $id;
+                    $alamatData['utama'] = 1;
+                    $alamatData['no_rm'] = $request->no_rm; // Fallback if RM is passed
+                    DB::table('pasien_alamat')->insert($alamatData);
+                }
+            }
+
+            // Update Status History if Status Changed implies we should log it, 
+            // but for now let's just update the latest status log or insert new?
+            // The existing store logic inserts into patient_status.
+            // Let's insert a log to track changes.
+            DB::table('pasien_status')->insert([
+                'idpasien' => $id,
+                'idstatus' => $request->status_pasien,
+                'pangkat' => $request->pangkat,
+                'kesatuan' => $request->kesatuan,
+                'nrp' => $request->nrp,
+                'keterangan' => 'Update Data Pasien', // Or $request->keterangan if available
+                'no_rm' => $request->no_rm ?? Pasien::find($id)->no_rm, // Fallback
+            ]);
+
+            DB::commit();
+            return redirect(route('pasien.rekammedis_detail', $id))->with('berhasil', 'Data berhasil diperbarui');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('gagal', $e->getMessage());
+        }
+    }
+
 
 
     public function get_bpjs_by_nik(Request $request)
@@ -723,6 +856,7 @@ class PasienController extends Controller
             $pasien = Pasien::where('no_rm', $request->no_rm)->first();
             $poli = Poli::find($request->idpoli);
             $dokter = Dokter::find($request->iddokter);
+            // return $dokter;
             $kode_kunjungan = date('dmY') . rand(1000, 9999);
             if ($request->jenis_rawat == 1) {
                 $kode = 'RJ';
@@ -934,7 +1068,8 @@ class PasienController extends Controller
 
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Data Berhasil disimpan | No SEP : ' . $sep['response']['sep']['noSep']
+                    'message' => 'Data Berhasil disimpan | No SEP : ' . $sep['response']['sep']['noSep'],
+                    'redirect_url' => route('pasien.rekammedis_detail', $pasien->id)
                 ]);
             }
             // return $rawat;
@@ -943,7 +1078,8 @@ class PasienController extends Controller
             EncounterHelper::create($rawat);
             return response()->json([
                 'status' => 'success',
-                'message' => 'Data Berhasil disimpan'
+                'message' => 'Data Berhasil disimpan',
+                'redirect_url' => route('pasien.rekammedis_detail', $pasien->id)
             ]);
         } catch (\Exception $e) {
             DB::rollback();
@@ -956,8 +1092,24 @@ class PasienController extends Controller
 
     public function show_sep($nomer_sep)
     {
-        return View::make('pasien.modal.sep', compact('nomer_sep'));
+        $rawat = Rawat::where('no_sep', $nomer_sep)->first();
+        $sep = VclaimSepHelper::getCariSep($nomer_sep);
+        // return $sep;
+        // return $rawat;
+        return View::make('pasien.modal.sep', compact('nomer_sep', 'rawat', 'sep'));
     }
+
+    public function print_sep_pdf(Request $request)
+    {
+        $nomer_sep = $request->sep;
+        $rawat = Rawat::where('no_sep', $nomer_sep)->first();
+        $sep = VclaimSepHelper::getCariSep($nomer_sep);
+        // return $sep;
+        $pdf = Pdf::loadView('pasien.cetak.sep_pdf', compact('rawat', 'sep'));
+        $pdf->setPaper('a4', 'portrait');
+        return $pdf->stream('SEP-' . $nomer_sep . '.pdf');
+    }
+
     public function buat_sep_manual(Request $request)
     {
         $pasien = Pasien::where('no_rm', $request->no_rm)->first();

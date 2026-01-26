@@ -4,6 +4,7 @@ namespace App\Models\Pasien;
 
 use App\Models\Pasien\Agama;
 use App\Models\Pasien\Alamat;
+use App\Models\PasienPenganggungJawab;
 use App\Models\RekapMedis\RekapMedis;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -32,7 +33,12 @@ class Pasien extends Model
 
     public function agama(): HasOne
     {
-        return $this->hasOne(Agama::class, 'id','idagama');
+        return $this->hasOne(Agama::class, 'id', 'idagama');
+    }
+
+    public function penanggungJawab(): BelongsTo
+    {
+        return $this->belongsTo(PasienPenganggungJawab::class, 'idsb_penanggungjawab', 'id');
     }
 
     /**
@@ -42,7 +48,7 @@ class Pasien extends Model
      */
     public function RekapMedis(): HasMany
     {
-        return $this->HasMany(RekapMedis::class, 'idpasien','id');
+        return $this->HasMany(RekapMedis::class, 'idpasien', 'id');
     }
 
     public function genKode()
