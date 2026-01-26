@@ -229,7 +229,6 @@
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
     <button type="button" class="btn btn-primary"
         onclick="window.open('{{ route('pasien.print-sep-pdf') }}?sep={{ $data['noSep'] ?? '' }}', '_blank')">Cetak
         PDF</button>

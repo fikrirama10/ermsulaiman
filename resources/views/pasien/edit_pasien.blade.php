@@ -343,7 +343,7 @@
                                 <div class="col-md-12">
                                     <label class="form-label required">Kelurahan / Desa</label>
                                     <select class="form-select form-select-sm" name="id_kel" id='id_kel'
-                                        data-control="select2" data-placeholder="Ketik minimal 3 karakter..." required>
+                                        data-placeholder="Ketik minimal 3 karakter..." required>
                                         @if ($pasien->alamat && $pasien->alamat->idkel)
                                             <option value="{{ $pasien->alamat->idkel }}" selected>{{ $kelurahan_text }}
                                             </option>
@@ -751,7 +751,7 @@
 
         $("#id_kel").select2({
             ajax: {
-                url: " {{ route('pasien.cari-kelurahan') }}",
+                url: "{{ route('pasien.cari-kelurahan') }}",
                 dataType: 'json',
                 delay: 250,
                 data: params => ({
