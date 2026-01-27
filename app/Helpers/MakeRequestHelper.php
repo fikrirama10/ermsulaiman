@@ -17,7 +17,6 @@ class MakeRequestHelper
             $token = VclaimAuthHelper::getToken();
             $url_request = config('app.url_vclaim_prod');
             $metadata = 'metaData';
-           
         } else {
             $token = VclaimAuthHelper::getTokenAntrol();
             $url_request = config('app.url_antrian_prod');
@@ -26,7 +25,7 @@ class MakeRequestHelper
         }
         // return $url_request;
         $startTime = microtime(true);
-
+        // return $metadata;
 
         if ($data) {
             if ($token_jenis != 1) {
@@ -35,6 +34,7 @@ class MakeRequestHelper
                     ->{$method}($url_request . $url, $data);
                 $endTime = microtime(true);
                 $duration = round($endTime - $startTime, 2);
+                // return $duration;
                 DB::table('demo_log_request_bpjs')->insert([
                     'url' => $url_request . $url,
                     'name' => $name_request,
@@ -46,8 +46,8 @@ class MakeRequestHelper
                     'message' => $response[$metadata]['message'] ?? 0,
                     'code' => $response->getStatusCode(),
                 ]);
-                if ($response->status() == 200) {
-                    if(isset($response['response'])){
+                if ($response->getStatusCode() == 200) {
+                    if (isset($response['response'])) {
                         $data_response = VclaimAuthHelper::stringDecrypt($token['key'], $response['response']);
                         $data_response = VclaimAuthHelper::decompress($data_response);
                         $data_response = json_decode($data_response, true);
@@ -56,13 +56,12 @@ class MakeRequestHelper
                             'response' => $data_response,
                             'duration' => $duration,
                         ];
-                    }else{
+                    } else {
                         return [
                             'metaData' => $response[$metadata],
                             'duration' => $duration,
                         ];
                     }
-                    
                 } else {
                     return $response;
                 }
@@ -106,12 +105,14 @@ class MakeRequestHelper
             }
             return $response;
         } else {
+            // return $data;
             $response = Http::withHeaders($token['signature'])
                 ->withOptions(["verify" => $token['ssl']])
                 ->{$method}($url_request . $url);
 
             $endTime = microtime(true);
             $duration = round($endTime - $startTime, 2);
+            // return $response->status();
             DB::table('demo_log_request_bpjs')->insert([
                 'url' => $url_request . $url,
                 'name' => $name_request,
@@ -123,7 +124,8 @@ class MakeRequestHelper
                 'code' => $response->getStatusCode(),
             ]);
             if ($response->status() == 200) {
-                if ($response[$metadata]['code'] == 200) {
+                // return $response;
+                if ($response[$metadata]['code'] == 1 || $response[$metadata]['code'] == 200) {
                     if ($token_jenis == 3) {
                         return $response;
                     }

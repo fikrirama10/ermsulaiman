@@ -1,6 +1,8 @@
 <?php
 
 // use GuzzleHttp\Psr7\Request;
+
+use App\Helpers\Antrol\WsBpjsHelper;
 use App\Models\Rawat;
 use Illuminate\Http\Request;
 use App\Helpers\VclaimHelper;
@@ -326,6 +328,11 @@ Route::get('/', function () {
 })->name('login');
 
 
+Route::get('/ref-dokter', function () {
+    $data = WsBpjsHelper::referensi_dokter();
+    return $data;
+})->name('refdokter');
+Route::get('/reffasker', [App\Http\Controllers\DokterController::class, 'syncBpjs'])->name('reffasker');
 Route::get('/chart', function () {
     return view('chart.index');
 })->name('chart');

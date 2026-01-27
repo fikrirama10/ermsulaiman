@@ -7,6 +7,7 @@ use App\Models\Dokter;
 use App\Models\Poli;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use App\Helpers\Antrol\WsBpjsHelper;
 
 class DokterController extends Controller
 {
@@ -17,8 +18,12 @@ class DokterController extends Controller
                 ->leftJoin('dokter_spesialis', 'dokter.idspesialis', '=', 'dokter_spesialis.id')
                 ->leftJoin('user_detail', 'dokter.id', '=', 'user_detail.iddokter')
                 ->leftJoin('user', 'user_detail.kode_user', '=', 'user.kode_user')
-                ->select('dokter.*', 'dokter_spesialis.spesialis', 'user.username',
-                         DB::raw('CASE WHEN user.id IS NOT NULL THEN 1 ELSE 0 END as has_user'));
+                ->select(
+                    'dokter.*',
+                    'dokter_spesialis.spesialis',
+                    'user.username',
+                    DB::raw('CASE WHEN user.id IS NOT NULL THEN 1 ELSE 0 END as has_user')
+                );
 
             // Filter by status
             if ($request->has('filter_status') && $request->filter_status != '') {
@@ -42,42 +47,42 @@ class DokterController extends Controller
             $dokter = $query->get();
 
             return DataTables::of($dokter)
-                ->addColumn('checkbox', function($dokter) {
-                    return '<input type="checkbox" class="form-check-input dokter-checkbox" value="'.$dokter->id.'">';
+                ->addColumn('checkbox', function ($dokter) {
+                    return '<input type="checkbox" class="form-check-input dokter-checkbox" value="' . $dokter->id . '">';
                 })
-                ->addColumn('status_badge', function($dokter) {
+                ->addColumn('status_badge', function ($dokter) {
                     return $dokter->status == 1 ?
                         '<span class="badge badge-success">Aktif</span>' :
                         '<span class="badge badge-secondary">Nonaktif</span>';
                 })
-                ->addColumn('spesialis_name', function($dokter) {
+                ->addColumn('spesialis_name', function ($dokter) {
                     return $dokter->spesialis ?? 'Umum';
                 })
-                ->addColumn('user_status', function($dokter) {
+                ->addColumn('user_status', function ($dokter) {
                     if ($dokter->has_user) {
                         return '<span class="badge badge-success"><i class="bi bi-check-circle"></i> ' . ($dokter->username ?? 'Ada User') . '</span>';
                     } else {
                         return '<span class="badge badge-danger"><i class="bi bi-x-circle"></i> Belum Ada User</span>';
                     }
                 })
-                ->addColumn('actions', function($dokter) {
-                    $statusBtn = '<button type="button" class="btn btn-sm '.($dokter->status ? 'btn-warning' : 'btn-success').'" onclick="toggleStatus('.$dokter->id.')" title="'.($dokter->status ? 'Nonaktifkan' : 'Aktifkan').'">
+                ->addColumn('actions', function ($dokter) {
+                    $statusBtn = '<button type="button" class="btn btn-sm ' . ($dokter->status ? 'btn-warning' : 'btn-success') . '" onclick="toggleStatus(' . $dokter->id . ')" title="' . ($dokter->status ? 'Nonaktifkan' : 'Aktifkan') . '">
                         <i class="bi bi-power"></i>
                     </button>';
 
-                    $editBtn = '<button type="button" class="btn btn-sm btn-primary" onclick="editDokter('.$dokter->id.')" title="Edit">
+                    $editBtn = '<button type="button" class="btn btn-sm btn-primary" onclick="editDokter(' . $dokter->id . ')" title="Edit">
                         <i class="bi bi-pencil"></i>
                     </button>';
 
-                    $jadwalBtn = '<a href="'.route('dokter.jadwal', $dokter->id).'" class="btn btn-sm btn-info" title="Jadwal">
+                    $jadwalBtn = '<a href="' . route('dokter.jadwal', $dokter->id) . '" class="btn btn-sm btn-info" title="Jadwal">
                         <i class="bi bi-calendar"></i>
                     </a>';
 
-                    $kuotaBtn = '<a href="'.route('dokter.kuota', $dokter->id).'" class="btn btn-sm btn-success" title="Kuota">
+                    $kuotaBtn = '<a href="' . route('dokter.kuota', $dokter->id) . '" class="btn btn-sm btn-success" title="Kuota">
                         <i class="bi bi-people"></i>
                     </a>';
 
-                    return '<div class="d-flex gap-1">'.$statusBtn.$editBtn.$jadwalBtn.$kuotaBtn.'</div>';
+                    return '<div class="d-flex gap-1">' . $statusBtn . $editBtn . $jadwalBtn . $kuotaBtn . '</div>';
                 })
                 ->rawColumns(['checkbox', 'status_badge', 'user_status', 'actions'])
                 ->addIndexColumn()
@@ -156,30 +161,112 @@ class DokterController extends Controller
 
     public function edit($id)
     {
-        $dokter = DB::table('dokter')->where('id', $id)->first();
+        $dokter = DB::table('dokter')
+            ->leftJoin('user_detail', 'dokter.id', '=', 'user_detail.iddokter')
+            ->leftJoin('user', 'user_detail.kode_user', '=', 'user.kode_user')
+            ->select('dokter.*', 'user.username', 'user.email')
+            ->where('dokter.id', $id)
+            ->first();
         return response()->json($dokter);
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'kode_dokter' => 'required|unique:dokter,kode_dokter,'.$id,
+        $user = DB::table('user_detail')
+            ->where('iddokter', $id)
+            ->join('user', 'user_detail.kode_user', '=', 'user.kode_user')
+            ->select('user.id', 'user.kode_user')
+            ->first();
+
+        $userId = $user ? $user->id : null;
+
+        $rules = [
+            'kode_dokter' => 'required|unique:dokter,kode_dokter,' . $id,
             'nama_dokter' => 'required',
             'idspesialis' => 'nullable',
             'sip' => 'nullable',
             'status' => 'required|in:0,1'
-        ]);
+        ];
 
-        DB::table('dokter')->where('id', $id)->update([
-            'kode_dokter' => $request->kode_dokter,
-            'nama_dokter' => $request->nama_dokter,
-            'idspesialis' => $request->idspesialis,
+        if ($request->has('username') && $request->filled('username')) {
+            $rules['username'] = 'required|unique:user,username,' . $userId;
+        }
 
-            'sip' => $request->sip,
-            'status' => $request->status
-        ]);
+        $request->validate($rules);
 
-        return response()->json(['success' => true, 'message' => 'Dokter berhasil diupdate']);
+        DB::beginTransaction();
+        try {
+            DB::table('dokter')->where('id', $id)->update([
+                'kode_dokter' => $request->kode_dokter,
+                'nama_dokter' => $request->nama_dokter,
+                'idspesialis' => $request->idspesialis,
+                'idpoli' => $request->idpoli,
+                'sip' => $request->sip,
+                'status' => $request->status
+            ]);
+
+            if ($userId) {
+                // Update existing user
+                $userUpdate = [
+                    'username' => $request->username,
+                    'email' => $request->email,
+                    'full_name' => $request->nama_dokter
+                ];
+
+                if ($request->filled('password')) {
+                    $userUpdate['password'] = bcrypt($request->password);
+                    $userUpdate['password_hash'] = bcrypt($request->password);
+                }
+
+                DB::table('user')->where('id', $userId)->update($userUpdate);
+
+                // Update user_detail
+                DB::table('user_detail')->where('kode_user', $user->kode_user)->update([
+                    'nama' => $request->nama_dokter,
+                    'email' => $request->email,
+                    'idpoli' => $request->idpoli,
+                    'dokter' => 1,
+                ]);
+            } elseif ($request->filled('username') && $request->filled('password')) {
+                // Create new user if not exists but credentials provided
+                $kodeUser = 'USR' . str_pad($id, 6, '0', STR_PAD_LEFT);
+
+                DB::table('user')->insert([
+                    'username' => $request->username,
+                    'password' => bcrypt($request->password),
+                    'password_hash' => bcrypt($request->password),
+                    'email' => $request->email ?? $request->username . '@rsau.com',
+                    'status' => 10,
+                    'idpriv' => 7,
+                    'kode_user' => $kodeUser,
+                    'full_name' => $request->nama_dokter,
+                    'is_active' => '1',
+                    'created_at' => time(),
+                    'updated_at' => time()
+                ]);
+
+                // Check if user_detail exists, if not create it
+                $existsDetail = DB::table('user_detail')->where('iddokter', $id)->exists();
+                if (!$existsDetail) {
+                    DB::table('user_detail')->insert([
+                        'kode_user' => $kodeUser,
+                        'email' => $request->email ?? $request->username . '@rsau.com',
+                        'nama' => $request->nama_dokter,
+                        'nohp' => '-',
+                        'alamat' => '-',
+                        'jenis_kelamin' => '-',
+                        'iddokter' => $id,
+                        'dokter' => 1
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Dokter dan akun berhasil diupdate']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['success' => false, 'message' => 'Gagal update: ' . $e->getMessage()], 500);
+        }
     }
 
     public function toggleStatus($id)
@@ -213,24 +300,24 @@ class DokterController extends Controller
                 ->get();
 
             return DataTables::of($jadwal)
-                ->addColumn('hari_nama', function($jadwal) {
+                ->addColumn('hari_nama', function ($jadwal) {
                     $hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
                     return $hari[$jadwal->idhari - 1] ?? '-';
                 })
-                ->addColumn('waktu', function($jadwal) {
+                ->addColumn('waktu', function ($jadwal) {
                     return $jadwal->jam_mulai . ' - ' . $jadwal->jam_selesai;
                 })
-                ->addColumn('status_badge', function($jadwal) {
+                ->addColumn('status_badge', function ($jadwal) {
                     return $jadwal->status == 1 ?
                         '<span class="badge badge-success">Aktif</span>' :
                         '<span class="badge badge-secondary">Nonaktif</span>';
                 })
-                ->addColumn('actions', function($jadwal) {
+                ->addColumn('actions', function ($jadwal) {
                     return '<div class="d-flex gap-1">
-                        <button type="button" class="btn btn-sm btn-primary" onclick="editJadwal('.$jadwal->id.')">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="editJadwal(' . $jadwal->id . ')">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteJadwal('.$jadwal->id.')">
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteJadwal(' . $jadwal->id . ')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>';
@@ -331,14 +418,14 @@ class DokterController extends Controller
                 ->leftJoin('poli', 'dokter_kuota.idpoli', '=', 'poli.id')
                 ->leftJoin('hari', 'dokter_kuota.idhari', '=', 'hari.id')
                 ->where('dokter_kuota.iddokter', $dokterId)
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->where(DB::raw('YEAR(dokter_kuota.tgl)'), '>', date('Y'))
-                          ->orWhere(function($q) {
-                              $q->where(DB::raw('YEAR(dokter_kuota.tgl)'), '=', date('Y'))
+                        ->orWhere(function ($q) {
+                            $q->where(DB::raw('YEAR(dokter_kuota.tgl)'), '=', date('Y'))
                                 ->where(DB::raw('MONTH(dokter_kuota.tgl)'), '>=', date('m'));
-                          });
+                        });
                 })
-                ->select('dokter_kuota.*', 'poli.poli as nama_poli', 'hari.hari as nama_hari')->orderby('dokter_kuota.tgl','desc');
+                ->select('dokter_kuota.*', 'poli.poli as nama_poli', 'hari.hari as nama_hari')->orderby('dokter_kuota.tgl', 'desc');
 
             // Filter by tanggal
             if ($request->has('tanggal') && $request->tanggal != '') {
@@ -353,18 +440,18 @@ class DokterController extends Controller
             $kuota = $query->get();
 
             return DataTables::of($kuota)
-                ->addColumn('tanggal_formatted', function($kuota) {
+                ->addColumn('tanggal_formatted', function ($kuota) {
                     return $kuota->tgl ? date('d/m/Y', strtotime($kuota->tgl)) : '-';
                 })
-                ->addColumn('hari_nama', function($kuota) {
+                ->addColumn('hari_nama', function ($kuota) {
                     return $kuota->nama_hari ?? '-';
                 })
-                ->addColumn('kuota', function($kuota) {
+                ->addColumn('kuota', function ($kuota) {
                     $used = $kuota->terdaftar ?? 0;
                     $total = $kuota->kuota;
-                    return $used.'/'.$total;
+                    return $used . '/' . $total;
                 })
-                ->addColumn('progress', function($kuota) {
+                ->addColumn('progress', function ($kuota) {
                     $used = $kuota->terdaftar ?? 0;
                     $total = $kuota->kuota;
                     $remaining = $total - $used;
@@ -373,29 +460,29 @@ class DokterController extends Controller
                     return '<div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                             <div class="progress h-20px">
-                                <div class="progress-bar bg-'.($percentage > 80 ? 'danger' : ($percentage > 60 ? 'warning' : 'success')).'"
+                                <div class="progress-bar bg-' . ($percentage > 80 ? 'danger' : ($percentage > 60 ? 'warning' : 'success')) . '"
                                      role="progressbar"
-                                     style="width: '.$percentage.'%;"
-                                     aria-valuenow="'.$used.'"
+                                     style="width: ' . $percentage . '%;"
+                                     aria-valuenow="' . $used . '"
                                      aria-valuemin="0"
-                                     aria-valuemax="'.$total.'">
-                                    '.$used.'/'.$total.'
+                                     aria-valuemax="' . $total . '">
+                                    ' . $used . '/' . $total . '
                                 </div>
                             </div>
                         </div>
                     </div>';
                 })
-                ->addColumn('status_badge', function($kuota) {
+                ->addColumn('status_badge', function ($kuota) {
                     return $kuota->status == 1 ?
                         '<span class="badge badge-success">Aktif</span>' :
                         '<span class="badge badge-secondary">Nonaktif</span>';
                 })
-                ->addColumn('actions', function($kuota) {
+                ->addColumn('actions', function ($kuota) {
                     return '<div class="d-flex gap-1">
-                        <button type="button" class="btn btn-sm btn-primary" onclick="editKuota('.$kuota->id.')">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="editKuota(' . $kuota->id . ')">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteKuota('.$kuota->id.')">
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteKuota(' . $kuota->id . ')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>';
@@ -617,5 +704,46 @@ class DokterController extends Controller
             DB::rollback();
             return response()->json(['success' => false, 'message' => 'Gagal membuat user: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function syncBpjs()
+    {
+        $data = WsBpjsHelper::referensi_dokter();
+
+        if (isset($data['metaData']['code']) && $data['metaData']['code'] == 1 && isset($data['response'])) {
+            DB::beginTransaction();
+            try {
+                foreach ($data['response'] as $dokter) {
+                    $exist = DB::table('dokter')->where('kode_dpjp', $dokter['kodedokter'])->first();
+                    if ($exist) {
+                        DB::table('dokter')->where('id', $exist->id)->update([
+                            'nama_dokter' => $dokter['namadokter'],
+                        ]);
+                    } else {
+                        $last = DB::table('dokter')->where('kode_dokter', 'like', 'DR%')->orderBy('kode_dokter', 'desc')->first();
+                        $nextNo = $last ? (int)substr($last->kode_dokter, 2) + 1 : 1;
+                        $newKode = 'DR' . str_pad($nextNo, 4, '0', STR_PAD_LEFT);
+
+                        DB::table('dokter')->insert([
+                            'kode_dokter' => $newKode,
+                            'kode_dpjp' => $dokter['kodedokter'],
+                            'nama_dokter' => $dokter['namadokter'],
+                            'status' => 1,
+                        ]);
+                    }
+                }
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                return response()->json([
+                    'metaData' => [
+                        'code' => 500,
+                        'message' => 'Gagal sinkronisasi: ' . $e->getMessage()
+                    ]
+                ], 500);
+            }
+        }
+
+        return response()->json($data);
     }
 }
