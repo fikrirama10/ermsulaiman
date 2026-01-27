@@ -68,7 +68,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Dokter</label>
-                                                    <select name="dokter" class="form-select" data-kt-repeater="select22" data-placeholder="-Pilih-" required>
+                                                    <select name="dokter" class="form-select" data-kt-repeater="select22" data-placeholder="-Pilih-" >
                                                         <option></option>
                                                         @foreach ($dokter as $val)
                                                             <option value="{{ $val->id }}" {{ $st->dokter == $val->id ? 'selected' : '' }}>

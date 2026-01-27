@@ -213,6 +213,23 @@
                                         </div>
                                     </div>
 
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="fv-row mb-4">
+                                                <label class="required form-label fw-bold">Cara Datang</label>
+                                                <select name="cara_datang" class="form-select form-select-solid"
+                                                    id="cara_datang">
+                                                    <option value="">-- Pilih Cara Datang --</option>
+                                                    <option value="Datang Sendiri">Datang Sendiri</option>
+                                                    <option value="Diantar Keluarga">Diantar Keluarga</option>
+                                                    <option value="Diantar Polisi">Diantar Polisi</option>
+                                                    <option value="Ambulans">Ambulans</option>
+                                                    <option value="Rujukan">Rujukan</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="separator separator-dashed my-5"></div>
 
                                     <div class="row">
@@ -533,7 +550,7 @@
                 const form = document.getElementById('formInputKunjungan');
                 // Removed 'icdx', 'no_surat', 'txtnmdpjp', 'status_kecelakaan' as they might be dynamic/not initially present
                 // Validation logic for dynamic fields should ideally be conditional or attached later, but for now we validate base fields.
-                const requiredFields = ['tglmasuk', 'penanggung', 'jenis_rawat', 'idpoli', 'dokter'];
+                const requiredFields = ['tglmasuk', 'penanggung', 'cara_datang', 'jenis_rawat', 'idpoli', 'dokter'];
                 const fields = {};
                 requiredFields.forEach(field => {
                     fields[field] = {
@@ -615,7 +632,8 @@
                     UIHelper.setButtonState(submitButton, true);
                     let formData = $(form).serialize();
                     if (Object.keys(selections).length > 0) Object.entries(selections).forEach(([key,
-                        value]) => {
+                        value
+                    ]) => {
                         formData += `&${key}=${value || ''}`;
                     });
 
@@ -743,7 +761,7 @@
                         }
                         const noSurat = $('#no_surat').val();
                         const isRujukan = $('#is_rujukan')
-                    .val(); // Logic note: #is_rujukan element might be dynamically added by SEP form
+                            .val(); // Logic note: #is_rujukan element might be dynamically added by SEP form
                         // If SEP section logic adds #is_rujukan, we use it. Otherwise fallback.
                         if (isRujukan) FormSubmissionHandler.handleRujukanFlow(noSurat);
                         else FormSubmissionHandler.submitFormData();
@@ -784,7 +802,8 @@
                                     $('#insert_sep_manual').html(response);
                                     $('#btn-cari-dokter').prop('disabled', false);
                                     $('#jenis_rawat').val(
-                                    3); // Auto select IGD or let user choose? Assuming IGD based on request context but user said "Manual / IGD"
+                                        3
+                                    ); // Auto select IGD or let user choose? Assuming IGD based on request context but user said "Manual / IGD"
                                     // Trigger change event to populate poli if needed, or set manually
                                     // $('#jenis_rawat').trigger('change'); 
 
@@ -797,7 +816,7 @@
                                     btn.data('mode', 'manual');
                                     btn.html(
                                         '<i class="ki-outline ki-arrow-left fs-4 me-1"></i> Kembali ke Mode Rujukan'
-                                        ).removeClass('btn-outline-warning').addClass(
+                                    ).removeClass('btn-outline-warning').addClass(
                                         'btn-warning');
                                     toastr.info('Mode Manual / IGD diaktifkan');
                                 }

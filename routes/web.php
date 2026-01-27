@@ -20,6 +20,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\FarmasiController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanBorLosToiController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\DashboardController;
@@ -646,6 +647,14 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
         Route::get('/gelang/{id}', [App\Http\Controllers\PasienCetakController::class, 'cetakGelang'])->name('pasien.cetak-gelang');
     });
 
+    # SPRI Module
+    Route::group(['prefix' => 'spri', 'as' => 'spri.'], function () {
+        Route::get('/', [App\Http\Controllers\SpriController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\SpriController::class, 'create'])->name('create');
+        Route::post('/store', [App\Http\Controllers\SpriController::class, 'store'])->name('store');
+        Route::get('/cetak/{id}', [App\Http\Controllers\SpriController::class, 'cetak'])->name('cetak');
+    });
+
     # Pendaftaran Module
     Route::group(['prefix' => 'pendaftaran', 'as' => 'pendaftaran.'], function () {
         Route::get('/', [App\Http\Controllers\PendaftaranController::class, 'index'])->name('index');
@@ -654,6 +663,8 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
         Route::post('/store', [App\Http\Controllers\PendaftaranController::class, 'store'])->name('store');
         Route::get('/search-pasien', [App\Http\Controllers\PendaftaranController::class, 'searchPasien'])->name('search-pasien');
         Route::get('/get-dokter/{id_poli}', [App\Http\Controllers\PendaftaranController::class, 'getDokterByPoli'])->name('get-dokter');
+        Route::get('/get-beds/{id_ruangan}', [App\Http\Controllers\PendaftaranController::class, 'getBeds'])->name('get-beds');
+        Route::get('/search-spri', [App\Http\Controllers\PendaftaranController::class, 'searchSpri'])->name('search-spri');
         Route::post('/batal/{id}', [App\Http\Controllers\PendaftaranController::class, 'batal'])->name('batal');
     });
 
@@ -848,4 +859,10 @@ Route::prefix('partograf')->middleware(['auth', 'two-factor'])->name('partograf.
 
     // Export
     Route::get('/{id}/pdf', [App\Http\Controllers\PartografController::class, 'exportPDF'])->name('pdf');
+});
+
+// Laporan Routes
+Route::prefix('laporan')->middleware('auth')->name('laporan.')->group(function () {
+    Route::get('/bor-los-toi', [App\Http\Controllers\LaporanBorLosToiController::class, 'index'])->name('bor_los_toi');
+    Route::get('/data-bor-los-toi', [App\Http\Controllers\LaporanBorLosToiController::class, 'data'])->name('data_bor_los_toi');
 });

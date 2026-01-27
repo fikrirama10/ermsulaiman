@@ -903,6 +903,7 @@ class PasienController extends Controller
                 'status' => 1,
                 'icdx' => $request->icdx ?? null,
                 'anggota' => $request->anggota ?? 0,
+                'cara_datang' => $request->cara_datang,
                 'no_antrian' => $antrian
             ]);
 

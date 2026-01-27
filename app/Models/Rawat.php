@@ -73,4 +73,9 @@ class Rawat extends Model
     {
         return $query->where('melahirkan', 1);
     }
+
+    public function spri(): HasOne
+    {
+        return $this->hasOne(RawatSpri::class, 'idrawat', 'id');
+    }
 }
