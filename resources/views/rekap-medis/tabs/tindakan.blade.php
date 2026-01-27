@@ -46,6 +46,13 @@
                     <span>Silakan input tindakan medis yang dilakukan pada pasien</span>
                 </div>
 
+                <div class="alert alert-info d-flex align-items-center mb-5">
+                    <i class="ki-duotone ki-information-5 fs-2x text-info me-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                    <div>
+                        <strong>Catatan:</strong> Jika tindakan dilakukan oleh <strong>perawat</strong>, kosongkan bagian <strong>Dokter</strong>.
+                    </div>
+                </div>
+
                 <form action="{{ route('post.tindakan', $rawat->id) }}" method="POST" id="frmTindakan">
                     @csrf
                     <div id="kt_tindakan_repeater">
@@ -67,7 +74,7 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <label class="form-label">Dokter</label>
+                                                    <label class="form-label">Dokter <span class="text-muted fs-7">(Kosongkan jika tindakan oleh perawat)</span></label>
                                                     <select name="dokter" class="form-select" data-kt-repeater="select22" data-placeholder="-Pilih-" >
                                                         <option></option>
                                                         @foreach ($dokter as $val)
@@ -111,8 +118,8 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-4">
-                                                <label class="form-label">Dokter</label>
-                                                <select name="dokter" class="form-select" data-kt-repeater="select22" data-placeholder="-Pilih-" required>
+                                                <label class="form-label">Dokter <span class="text-muted fs-7">(Kosongkan jika tindakan oleh perawat)</span></label>
+                                                <select name="dokter" class="form-select" data-kt-repeater="select22" data-placeholder="-Pilih-">
                                                     <option></option>
                                                     @foreach ($dokter as $val)
                                                         <option value="{{ $val->id }}" {{ $rawat->iddokter == $val->id ? 'selected' : '' }}>
