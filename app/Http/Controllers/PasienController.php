@@ -1171,4 +1171,154 @@ class PasienController extends Controller
         }
         return $request->all();
     }
+    public function edit_kunjungan($id)
+    {
+        \Carbon\Carbon::setLocale('id');
+        $rawat = DB::table('rawat')
+            ->select('rawat.*', 'dokter.nama_dokter', 'poli.poli')
+            ->leftJoin('dokter', 'rawat.iddokter', '=', 'dokter.id')
+            ->leftJoin('poli', 'rawat.idpoli', '=', 'poli.id')
+            ->where('rawat.id', $id)
+            ->first();
+
+        if (!$rawat) {
+            return redirect()->back()->with('error', 'Data kunjungan tidak ditemukan.');
+        }
+
+        $pasien = Pasien::where('no_rm', $rawat->no_rm)->first();
+        $poli = Poli::get();
+        // Check fingerprint only if patient is BPJS
+        $cek_finger_print = $rawat->idbayar == 2 && $pasien->no_bpjs ? VclaimSepHelper::get_finger_print($pasien->no_bpjs, date('Y-m-d')) : ['metaData' => ['code' => 0]];
+        $cek_general_concent = DB::table('demo_consent')->where('idpasien', $pasien->id)->whereDate('period', date('Y-m-d'))->first();
+
+        return view('pasien.edit-kunjungan', compact('pasien', 'poli', 'cek_finger_print', 'cek_general_concent', 'rawat'));
+    }
+
+    public function update_kunjungan(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $rawat = DB::table('rawat')->where('id', $id)->first();
+            if (!$rawat) throw new \Exception('Data kunjungan tidak ditemukan');
+            $pasien = Pasien::where('no_rm', $rawat->no_rm)->first();
+            $dokter = Dokter::find($request->iddokter);
+            $poli = Poli::find($request->idpoli);
+
+            // Update Basic Data
+            DB::table('rawat')->where('id', $id)->update([
+                'idbayar' => $request->penanggung,
+                'cara_datang' => $request->cara_datang,
+                'anggota' => $request->anggota ?? 0,
+                'status' => $request->status ?? $rawat->status, // Allow status update if needed, else keep same
+                // Updating medical data if changed
+                'idjenisrawat' => $request->jenis_rawat,
+                'idpoli' => $request->idpoli,
+                'iddokter' => $request->iddokter,
+                // Note: Tgl Masuk logic to preserve time part if date matches, else use new date + current time
+                'tglmasuk' => $request->tglmasuk . ' ' . date('H:i:s', strtotime($rawat->tglmasuk)),
+            ]);
+
+            // Handle SEP Creation if requested and doesn't exist
+            if ($request->sep == 1 && empty($rawat->no_sep)) {
+                if ($request->no_rujukan) {
+                    $rujukan = VclaimRujukanHelper::get_rujukan_norujukan($request->no_rujukan);
+                    $tanggal = $rujukan['response']['rujukan']['tglKunjungan'];
+                } else {
+                    $tanggal = "";
+                }
+                $icdx = explode(" - ", $request->icdx ?? $request->kode);
+                $kode = $icdx[0] ?? ''; // handle potential array index undefined
+                // $nama = $icdx[1]; 
+
+                $sep_manual = [
+                    'request' => [
+                        't_sep' => [
+                            'noKartu' => $pasien->no_bpjs,
+                            'tglSep' => $request->tglmasuk,
+                            'ppkPelayanan' => env('KODE_FASKES'),
+                            'jnsPelayanan' => 2,
+                            "klsRawat" => [
+                                "klsRawatHak" => 3,
+                                "klsRawatNaik" => "",
+                                "pembiayaan" => "",
+                                "penanggungJawab" => ""
+                            ],
+                            'noMR' => $pasien->no_rm,
+                            'rujukan' => [
+                                "asalRujukan" => $request->faskes ?? 2,
+                                "tglRujukan" => $tanggal,
+                                "noRujukan" => $request->no_rujukan ?? "",
+                                "ppkRujukan" => $request->kode_faskes  ?? ""
+                            ],
+                            'catatan' => '-',
+                            'diagAwal' => $kode,
+                            'poli' => [
+                                'tujuan' => $poli->kode,
+                                'eksekutif' => '0'
+                            ],
+                            'cob' => [
+                                'cob' => '0'
+                            ],
+                            'katarak' => [
+                                'katarak' => '0'
+                            ],
+                            'jaminan' => [
+                                'lakaLantas' => '0',
+                                'penjamin' => [
+                                    'penjamin' => '0',
+                                    'tglKejadian' => '',
+                                    'keterangan' => '',
+                                    'suplesi' => [
+                                        'suplesi' => '0',
+                                        'noSepSuplesi' => '0',
+                                        'lokasiLaka' => [
+                                            'kdPropinsi' => '',
+                                            'kdKabupaten' => '',
+                                            'kdKecamatan' => ''
+                                        ]
+                                    ]
+                                ]
+                            ],
+                            "tujuanKunj" => $request->tujuanKunjungan ?? 0,
+                            "flagProcedure" => $request->prosedur ?? "",
+                            "kdPenunjang" => $request->prosedurTidakBerkelanjutan ?? "",
+                            "assesmentPel" => $request->alasanTidakSelesai ?? "",
+                            "skdp" => [
+                                "noSurat" => $request->no_surat ?? "",
+                                "kodeDPJP" => $request->txtkddpjp ?? "",
+                            ],
+                            "dpjpLayan" => $dokter->kode_dpjp,
+                            "noTelp" => $pasien->nohp,
+                            "user" => auth()->user()->username
+                        ]
+                    ]
+                ];
+
+                $sep = VclaimSepHelper::getInsertSep($sep_manual);
+
+                if (isset($sep['metaData']) && $sep['metaData']['code'] != 200) {
+                    // Rollback handled by catch block but we custom return here? 
+                    // No, throw exception to rollback.
+                    throw new \Exception($sep['metaData']['message'] ?? 'Gagal membuat SEP');
+                }
+
+                DB::table('rawat')->where('id', $id)->update([
+                    'no_sep' => $sep['response']['sep']['noSep']
+                ]);
+            }
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data Kunjungan Berhasil Diperbarui',
+                'redirect_url' => route('pasien.rekammedis_detail', $pasien->id)
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'failed',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 }

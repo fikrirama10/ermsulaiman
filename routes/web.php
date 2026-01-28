@@ -606,6 +606,8 @@ Route::prefix('/pasien')->middleware('auth')->group(function () {
     Route::get('/view/{id}', [PasienController::class, 'rekammedis_detail'])->name('pasien.rekammedis_detail');
     Route::get('/create', [PasienController::class, 'tambah_pasien_baru'])->name('pasien.tambah-pasien');
     Route::get('/create-kunjungan/{id}/{jenis}', [PasienController::class, 'tambah_kunjungan'])->name('pasien.tambah-kunjungan');
+    Route::get('/kunjungan/{id}/edit', [PasienController::class, 'edit_kunjungan'])->name('pasien.edit-kunjungan');
+    Route::post('/kunjungan/{id}/update', [PasienController::class, 'update_kunjungan'])->name('pasien.update-kunjungan');
     Route::get('/cari-kelurahan', [PasienController::class, 'cari_kelurahan'])->name('pasien.cari-kelurahan');
     Route::get('/get-jadwal-dokter-kontrol', [PasienController::class, 'get_jadwal_dokter_kontrol'])->name('get-jadwal-dokter-kontrol');
     Route::get('/get-jadwal-dokter', [PasienController::class, 'get_jadwal_dokter'])->name('get-jadwal-dokter');

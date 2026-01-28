@@ -637,7 +637,8 @@
                                                 <th class="min-w-150px">Poli / Dokter</th>
                                                 <th class="min-w-100px">Masuk</th>
                                                 <th class="min-w-100px">Pulang</th>
-                                                <th class="pe-4 rounded-end min-w-100px">Status</th>
+                                                <th class="min-w-100px">Status</th>
+                                                <th class="pe-4 rounded-end min-w-100px">Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -901,6 +902,15 @@
                             if (data && data.toLowerCase().includes('rawat')) color = 'warning';
                             if (data && data.toLowerCase().includes('rujuk')) color = 'danger';
                             return `<span class="badge badge-light-${color} fw-bold px-3">${data}</span>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'id',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return `<a href="/pasien/kunjungan/${data}/edit" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" title="Edit Data Kunjungan"><i class="ki-outline ki-pencil fs-2"></i></a>`;
                         }
                     }
                 ]
