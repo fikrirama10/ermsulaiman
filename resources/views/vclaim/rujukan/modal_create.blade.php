@@ -128,6 +128,11 @@
             cache: true
         },
         minimumInputLength: 3
+    }).on('select2:opening', function() {
+        // Fix: Close flatpickr if open to prevent overlap
+        if (document.querySelector('.flatpickr-calendar.open')) {
+            document.querySelector('.flatpickr-calendar.open')._flatpickr.close();
+        }
     });
 
     // On RS Change -> Load Poli
