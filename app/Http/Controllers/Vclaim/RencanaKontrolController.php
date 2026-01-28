@@ -62,6 +62,7 @@ class RencanaKontrolController extends Controller
             ->whereDate('rawat.tglmasuk', '>=', $startDate)
             ->whereDate('rawat.tglmasuk', '<=', $endDate)
             ->where('rawat.status', '<>', 0)
+            ->where('rawat.idjenisrawat', 1)
             ->whereNotNull('rawat.no_sep') // Only those with SEP
             ->where('rawat.no_sep', '<>', '')
             ->orderBy('rawat.tglmasuk', 'desc');
