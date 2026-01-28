@@ -1,30 +1,7 @@
 @extends('layouts.index')
 
 @section('css')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        .step-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f1f1f2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #7e8299;
-        }
-
-        .step-item.current .step-icon {
-            background: #009ef7;
-            color: #fff;
-        }
-
-        .step-item.current .step-label {
-            color: #3f4254;
-            font-weight: bold;
-        }
-
         .search-result-item {
             cursor: pointer;
             transition: background-color 0.2s;
@@ -34,276 +11,232 @@
             background-color: #f1faff;
         }
 
-        .service-card {
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-
-        .service-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .service-card.selected {
-            border-color: #009ef7;
-            background-color: #f1faff;
+        /* Disabled state for the form wrapper */
+        .form-disabled {
+            opacity: 0.6;
+            pointer-events: none;
+            filter: grayscale(100%);
         }
     </style>
 @endsection
 
 @section('content')
     <div class="d-flex flex-column flex-column-fluid">
-        <div id="kt_app_toolbar" class="app-toolbar pt-7 pt-lg-10">
+        <!-- Toolbar -->
+        <div id="kt_app_toolbar" class="app-toolbar pt-5">
             <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
                 <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
                     <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
                         <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">
-                            Pendaftaran Pasien Baru
+                            Pendaftaran Rawat Inap
                         </h1>
-                        <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
-                            <li class="breadcrumb-item text-muted">
-                                <a href="{{ route('pendaftaran.index') }}"
-                                    class="text-muted text-hover-primary">Pendaftaran</a>
-                            </li>
-                            <li class="breadcrumb-item"><span class="bullet bg-gray-400 w-5px h-2px"></span></li>
-                            <li class="breadcrumb-item text-muted">Baru</li>
-                        </ul>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 gap-lg-3">
+                        <a href="{{ route('pendaftaran.index') }}" class="btn btn-sm btn-light">Kembali</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="kt_app_content" class="app-content flex-column-fluid">
+        <!-- Content -->
+        <div id="kt_app_content" class="app-content flex-column-fluid mt-5">
             <div id="kt_app_content_container" class="app-container container-fluid">
+                <form action="{{ route('pendaftaran.store') }}" method="POST" id="formPendaftaran">
+                    @csrf
+                    <input type="hidden" name="jenis_rawat" value="2"> {{-- Hardcoded Rawat Inap --}}
+                    <input type="hidden" name="idpasien" id="selected_idpasien">
 
-                <div class="card shadow-sm">
-                    <div class="card-body">
-
-                        <!-- Form Header (Steps) -->
-                        <div class="d-flex justify-content-center mb-10">
-                            <div class="d-flex align-items-center me-10 step-item current" id="step1-header">
-                                <div class="step-icon me-3">1</div>
-                                <div class="step-label text-gray-600">Cari Pasien</div>
-                            </div>
-                            <div class="d-flex align-items-center step-item" id="step2-header">
-                                <div class="step-icon me-3">2</div>
-                                <div class="step-label text-gray-600">Data Kunjungan</div>
-                            </div>
-                        </div>
-
-                        <!-- Step 1: Cari Pasien -->
-                        <div id="step1-content">
-                            <div class="text-center mb-8">
-                                <h3 class="fs-2hx text-dark mb-5">Cari Data Pasien</h3>
-                                <div class="text-gray-400 fw-bold fs-5">Cari berdasarkan No RM, NIK, atau Nama Pasien</div>
-                            </div>
-
-                            <div class="row justify-content-center">
-                                <div class="col-lg-8">
-                                    <div class="position-relative w-100 mb-8">
-                                        <span
-                                            class="svg-icon svg-icon-2 svg-icon-gray-500 position-absolute top-50 translate-middle-y ms-4">
-                                            <i class="fas fa-search fs-4"></i>
+                    <div class="row g-5">
+                        <!-- LEFT COLUMN: Patient Search -->
+                        <div class="col-lg-4">
+                            <!-- Search Card -->
+                            <div class="card shadow-sm mb-5" id="card_search">
+                                <div class="card-header min-h-50px">
+                                    <h3 class="card-title fs-5">1. Cari Pasien</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="position-relative mb-4">
+                                        <span class="svg-icon svg-icon-2 position-absolute top-50 translate-middle-y ms-4">
+                                            <i class="fas fa-search"></i>
                                         </span>
-                                        <input type="text" class="form-control form-control-lg form-control-solid ps-12"
-                                            id="search_pasien" placeholder="Ketik minimal 3 karakter..." autocomplete="off">
+                                        <input type="text" class="form-control form-control-solid ps-12"
+                                            id="search_pasien" placeholder="Nama / RM / NIK (Min 3 Karakter)"
+                                            autocomplete="off">
                                     </div>
 
-                                    <div id="search_results" class="list-group list-group-flush shadow-sm d-none">
+                                    <div id="loading_search" class="text-center d-none py-3">
+                                        <span class="spinner-border spinner-border-sm text-primary"></span> Mencari...
+                                    </div>
+
+                                    <div id="search_results" class="list-group list-group-flush border rounded d-none"
+                                        style="max-height: 300px; overflow-y: auto;">
                                         <!-- Results injected here -->
                                     </div>
-                                    <div id="loading_search" class="text-center d-none">
-                                        <span class="spinner-border text-primary" role="status"></span>
-                                    </div>
 
-                                    <div class="text-center mt-5">
-                                        <span class="text-muted">Pasien belum terdaftar?</span>
-                                        <a href="{{ route('pasien.tambah-pasien') }}" class="fw-bold text-primary ms-1">Buat
-                                            Pasien Baru</a>
+                                    <div class="separator my-4"></div>
+
+                                    <div class="text-center">
+                                        <a href="{{ route('pasien.tambah-pasien') }}" class="small fw-bold text-primary">
+                                            <i class="fas fa-plus-circle me-1"></i>Pasien Baru
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Selected Patient Card (Hidden initially) -->
+                            <div class="card shadow-sm bg-primary text-white d-none" id="card_selected_patient">
+                                <div class="card-body p-5">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="d-flex flex-column">
+                                            <h3 class="text-white fw-bold fs-4 mb-1" id="lbl_nama_pasien">Nama Pasien</h3>
+                                            <span class="opacity-75" id="lbl_no_rm">RM: 000000</span>
+                                            <span class="opacity-75 small mt-1" id="lbl_nik">NIK: -</span>
+                                            <span class="opacity-75 small" id="lbl_tgl_lahir">Tgl Lahir: -</span>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-light btn-icon text-primary"
+                                            onclick="resetPatient()" title="Ganti Pasien">
+                                            <i class="fas fa-times"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Step 2: Form Pendaftaran -->
-                        <div id="step2-content" class="d-none">
-                            <form action="{{ route('pendaftaran.store') }}" method="POST" id="formPendaftaran">
-                                @csrf
-                                <input type="hidden" name="idpasien" id="selected_idpasien">
-
-                                <!-- Selected Patient Info -->
-                                <div class="alert alert-primary d-flex align-items-center p-5 mb-10">
-                                    <span class="svg-icon svg-icon-2hx svg-icon-primary me-4">
-                                        <i class="fas fa-user-circle fs-1"></i>
-                                    </span>
-                                    <div class="d-flex flex-column">
-                                        <h4 class="mb-1 text-primary" id="selected_patient_name">Nama Pasien</h4>
-                                        <span id="selected_patient_rm">RM: -</span>
-                                    </div>
-                                    <button type="button" class="btn btn-sm btn-icon btn-light-primary ms-auto"
-                                        onclick="resetStep1()" title="Ganti Pasien">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                        <!-- RIGHT COLUMN: Admission Form -->
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm form-disabled" id="card_admission">
+                                <div class="card-header min-h-50px">
+                                    <h3 class="card-title fs-5">2. Data Masuk Rawat Inap</h3>
                                 </div>
-
-                                <!-- Service Type Selection -->
-                                <div class="row g-5 mb-10">
-                                    <div class="col-md-4">
-                                        <div class="card shadow-none bg-light service-card selected"
-                                            onclick="selectService(1)" id="card_rj">
-                                            <div class="card-body text-center py-5">
-                                                <i class="fas fa-clinic-medical fs-1 text-primary mb-3"></i>
-                                                <div class="fs-4 fw-bold text-gray-800">Rawat Jalan</div>
+                                <div class="card-body">
+                                    <!-- SPRI Search Row -->
+                                    <div
+                                        class="alert alert-dismissible bg-light-primary border border-primary border-dashed d-flex flex-column flex-sm-row w-100 p-5 mb-5">
+                                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                                            <h5 class="mb-1">Cari SPRI (Opsional)</h5>
+                                            <span class="text-gray-600 small">Jika pasien memiliki SPRI, data dokter dan
+                                                jaminan akan terisi otomatis.</span>
+                                        </div>
+                                        <div class="flex-shrink-0 ms-sm-auto mt-3 mt-sm-0">
+                                            <div class="input-group input-group-sm" style="max-width: 250px;">
+                                                <input type="text" class="form-control" id="no_spri_display"
+                                                    placeholder="Pilih SPRI..." readonly>
+                                                <input type="hidden" name="id_spri" id="id_spri">
+                                                <button class="btn btn-primary" type="button" onclick="openSpriModal()">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                                <button class="btn btn-light" type="button" onclick="clearSpri()">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="card shadow-none bg-light service-card" onclick="selectService(3)"
-                                            id="card_igd">
-                                            <div class="card-body text-center py-5">
-                                                <i class="fas fa-ambulance fs-1 text-danger mb-3"></i>
-                                                <div class="fs-4 fw-bold text-gray-800">IGD / UGD</div>
-                                            </div>
+
+                                    <div class="row mb-5">
+                                        <div class="col-md-6">
+                                            <label class="form-label required">Tanggal Masuk</label>
+                                            <input type="date" class="form-control form-control-solid" name="tglmasuk"
+                                                value="{{ date('Y-m-d') }}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label required">Penanggung / Bayar</label>
+                                            <select class="form-select form-select-solid" name="penanggung"
+                                                id="select_penanggung" required>
+                                                <option value="1">Umum / Pribadi</option>
+                                                <option value="2">BPJS Kesehatan</option>
+                                                <option value="3">Asuransi Lain</option>
+                                            </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="card shadow-none bg-light service-card" onclick="selectService(2)"
-                                            id="card_ri">
-                                            <div class="card-body text-center py-5">
-                                                <i class="fas fa-procédure fs-1 text-warning mb-3"></i>
-                                                <!-- procdure icon? using bed icon if fail -->
-                                                <i class="fas fa-bed fs-1 text-warning mb-3"></i>
-                                                <div class="fs-4 fw-bold text-gray-800">Rawat Inap</div>
-                                            </div>
+
+                                    <div class="row mb-5">
+                                        <div class="col-md-6">
+                                            <label class="form-label required">Dokter DPJP</label>
+                                            <select class="form-select form-select-solid" name="iddokter"
+                                                id="select_dokter" required>
+                                                <option value="">-- Pilih Dokter --</option>
+                                                @foreach ($dokter as $d)
+                                                    <option value="{{ $d->id }}">{{ $d->nama_dokter }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label required">Diagnosa Awal (ICD-10)</label>
+                                            <select class="form-select form-select-solid js-data-example-ajax"
+                                                name="diagnosa_masuk" id="diagnosa_masuk" required>
+                                                <option value="" selected disabled>Ketik Kode ICD-10 / Diagnosa...
+                                                </option>
+                                            </select>
                                         </div>
                                     </div>
-                                </div>
 
-                                <input type="hidden" name="jenis_rawat" id="jenis_rawat" value="1">
+                                    <div class="separator my-5"></div>
 
-                                <!-- Dynamic Inputs -->
-                                <div class="row mb-5">
-                                    <div class="col-md-6 mb-5" id="group_poli">
-                                        <label class="form-label required">Poliklinik</label>
-                                        <select class="form-select form-select-solid" name="idpoli" id="select_poli">
-                                            <option value="">-- Pilih Poliklinik --</option>
-                                            @foreach ($poli as $p)
-                                                <option value="{{ $p->id }}">{{ $p->poli }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6 mb-5 d-none" id="group_ruangan">
-                                        <label class="form-label required">Ruangan / Kamar</label>
-                                        <select class="form-select form-select-solid" name="idruangan"
-                                            id="select_ruangan">
-                                            <option value="">-- Pilih Ruangan --</option>
-                                            @foreach ($ruangan as $r)
-                                                <option value="{{ $r->id }}">{{ $r->nama_ruangan }} (Kelas
-                                                    {{ $r->idkelas }})</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6 mb-5">
-                                        <label class="form-label required">Dokter</label>
-                                        <select class="form-select form-select-solid" name="iddokter" id="select_dokter">
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach ($dokter as $d)
-                                                <option value="{{ $d->id }}">{{ $d->nama_dokter }}</option>
-                                            @endforeach
-                                        </select>
-                                        <div class="form-text" id="dokter_helper">Pilih Poli terlebih dahulu untuk filter
-                                            dokter.</div>
-                                    </div>
-
-                                    <div class="col-md-6 mb-5">
-                                        <label class="form-label required">Penanggung</label>
-                                        <select class="form-select form-select-solid" name="penanggung" required>
-                                            <option value="1">Umum / Pribadi</option>
-                                            <option value="2">BPJS Kesehatan</option>
-                                            <option value="3">Asuransi Lain</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6 mb-5">
-                                        <label class="form-label">Tanggal Masuk</label>
-                                        <input type="date" class="form-control form-control-solid" name="tglmasuk"
-                                            value="{{ date('Y-m-d') }}">
-                                    </div>
-                                    <input type="date" class="form-control form-control-solid" name="tglmasuk"
-                                        value="{{ date('Y-m-d') }}">
-                                </div>
-
-                                <div class="col-md-6 mb-5 d-none" id="group_bed">
-                                    <label class="form-label required">Bed / Tempat Tidur</label>
-                                    <select class="form-select form-select-solid" name="idbed" id="select_bed">
-                                        <option value="">-- Pilih Ruangan Dulu --</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6 mb-5 d-none" id="group_spri">
-                                    <label class="form-label">Nomor SPRI (Opsional)</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="no_spri_display"
-                                            placeholder="Cari SPRI..." readonly style="cursor: pointer;"
-                                            onclick="openSpriModal()">
-                                        <input type="hidden" name="id_spri" id="id_spri">
-                                        <button class="btn btn-secondary" type="button" onclick="clearSpri()"><i
-                                                class="fas fa-times"></i></button>
-                                    </div>
-                                    <div class="form-text">Klik untuk mencari SPRI pasien ini.</div>
-                                </div>
-
-                                <div class="col-md-12 mb-5 d-none" id="group_diagnosa">
-                                    <label class="form-label">Diagnosa Masuk</label>
-                                    <textarea class="form-control form-control-solid" name="diagnosa_masuk" rows="2"
-                                        placeholder="Diagnosa awal masuk..."></textarea>
-                                </div>
-                        </div>
-
-                        <!-- Modal Cari SPRI -->
-                        <div class="modal fade" id="modalSpri" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Cari SPRI Pasien</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="spri_list" class="list-group">
-                                            <!-- Ajax content -->
+                                    <h5 class="mb-4 text-gray-700">Ruangan & Bed</h5>
+                                    <div class="row mb-5">
+                                        <div class="col-md-6">
+                                            <label class="form-label required">Ruangan</label>
+                                            <select class="form-select form-select-solid" name="idruangan"
+                                                id="select_ruangan" required>
+                                                <option value="">-- Pilih Ruangan --</option>
+                                                @foreach ($ruangan as $r)
+                                                    <option value="{{ $r->id }}">{{ $r->nama_ruangan }} (Kelas
+                                                        {{ $r->idkelas }})</option>
+                                                @endforeach
+                                            </select>
                                         </div>
-                                        <div id="spri_loading" class="text-center d-none">
-                                            <span class="spinner-border text-primary"></span>
+                                        <div class="col-md-6">
+                                            <label class="form-label required">Bed / Tempat Tidur</label>
+                                            <select class="form-select form-select-solid" name="idbed" id="select_bed"
+                                                required>
+                                                <option value="">-- Pilih Ruangan Dulu --</option>
+                                            </select>
                                         </div>
-                                        <div id="spri_empty" class="alert alert-info d-none">
-                                            Tidak ditemukan SPRI aktif untuk pasien ini.
-                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end pt-5">
+                                        <button type="submit" class="btn btn-primary" id="btn_submit">
+                                            <i class="fas fa-save me-2"></i>Simpan Pendaftaran
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-light me-3" onclick="resetStep1()">Kembali</button>
-                            <button type="submit" class="btn btn-primary" id="btn_submit">
-                                <span class="indicator-label">Simpan Pendaftaran</span>
-                                <span class="indicator-progress">Please wait... <span
-                                        class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                            </button>
-                        </div>
-
-                        </form>
                     </div>
-
-                </div>
+                </form>
             </div>
-
         </div>
     </div>
+
+    <!-- Modal Cari SPRI -->
+    <div class="modal fade" id="modalSpri" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header pb-0 border-0 justify-content-end">
+                    <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                        <i class="fas fa-times fs-1"></i>
+                    </div>
+                </div>
+                <div class="modal-body scroll-y pt-0 pb-15">
+                    <div class="text-center mb-10">
+                        <h2>Cari SPRI Pasien</h2>
+                        <div class="text-muted fw-bold fs-5">Pilih SPRI yang valid untuk pasien ini</div>
+                    </div>
+
+                    <div id="spri_loading" class="text-center d-none">
+                        <span class="spinner-border text-primary"></span>
+                    </div>
+
+                    <div id="spri_empty" class="alert alert-info d-none text-center">
+                        Tidak ditemukan SPRI aktif.
+                    </div>
+
+                    <div id="spri_list" class="list-group">
+                        <!-- Ajax items -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -311,11 +244,14 @@
     <script>
         let searchTimeout;
 
-        // Search Patient
+        // 1. Patient Search Logic
         $('#search_pasien').on('keyup', function() {
             clearTimeout(searchTimeout);
             let val = $(this).val();
-            if (val.length < 3) return;
+            if (val.length < 3) {
+                $('#search_results').addClass('d-none');
+                return;
+            }
 
             $('#loading_search').removeClass('d-none');
             $('#search_results').addClass('d-none');
@@ -332,84 +268,102 @@
                         if (res.length > 0) {
                             res.forEach(p => {
                                 html += `
-                                <div class="list-group-item search-result-item" onclick='selectPatient(${JSON.stringify(p)})'>
+                                <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3 search-result-item" onclick='selectPatient(${JSON.stringify(p)})'>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="fw-bold text-dark">${p.nama_pasien}</div>
-                                            <div class="small text-muted">RM: ${p.no_rm} | NIK: ${p.nik || '-'}</div>
+                                            <div class="fw-bold fs-6 text-dark">${p.nama_pasien}</div>
+                                            <div class="text-muted small">RM: ${p.no_rm} | Tgl Lahir: ${p.tgllahir || '-'}</div>
                                         </div>
-                                        <div class="text-end">
-                                             <div class="badge badge-light-primary">Pilih</div>
-                                        </div>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
                                     </div>
-                                </div>
+                                </a>
                             `;
                             });
                             $('#search_results').html(html).removeClass('d-none');
                         } else {
                             $('#search_results').html(
-                                '<div class="list-group-item text-muted text-center">Data tidak ditemukan</div>'
+                                '<div class="p-3 text-center text-muted small">Data tidak ditemukan</div>'
                             ).removeClass('d-none');
                         }
+                    },
+                    error: function() {
+                        $('#loading_search').addClass('d-none');
                     }
                 });
             }, 500);
         });
 
-        function selectPatient(patient) {
-            // console.log(patient);
-            $('#selected_idpasien').val(patient.id);
-            $('#selected_patient_name').text(patient.nama_pasien);
-            $('#selected_patient_rm').text('RM: ' + patient.no_rm);
+        function selectPatient(p) {
+            // Set Hidden ID
+            $('#selected_idpasien').val(p.id);
 
-            $('#step1-content').addClass('d-none');
-            $('#step2-content').removeClass('d-none');
-            $('#step1-header').removeClass('current');
-            $('#step2-header').addClass('current');
-        }
+            // Update UI Labels
+            $('#lbl_nama_pasien').text(p.nama_pasien);
+            $('#lbl_no_rm').text('RM: ' + p.no_rm);
+            $('#lbl_nik').text('NIK: ' + (p.nik || '-'));
+            $('#lbl_tgl_lahir').text('Tgl Lahir: ' + (p.tgllahir || '-'));
 
-        function resetStep1() {
-            $('#step2-content').addClass('d-none');
-            $('#step1-content').removeClass('d-none');
-            $('#step2-header').removeClass('current');
-            $('#step1-header').addClass('current');
-            $('#search_pasien').val('').focus();
+            // Toggle Cards
+            $('#card_search').addClass('d-none');
+            $('#card_selected_patient').removeClass('d-none');
+
+            // Enable Admission Form
+            $('#card_admission').removeClass('form-disabled');
+
+            // Clear search
+            $('#search_pasien').val('');
             $('#search_results').addClass('d-none');
         }
 
-        $('.indicator-progress').show();
+        function resetPatient() {
+            $('#selected_idpasien').val('');
 
-        // Handle Ruangan Change -> Load Bed
+            // Toggle Cards
+            $('#card_search').removeClass('d-none');
+            $('#card_selected_patient').addClass('d-none');
+
+            // Disable Admission Form and Reset some fields if needed
+            $('#card_admission').addClass('form-disabled');
+
+            // Optional: Reset form fields?
+            // $('#formPendaftaran')[0].reset();
+            // Just clearing SPRI and Bed might be enough
+            clearSpri();
+        }
+
+        // 2. Ruangan & Bed Logic
         $('#select_ruangan').change(function() {
-            let id_ruangan = $(this).val();
-            if (!id_ruangan) return;
+            let id = $(this).val();
+            let bedSelect = $('#select_bed');
 
-            // Clear Beds
-            $('#select_bed').html('<option value="">Loading...</option>');
+            bedSelect.html('<option value="">Loading...</option>');
 
-            $.get("{{ route('pendaftaran.get-beds', '') }}/" + id_ruangan, function(res) {
-                let opts = '<option value="">-- Pilih Bed --</option>';
-                if (res.length > 0) {
-                    res.forEach(b => {
-                        opts += `<option value="${b.id}">${b.kodebed}</option>`;
-                    });
-                } else {
-                    opts = '<option value="">-- Penuh / Tidak Ada Bed --</option>';
-                }
-                $('#select_bed').html(opts);
-            });
+            if (id) {
+                $.get("{{ route('pendaftaran.get-beds', '') }}/" + id, function(res) {
+                    let opts = '<option value="">-- Pilih Bed --</option>';
+                    if (res.length > 0) {
+                        res.forEach(b => {
+                            opts += `<option value="${b.id}">${b.kodebed}</option>`;
+                        });
+                    } else {
+                        opts = '<option value="">-- Penuh / Tidak Ada Bed --</option>';
+                    }
+                    bedSelect.html(opts);
+                }).fail(function() {
+                    bedSelect.html('<option value="">Error memuat bed</option>');
+                });
+            } else {
+                bedSelect.html('<option value="">-- Pilih Ruangan Dulu --</option>');
+            }
         });
 
-        // SPRI Logic
+        // 3. SPRI Logic
         function openSpriModal() {
-            let id_pasien = $('#selected_idpasien').val();
-            // We need NO_RM actually, assume we have it in a hidden input or text?
-            // Step 1 selected_patient_rm text is "RM: 123456"
-            let txt = $('#selected_patient_rm').text();
-            let no_rm = txt.replace('RM: ', '').trim();
+            let no_rm_text = $('#lbl_no_rm').text();
+            let no_rm = no_rm_text.replace('RM: ', '').trim();
 
-            if (!no_rm) {
-                alert('Pasien belum dipilih');
+            if (!no_rm || no_rm === '000000') {
+                Swal.fire('Error', 'Pilih pasien terlebih dahulu', 'error');
                 return;
             }
 
@@ -429,14 +383,15 @@
                         let html = '';
                         res.forEach(s => {
                             html += `
-                                    <a href="#" class="list-group-item list-group-item-action" onclick='selectSpri(${JSON.stringify(s)})'>
-                                        <div class="d-flex w-100 justify-content-between">
-                                            <h5 class="mb-1">${s.no_spri}</h5>
-                                            <small>${s.tgl_rawat}</small>
-                                        </div>
-                                        <p class="mb-1">Dokter: ${s.dokter ? s.dokter.nama_dokter : '-'}</p>
-                                    </a>
-                                `;
+                                <a href="javascript:void(0)" class="list-group-item list-group-item-action" onclick='selectSpri(${JSON.stringify(s)})'>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1 fw-bold text-primary">${s.no_spri}</h5>
+                                        <small class="text-muted">${s.tgl_rawat}</small>
+                                    </div>
+                                    <p class="mb-1 text-gray-700">Dokter: ${s.dokter ? s.dokter.nama_dokter : '-'}</p>
+                                    <small>Poli: ${s.poli ? s.poli.poli : '-'}</small>
+                                </a>
+                            `;
                         });
                         $('#spri_list').html(html);
                     } else {
@@ -451,15 +406,22 @@
             $('#no_spri_display').val(spri.no_spri);
             $('#modalSpri').modal('hide');
 
-            // Auto Select Dokter DPJP if matches
+            // Auto-fill form based on SPRI
             if (spri.iddokter) {
-                $('#select_dokter').val(spri.iddokter).trigger('change');
+                $('#select_dokter').val(spri.iddokter);
+            }
+            if (spri.idbayar) {
+                $('#select_penanggung').val(spri.idbayar);
             }
 
-            // Auto Penanggung
-            if (spri.idbayar) {
-                $('select[name="penanggung"]').val(spri.idbayar).trigger('change');
-            }
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Data SPRI diterapkan',
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
 
         function clearSpri() {
@@ -467,78 +429,69 @@
             $('#no_spri_display').val('');
         }
 
-        // Modified Service Selection
-        function selectService(type) {
-            $('.service-card').removeClass('selected');
-            $('#jenis_rawat').val(type);
-
-            if (type == 1) { // RJ
-                $('#card_rj').addClass('selected');
-                $('#group_poli').removeClass('d-none');
-                $('#group_ruangan').addClass('d-none');
-                $('#group_bed').addClass('d-none');
-                $('#group_spri').addClass('d-none');
-                $('#group_diagnosa').addClass('d-none');
-                $('#select_dokter').empty().append('<option value="">-- Pilih Dokter --</option>');
-                $('#dokter_helper').text('Pilih Poli untuk memuat dokter.');
-                populateAllDoctorsContext(false);
-            } else if (type == 2) { // RI
-                $('#card_ri').addClass('selected');
-                $('#group_poli').addClass('d-none');
-                $('#group_ruangan').removeClass('d-none');
-                $('#group_bed').removeClass('d-none');
-                $('#group_spri').removeClass('d-none');
-                $('#group_diagnosa').removeClass('d-none');
-                populateAllDoctorsContext(true); // Load all doctors or DPJP
-                $('#dokter_helper').text('Pilih DPJP.');
-            } else if (type == 3) { // UGD
-                $('#card_igd').addClass('selected');
-                $('#group_poli').addClass('d-none');
-                $('#group_ruangan').addClass('d-none');
-                $('#group_bed').addClass(
-                    'd-none'
-                    ); // UGD usually doesn't select bed at registration or maybe does? User said "pemilihan ruangan dan juga bed" for rawat inap. UGD usually has "Bed UGD" implicit.
-                $('#group_spri').addClass('d-none');
-                $('#group_diagnosa').addClass('d-none');
-                populateAllDoctorsContext(true); // Load all doctors or Jaga
-                $('#dokter_helper').text('Pilih Dokter Jaga.');
+        // 4. Submit Validation
+        $('#formPendaftaran').on('submit', function(e) {
+            if (!$('#selected_idpasien').val()) {
+                e.preventDefault();
+                Swal.fire('Error', 'Silahkan pilih pasien terlebih dahulu', 'warning');
+                return;
             }
-        }
 
-        // Load Doctors on Poli Change
-        $('#select_poli').change(function() {
-            let id_poli = $(this).val();
-            if (!id_poli) return;
-
-            $.get("{{ route('pendaftaran.get-dokter', '') }}/" + id_poli, function(res) {
-                let opts = '<option value="">-- Pilih Dokter --</option>';
-                res.forEach(d => {
-                    opts += `<option value="${d.id}">${d.nama_dokter}</option>`;
-                });
-                $('#select_dokter').html(opts);
+            // Basic Confirm
+            e.preventDefault();
+            Swal.fire({
+                title: 'Konfirmasi Pendaftaran',
+                text: "Pastikan data rawat inap sudah benar.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Simpan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Disable button
+                    $('#btn_submit').attr('disabled', true).html(
+                        '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan...');
+                    this.submit();
+                }
             });
         });
 
-        // Helper to revert doctor list to initial (all) if needed
-        // For simplicity, I put all doctors in the blade variable $dokter initially.
-        // If RJ selected, we clear and load by poli. If UGD/RI selected, we might want to show all again.
-        const allDoctors = @json($dokter);
-
-        function populateAllDoctorsContext(showAll) {
-            if (showAll) {
-                let opts = '<option value="">-- Pilih Dokter --</option>';
-                allDoctors.forEach(d => {
-                    opts += `<option value="${d.id}">${d.nama_dokter}</option>`;
-                });
-                $('#select_dokter').html(opts);
-            }
-        }
-
-        // Submit handler
-        $('#formPendaftaran').on('submit', function() {
-            $('#btn_submit').attr('disabled', true);
-            $('.indicator-label').hide();
-            $('.indicator-progress').show();
+        // 5. ICD-10 Search Select2
+        $(document).ready(function() {
+            $('.js-data-example-ajax').select2({
+                ajax: {
+                    url: 'https://new-simrs.rsausulaiman.com/auth/listdiagnosa2',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            q: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.result.map(function(item) {
+                                return {
+                                    id: item.id,
+                                    text: item.text
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1,
+                placeholder: 'Ketik Kode ICD-10 / Diagnosa ...',
+                allowClear: true
+            });
         });
+
+        // Show alerts from session
+        @if (session('error'))
+            Swal.fire('Gagal', "{{ session('error') }}", 'error');
+        @endif
+        @if (session('success'))
+            Swal.fire('Berhasil', "{{ session('success') }}", 'success');
+        @endif
     </script>
 @endsection

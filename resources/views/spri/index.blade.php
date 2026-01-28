@@ -52,7 +52,7 @@
     </div>
 @endsection
 
-@push('scripts')
+@section('js')
     <script>
         $(document).ready(function() {
             var table = $('#kt_table_spri').DataTable({
@@ -79,15 +79,18 @@
                     },
                     {
                         data: 'pasien.nama_pasien',
-                        name: 'pasien.nama_pasien'
+                        name: 'pasien.nama_pasien',
+                        defaultContent: '-'
                     },
                     {
                         data: 'dokter.nama_dokter',
-                        name: 'dokter.nama_dokter'
+                        name: 'dokter.nama_dokter',
+                        defaultContent: '-'
                     },
                     {
                         data: 'poli.poli',
-                        name: 'poli.poli'
+                        name: 'poli.poli',
+                        defaultContent: '-'
                     },
                     {
                         data: 'action',
@@ -103,4 +106,4 @@
             });
         });
     </script>
-@endpush
+@endsection
