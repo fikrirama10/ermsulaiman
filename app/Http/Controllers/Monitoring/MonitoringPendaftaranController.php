@@ -72,7 +72,7 @@ class MonitoringPendaftaranController extends Controller
                     'rawat.no_rm',
                     'rawat.tglmasuk',
                     'rawat.status',
-                    'rawat.online',
+                    'rawat.anrian_online',
                     'rawat.no_antrian',
                     'pasien.nama_pasien',
                     'poli.poli as nama_poli',
@@ -106,7 +106,7 @@ class MonitoringPendaftaranController extends Controller
                     return Carbon::parse($row->tglmasuk)->format('d/m/Y H:i');
                 })
                 ->addColumn('online_status', function ($row) {
-                    return $row->online == 1
+                    return $row->antrian_online == 1
                         ? '<span class="badge badge-light-success">Online</span>'
                         : '<span class="badge badge-light-secondary">Onsite</span>';
                 })
