@@ -75,7 +75,7 @@
 
         @media print {
             @page {
-                size: A4 landscape;
+                size: A4 portrait;
                 /* Sample looks landscape-ish or wide */
                 margin: 1cm;
             }
@@ -124,7 +124,8 @@
         </div>
         <div class="row">
             <div class="label">Nama Peserta</div>
-            <div class="value">: {{ $rawat->pasien->nama_pasien ?? '-' }} ({{ $rawat->pasien->jenis_kelamin ?? '-' }})</div>
+            <div class="value">: {{ $rawat->pasien->nama_pasien ?? '-' }} ({{ $rawat->pasien->jenis_kelamin ?? '-' }})
+            </div>
         </div>
         <div class="row">
             <div class="label">Tgl.Lahir</div>
