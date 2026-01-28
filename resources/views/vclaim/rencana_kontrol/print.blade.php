@@ -120,15 +120,15 @@
 
         <div class="row">
             <div class="label">No.Kartu</div>
-            <div class="value">: {{ $rawa->pasien->nohp ?? '-' }}</div>
+            <div class="value">: {{ $rawat->pasien->no_bpjs ?? '-' }}</div>
         </div>
         <div class="row">
             <div class="label">Nama Peserta</div>
-            <div class="value">: {{ $rawa->pasien->nama ?? '-' }} ({{ $rawa->pasien->kelamin ?? '-' }})</div>
+            <div class="value">: {{ $rawat->pasien->nama_pasien ?? '-' }} ({{ $rawat->pasien->jenis_kelamin ?? '-' }})</div>
         </div>
         <div class="row">
             <div class="label">Tgl.Lahir</div>
-            <div class="value">: {{ $rawa->pasien->tgl_lahir ?? '-' }}</div>
+            <div class="value">: {{ $rawat->pasien->tgllahir ?? '-' }}</div>
         </div>
         <div class="row">
             <div class="label">Diagnosa</div>

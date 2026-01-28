@@ -118,7 +118,11 @@ class RencanaKontrolController extends Controller
     public function print($noSurat)
     {
         $surat = VclaimRencanaKontrolHelper::getDatabynosurat($noSurat);
-        $rawat = Rawat::where('no_suratkontrol', $noSurat);
+        if($surat['response'] == null){
+            return redirect()->back()->with('error',$surat['metaData']['message']);
+        }
+        $rawat = Rawat::where('no_suratkontrol', $noSurat)->first();
+        // return $rawat->pasien->nama_pasien;
         // return $surat;
         // We might need SEP details too for some info not in Surat response, 
         // usually Surat response has enough for the printout shown (Diagnosa, Poli, Dokter, Tgl Lahir etc)
