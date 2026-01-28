@@ -56,7 +56,7 @@
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 5%;
             display: flex;
             justify-content: flex-end;
             margin-right: 50px;
@@ -68,7 +68,7 @@
         }
 
         .meta {
-            margin-top: 30px;
+            margin-top: 5%;
             font-size: 10px;
             font-style: italic;
         }
@@ -141,7 +141,7 @@
             <div class="value">: {{ $data['tglRencanaKontrol'] ?? '-' }}</div>
         </div>
 
-        <div style="margin-top: 20px;">
+        <div style="margin-top: 5px;">
             Demikian atas bantuannya,diucapkan banyak terima kasih.
         </div>
     </div>
