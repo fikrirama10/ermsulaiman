@@ -825,6 +825,7 @@ Route::prefix('vclaim')->middleware('auth')->as('vclaim.')->group(function () {
         Route::post('/store', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'store'])->name('store');
         Route::get('/edit', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'edit'])->name('edit');
         Route::put('/update', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'update'])->name('update');
+        Route::get('/print/{noSurat}', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'print'])->name('print');
     });
 });
 

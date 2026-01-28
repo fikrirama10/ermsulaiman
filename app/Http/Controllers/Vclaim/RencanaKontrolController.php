@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
 use App\Helpers\Vclaim\VclaimRencanaKontrolHelper;
+use App\Models\Rawat;
 
 class RencanaKontrolController extends Controller
 {
@@ -36,10 +37,15 @@ class RencanaKontrolController extends Controller
                         $btn = '';
                         // Condition: terbitSEP == "Belum" to allow edit
                         if (isset($row['terbitSEP']) && $row['terbitSEP'] == 'Belum') {
-                            $btn .= '<button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" onclick="editRencanaKontrol(\'' . $row['noSuratKontrol'] . '\', \'' . $row['noSepAsalKontrol'] . '\')" title="Edit">
+                            $btn .= '<button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary me-1" onclick="editRencanaKontrol(\'' . $row['noSuratKontrol'] . '\', \'' . $row['noSepAsalKontrol'] . '\')" title="Edit">
                                         <i class="ki-outline ki-pencil fs-2"></i>
                                     </button>';
                         }
+
+                        $btn .= '<a href="' . route('vclaim.rencana-kontrol.print', ['noSurat' => $row['noSuratKontrol']]) . '" target="_blank" class="btn btn-sm btn-icon btn-bg-light btn-active-color-info" title="Print">
+                                    <i class="ki-outline ki-printer fs-2"></i>
+                                </a>';
+
                         return $btn;
                     })
                     ->rawColumns(['action'])
@@ -107,6 +113,25 @@ class RencanaKontrolController extends Controller
         $response = VclaimRencanaKontrolHelper::getUpdate($post_data);
 
         return response()->json($response);
+    }
+
+    public function print($noSurat)
+    {
+        $surat = VclaimRencanaKontrolHelper::getDatabynosurat($noSurat);
+        $rawat = Rawat::where('no_suratkontrol', $noSurat);
+        // return $surat;
+        // We might need SEP details too for some info not in Surat response, 
+        // usually Surat response has enough for the printout shown (Diagnosa, Poli, Dokter, Tgl Lahir etc)
+        // If some data missing, we fetch SEP.
+        // Based on sample: 
+        // - No Kartu: Present
+        // - Nama: Present
+        // - Tgl Lahir: Present in Peserta object usually
+        // - Diagnosa: Present
+        // - Rencana Kontrol: Present
+        // - Dokter: Present
+
+        return view('vclaim.rencana_kontrol.print', compact('surat', 'rawat'));
     }
 
     private function dataKunjungan(Request $request)
