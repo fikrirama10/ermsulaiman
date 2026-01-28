@@ -32,7 +32,7 @@
     <div class="row mb-5">
         <div class="col-md-12 mb-5">
             <label class="form-label required">Dirujuk Ke (RS/Faskes)</label>
-            <select class="form-select form-select-solid" data-control="select2" id="ppk_dirujuk" name="ppk_dirujuk"
+            <select class="form-select form-select-solid" id="ppk_dirujuk" name="ppk_dirujuk"
                 data-placeholder="Ketik Nama RS Tujuan...">
                 <option></option>
             </select>
@@ -40,7 +40,7 @@
 
         <div class="col-md-6 mb-5">
             <label class="form-label required">Poliklinik</label>
-            <select class="form-select form-select-solid" data-control="select2" id="poli_rujukan" name="poli_rujukan"
+            <select class="form-select form-select-solid" id="poli_rujukan" name="poli_rujukan"
                 data-placeholder="Pilih Poli..." disabled>
                 <option></option>
             </select>
@@ -59,7 +59,7 @@
     <div class="row mb-5">
         <div class="col-md-12 mb-3">
             <label class="form-label required">Diagnosa Rujukan (ICD-10)</label>
-            <select class="form-select form-select-solid" data-control="select2" id="diag_rujukan" name="diag_rujukan"
+            <select class="form-select form-select-solid" id="diag_rujukan" name="diag_rujukan"
                 data-placeholder="Ketik Kode/Nama Diagnosa">
                 <option></option>
             </select>
