@@ -116,7 +116,7 @@
                             </div>
                             <div class="card-body pt-4">
                                 <!-- Alerts -->
-                                @if (isset($cek_finger_print) && $cek_finger_print['metaData']['code'] == 200)
+                                {{-- @if (isset($cek_finger_print) && $cek_finger_print['metaData']['code'] == 200)
                                     <div id='alert-finger'
                                         class="alert alert-{{ $cek_finger_print['response']['kode'] == 0 ? 'danger' : 'success' }} d-flex align-items-center p-3 mb-4 rounded border-dashed border-{{ $cek_finger_print['response']['kode'] == 0 ? 'danger' : 'success' }} d-none">
                                         <i
@@ -129,7 +129,7 @@
                                                 class="fs-8 text-muted">{{ $cek_finger_print['response']['status'] }}</span>
                                         </div>
                                     </div>
-                                @endif
+                                @endif --}}
 
                                 <div class="mb-4">
                                     <div class="text-muted fw-bold fs-7 text-uppercase mb-2">Identitas & Kontak</div>
@@ -200,8 +200,7 @@
                                                     <option value="2">BPJS Kesehatan</option>
                                                     <option value="1">UMUM / Pribadi</option>
                                                 </select>
-                                                <div
-                                                    class="form-check form-switch form-check-custom form-check-solid mt-3">
+                                                <div class="form-check form-switch form-check-custom form-check-solid mt-3">
                                                     <input class="form-check-input" type="checkbox" value="1"
                                                         id="buat_sep" name="buat_sep" />
                                                     <label class="form-check-label fw-semibold text-gray-700"
