@@ -521,6 +521,10 @@ Route::prefix('/monitoring')->middleware('auth')->group(function () {
     Route::get('/export', [ActivityLogController::class, 'export'])->name('monitoring.export');
     Route::post('/cleanup', [ActivityLogController::class, 'cleanup'])->name('monitoring.cleanup');
     Route::get('/chart-data', [ActivityLogController::class, 'chartData'])->name('monitoring.chart-data');
+
+    // Pendaftaran Monitoring
+    Route::get('/pendaftaran', [App\Http\Controllers\Monitoring\MonitoringPendaftaranController::class, 'index'])->name('monitoring.pendaftaran.index');
+    Route::get('/pendaftaran/data', [App\Http\Controllers\Monitoring\MonitoringPendaftaranController::class, 'data'])->name('monitoring.pendaftaran.data');
 });
 
 Route::prefix('/rawat-jalan')->middleware('auth')->group(function () {
