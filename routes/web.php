@@ -798,6 +798,7 @@ Route::prefix('dokter')->middleware('auth')->group(function () {
 
     // Jadwal Routes
     Route::get('/{id}/jadwal', [App\Http\Controllers\DokterController::class, 'jadwal'])->name('dokter.jadwal');
+
     Route::get('/{id}/jadwal/data', [App\Http\Controllers\DokterController::class, 'jadwal'])->name('dokter.jadwal.data');
     Route::post('/jadwal/store', [App\Http\Controllers\DokterController::class, 'storeJadwal'])->name('dokter.jadwal.store');
     Route::get('/jadwal/edit/{id}', [App\Http\Controllers\DokterController::class, 'editJadwal'])->name('dokter.jadwal.edit');
@@ -812,6 +813,17 @@ Route::prefix('dokter')->middleware('auth')->group(function () {
     Route::get('/kuota/edit/{id}', [App\Http\Controllers\DokterController::class, 'editKuota'])->name('dokter.kuota.edit');
     Route::put('/kuota/update/{id}', [App\Http\Controllers\DokterController::class, 'updateKuota'])->name('dokter.kuota.update');
     Route::delete('/kuota/delete/{id}', [App\Http\Controllers\DokterController::class, 'destroyKuota'])->name('dokter.kuota.destroy');
+});
+
+// VClaim Modules
+Route::prefix('vclaim')->middleware('auth')->as('vclaim.')->group(function () {
+    Route::prefix('rencana-kontrol')->as('rencana-kontrol.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'index'])->name('index');
+        Route::get('/modal', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'modalCreate'])->name('modal');
+        Route::get('/check-sep', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'checkSep'])->name('check-sep');
+        Route::get('/check-schedule', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'checkSchedule'])->name('check-schedule');
+        Route::post('/store', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'store'])->name('store');
+    });
 });
 
 //Ajax

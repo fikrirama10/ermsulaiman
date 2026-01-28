@@ -301,14 +301,19 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 @section('js')
     <script>
+        // ... (Existing variables)
         var currentFilter = 'all';
         var table;
         var startDate = "{{ $startDate }}";
         var endDate = "{{ $endDate }}";
+
+        // ... (Existing document.ready)
+
 
         $(document).ready(function() {
             // Init Date Picker
@@ -463,7 +468,7 @@
 
                     // Set Bayar
                     $('#det_bayar').val(data.idbayar).trigger(
-                    'change'); // Assuming select2 is not init here, if normal select just val()
+                        'change'); // Assuming select2 is not init here, if normal select just val()
 
                     // Set Date input (remove time part if exists)
                     let datePart = data.tglmasuk.split(' ')[0];
