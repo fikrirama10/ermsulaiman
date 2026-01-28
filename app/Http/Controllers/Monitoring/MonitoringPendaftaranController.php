@@ -72,7 +72,7 @@ class MonitoringPendaftaranController extends Controller
                     'rawat.no_rm',
                     'rawat.tglmasuk',
                     'rawat.status',
-                    'rawat.anrian_online',
+                    'rawat.antrian_online',
                     'rawat.no_antrian',
                     'pasien.nama_pasien',
                     'poli.poli as nama_poli',
