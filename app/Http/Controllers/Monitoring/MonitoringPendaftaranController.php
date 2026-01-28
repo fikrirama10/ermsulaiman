@@ -86,7 +86,7 @@ class MonitoringPendaftaranController extends Controller
 
             // Filters
             if ($request->filter == 'online') {
-                $query->where('rawat.online', 1);
+                $query->where('rawat.antrian_online', 1);
             }
             if ($request->idpoli) {
                 $query->where('rawat.idpoli', $request->idpoli);
