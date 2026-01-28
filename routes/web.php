@@ -827,6 +827,16 @@ Route::prefix('vclaim')->middleware('auth')->as('vclaim.')->group(function () {
         Route::put('/update', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'update'])->name('update');
         Route::get('/print/{noSurat}', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'print'])->name('print');
     });
+
+    // Rujukan Route
+    Route::prefix('rujukan')->as('rujukan.')->group(function () {
+        Route::get('/modal', [App\Http\Controllers\Vclaim\RujukanController::class, 'modalCreate'])->name('modal');
+        Route::get('/cari-rs', [App\Http\Controllers\Vclaim\RujukanController::class, 'cariRS'])->name('cari-rs');
+        Route::get('/cari-poli', [App\Http\Controllers\Vclaim\RujukanController::class, 'cariPoli'])->name('cari-poli');
+        Route::get('/cari-diagnosa', [App\Http\Controllers\Vclaim\RujukanController::class, 'cariDiagnosa'])->name('cari-diagnosa');
+        Route::get('/print/{noRujukan}', [App\Http\Controllers\Vclaim\RujukanController::class, 'print'])->name('print');
+        Route::resource('/', App\Http\Controllers\Vclaim\RujukanController::class);
+    });
 });
 
 //Ajax
