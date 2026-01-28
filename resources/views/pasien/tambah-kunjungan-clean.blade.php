@@ -116,7 +116,7 @@
                             </div>
                             <div class="card-body pt-4">
                                 <!-- Alerts -->
-                                @if ($cek_finger_print['metaData']['code'] == 200)
+                                @if (isset($cek_finger_print) && $cek_finger_print['metaData']['code'] == 200)
                                     <div id='alert-finger'
                                         class="alert alert-{{ $cek_finger_print['response']['kode'] == 0 ? 'danger' : 'success' }} d-flex align-items-center p-3 mb-4 rounded border-dashed border-{{ $cek_finger_print['response']['kode'] == 0 ? 'danger' : 'success' }} d-none">
                                         <i
