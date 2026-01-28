@@ -467,10 +467,11 @@
                                                         @foreach ($soap_icdx as $icd)
                                                             <tr>
                                                                 <td class="ps-4"><span
-                                                                        class="badge badge-light-danger fw-bolder px-3 py-2">{{ $icd->icd10 }}</span>
+                                                                        class="badge badge-light-danger fw-bolder px-3 py-2">{{ $icd?->icd10 }}</span>
                                                                 </td>
                                                                 <td class="text-end text-muted pe-4 fw-semibold">
-                                                                    {{ date('d M Y', strtotime($icd->tglmasuk)) }}</td>
+                                                                    {{-- {{ date('d M Y', strtotime($icd->tglmasuk)) }} --}}
+                                                                </td>
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
