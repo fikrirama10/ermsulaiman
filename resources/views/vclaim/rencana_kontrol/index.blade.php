@@ -39,7 +39,7 @@
                                         <input class="form-control form-control-solid ps-12 w-250px"
                                             placeholder="Tanggal Masuk" id="filter_date_source" />
                                     </div>
-                                    <div class="w-200px">
+                                    <div class="w-150px me-3">
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-placeholder="Filter Poli" id="filter_poli">
                                             <option value="">Semua Poli</option>
@@ -48,8 +48,13 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div class="d-flex align-items-center position-relative my-1">
+                                        <i class="ki-outline ki-magnifier fs-2 position-absolute ms-4"></i>
+                                        <input type="text" class="form-control form-control-solid ps-12 w-200px"
+                                            placeholder="Cari Pasien/SEP" id="filter_keyword_source" />
+                                    </div>
                                     <button type="button" class="btn btn-primary ms-3" onclick="reloadTableSource()">
-                                        <i class="ki-outline ki-magnifier fs-2"></i> Cari
+                                        <i class="ki-outline ki-magnifier fs-2"></i>
                                     </button>
                                 </div>
                             </div>
@@ -84,17 +89,22 @@
                                 <div class="card-toolbar">
                                     <div class="d-flex align-items-center position-relative my-1 me-3">
                                         <i class="ki-outline ki-calendar-8 fs-2 position-absolute ms-4"></i>
-                                        <input class="form-control form-control-solid ps-12 w-200px" placeholder="Tanggal"
-                                            id="filter_date_history" value="{{ date('Y-m-d') }}" />
+                                        <input class="form-control form-control-solid ps-12 w-250px" placeholder="Tanggal"
+                                            id="filter_date_history" />
                                     </div>
-                                    <div class="w-150px">
+                                    <div class="w-150px me-3">
                                         <select class="form-select form-select-solid" id="filter_jenis_history">
                                             <option value="2">Rencana Kontrol</option>
                                             <option value="1">SPRI</option>
                                         </select>
                                     </div>
+                                    <div class="d-flex align-items-center position-relative my-1">
+                                        <i class="ki-outline ki-magnifier fs-2 position-absolute ms-4"></i>
+                                        <input type="text" class="form-control form-control-solid ps-12 w-200px"
+                                            placeholder="Cari..." id="filter_keyword_history" />
+                                    </div>
                                     <button type="button" class="btn btn-primary ms-3" onclick="reloadTableHistory()">
-                                        <i class="ki-outline ki-magnifier fs-2"></i> Cari
+                                        <i class="ki-outline ki-magnifier fs-2"></i>
                                     </button>
                                 </div>
                             </div>
@@ -110,6 +120,7 @@
                                                 <th>Poli Tujuan</th>
                                                 <th>Dokter</th>
                                                 <th>Terbit SEP</th>
+                                                <th class="text-end">Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody class="fw-semibold text-gray-600"></tbody>
@@ -161,18 +172,28 @@
             });
 
             $("#filter_date_history").flatpickr({
+                mode: "range",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ date('Y-m-d') }}",
+                defaultDate: ["{{ date('Y-m-d') }}", "{{ date('Y-m-d') }}"],
             });
 
             initTableSource();
             initTableHistory();
+
+            // Enter key trigger
+            $('#filter_keyword_source').on('keypress', function(e) {
+                if (e.which === 13) reloadTableSource();
+            });
+            $('#filter_keyword_history').on('keyup', function() {
+                tableHistory.search(this.value).draw();
+            });
         });
 
         function initTableSource() {
             tableSource = $('#table_source').DataTable({
                 processing: true,
                 serverSide: true,
+                searching: false, // Use custom search
                 ajax: {
                     url: "{{ route('vclaim.rencana-kontrol.index') }}",
                     data: function(d) {
@@ -184,6 +205,7 @@
                         else d.end_date = dates[0];
 
                         d.idpoli = $('#filter_poli').val();
+                        d.keyword = $('#filter_keyword_source').val();
                     }
                 },
                 columns: [{
@@ -231,7 +253,11 @@
                 ajax: {
                     url: "{{ route('vclaim.rencana-kontrol.index') }}",
                     data: function(d) {
-                        d.date = $("#filter_date_history").val();
+                        let dates = $("#filter_date_history").val().split(' to ');
+                        if (dates.length > 0) d.start_date = dates[0];
+                        if (dates.length > 1) d.end_date = dates[1];
+                        else d.end_date = dates[0];
+
                         d.filter = $("#filter_jenis_history").val();
                     }
                 },
@@ -265,6 +291,13 @@
                         data: 'terbitSEP',
                         name: 'terbitSEP'
                     },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-end'
+                    },
                 ]
             });
         }
@@ -281,7 +314,7 @@
             $('#modal_rencana_kontrol').modal('show');
             $('#modal_rencana_kontrol_body').html(
                 '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
-                );
+            );
 
             $.ajax({
                 url: "{{ route('vclaim.rencana-kontrol.modal') }}",
@@ -301,6 +334,34 @@
                 error: function() {
                     $('#modal_rencana_kontrol_body').html(
                         '<div class="alert alert-danger">Gagal memuat form</div>');
+                }
+            });
+        }
+
+        function editRencanaKontrol(no_surat, no_sep_asal) {
+            $('#modal_rencana_kontrol').modal('show');
+            $('#modal_rencana_kontrol_body').html(
+                '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
+            );
+
+            $.ajax({
+                url: "{{ route('vclaim.rencana-kontrol.edit') }}",
+                type: "GET",
+                data: {
+                    no_surat: no_surat,
+                    no_sep_asal: no_sep_asal
+                },
+                success: function(response) {
+                    $('#modal_rencana_kontrol_body').html(response);
+                    // Re-init select2
+                    KTApp.init();
+                    $('#modal_rencana_kontrol_body select[data-control="select2"]').select2({
+                        dropdownParent: $('#modal_rencana_kontrol')
+                    });
+                },
+                error: function() {
+                    $('#modal_rencana_kontrol_body').html(
+                        '<div class="alert alert-danger">Gagal memuat form edit</div>');
                 }
             });
         }

@@ -23,12 +23,26 @@ class RencanaKontrolController extends Controller
             }
 
             // For the "history" table (List Surat Kontrol)
-            $date = $request->date ?? date('Y-m-d');
-            $data = VclaimRencanaKontrolHelper::listSuratKontrol($date, $date, $request->filter ?? 2); // 2 = Rencana Kontrol
+            // For the "history" table (List Surat Kontrol)
+            $start_date = $request->start_date ?? date('Y-m-d');
+            $end_date = $request->end_date ?? date('Y-m-d');
+            $data = VclaimRencanaKontrolHelper::listSuratKontrol($start_date, $end_date, $request->filter ?? 2); // 2 = Rencana Kontrol
 
             if (isset($data['response']['list'])) {
                 return DataTables::of(collect($data['response']['list']))
                     ->addIndexColumn()
+                    ->addColumn('action', function ($row) {
+                        // Assuming $row is an array from collection
+                        $btn = '';
+                        // Condition: terbitSEP == "Belum" to allow edit
+                        if (isset($row['terbitSEP']) && $row['terbitSEP'] == 'Belum') {
+                            $btn .= '<button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" onclick="editRencanaKontrol(\'' . $row['noSuratKontrol'] . '\', \'' . $row['noSepAsalKontrol'] . '\')" title="Edit">
+                                        <i class="ki-outline ki-pencil fs-2"></i>
+                                    </button>';
+                        }
+                        return $btn;
+                    })
+                    ->rawColumns(['action'])
                     ->make(true);
             }
             return DataTables::of(collect([]))->make(true);
@@ -36,6 +50,63 @@ class RencanaKontrolController extends Controller
 
         $polis = Poli::get();
         return view('vclaim.rencana_kontrol.index', compact('polis'));
+    }
+
+    // ... dataKunjungan ...
+
+    // ... modalCreate ...
+
+    // ... checkSep ...
+
+    // ... checkSchedule ...
+
+    public function edit(Request $request)
+    {
+        $no_surat = $request->no_surat;
+        $no_sep_asal = $request->no_sep_asal;
+
+        // Fetch Surat Details
+        // VclaimRencanaKontrolHelper::getDatabynosurat($nosurat)
+        $surat = VclaimRencanaKontrolHelper::getDatabynosurat($no_surat);
+        $sep = VclaimRencanaKontrolHelper::getDatabysep($no_sep_asal);
+
+        $polis = Poli::get();
+
+        return view('vclaim.rencana_kontrol.modal_edit', compact('surat', 'sep', 'polis', 'no_surat', 'no_sep_asal'));
+    }
+
+    public function update(Request $request)
+    {
+        /*
+           "request": {
+              "noSuratKontrol": "...",
+              "noSEP": "...",
+              "kodeDokter": "...",
+              "poliKontrol": "...",
+              "tglRencanaKontrol": "...",
+              "user": "..."
+           }
+        */
+
+        $post_data = [
+            "request" => [
+                "noSuratKontrol" => $request->no_surat,
+                "noSEP" => $request->no_sep,
+                "kodeDokter" => $request->kode_dokter,
+                "poliKontrol" => $request->kode_poli,
+                "tglRencanaKontrol" => $request->tgl_kontrol,
+                "user" => auth()->user()->name ?? 'System'
+            ]
+        ];
+
+        // SPRI Update - usually SPRI endpoint is different or same? 
+        // Helper::getUpdate calls /RencanaKontrol/Update. 
+        // Check if SPRI uses different update endpoint. 
+        // Based on BPJS docs, Update SPRI and Update Rencana Kontrol usually use the same endpoint /RencanaKontrol/Update.
+
+        $response = VclaimRencanaKontrolHelper::getUpdate($post_data);
+
+        return response()->json($response);
     }
 
     private function dataKunjungan(Request $request)
@@ -69,6 +140,15 @@ class RencanaKontrolController extends Controller
 
         if ($request->idpoli) {
             $query->where('rawat.idpoli', $request->idpoli);
+        }
+
+        if ($request->keyword) {
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('pasien.nama_pasien', 'like', "%$keyword%")
+                    ->orWhere('rawat.no_rm', 'like', "%$keyword%")
+                    ->orWhere('rawat.no_sep', 'like', "%$keyword%");
+            });
         }
 
         return DataTables::of($query)

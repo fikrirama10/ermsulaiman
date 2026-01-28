@@ -823,6 +823,8 @@ Route::prefix('vclaim')->middleware('auth')->as('vclaim.')->group(function () {
         Route::get('/check-sep', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'checkSep'])->name('check-sep');
         Route::get('/check-schedule', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'checkSchedule'])->name('check-schedule');
         Route::post('/store', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'store'])->name('store');
+        Route::get('/edit', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'edit'])->name('edit');
+        Route::put('/update', [App\Http\Controllers\Vclaim\RencanaKontrolController::class, 'update'])->name('update');
     });
 });
 
