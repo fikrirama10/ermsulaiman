@@ -156,7 +156,7 @@ class PendaftaranController extends Controller
         $term = $request->term;
         $no_rm = $request->no_rm;
 
-        $query = RawatSpri::with(['dokter'])->where('status', 1); // Status 1 = Created/Active
+        $query = RawatSpri::with(['dokter'])->whereYear('tgl_rawat', date('Y'))->where('status', 1); // Status 1 = Created/Active
 
         if ($no_rm) {
             $query->where('no_rm', $no_rm);
