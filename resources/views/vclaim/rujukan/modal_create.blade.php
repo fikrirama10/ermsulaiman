@@ -7,12 +7,12 @@
     <div class="row mb-5">
         <div class="col-md-4">
             <label class="form-label required">Tgl Rujukan</label>
-            <input class="form-control form-control-solid" placeholder="Pilih Tanggal" id="tgl_rujukan"
+            <input type="date" class="form-control form-control-solid" placeholder="Pilih Tanggal" id="tgl_rujukan"
                 name="tgl_rujukan" value="{{ date('Y-m-d') }}" />
         </div>
         <div class="col-md-4">
             <label class="form-label required">Tgl Rencana Kunjungan</label>
-            <input class="form-control form-control-solid" placeholder="Pilih Tanggal" id="tgl_rencana"
+            <input type="date" class="form-control form-control-solid" placeholder="Pilih Tanggal" id="tgl_rencana"
                 name="tgl_rencana" value="{{ date('Y-m-d') }}" />
         </div>
         <div class="col-md-4">
@@ -81,11 +81,6 @@
 </form>
 
 <script>
-    $('#tgl_rujukan, #tgl_rencana').flatpickr({
-        dateFormat: "Y-m-d",
-        minDate: "today" // Usually rujukan is for future, or today
-    });
-
     // Diagnosa Search
     $('#diag_rujukan').select2({
         dropdownParent: $('#modal_rujukan'),
