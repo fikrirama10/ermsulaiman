@@ -68,5 +68,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('gizi', function (User $user) {
             return $user->idpriv === 6;
         });
+        Gate::define('bidan', function (User $user) {
+            return $user->idpriv === 20;
+        });
+        Gate::define('kebidanan', function (User $user) {
+            return $user->idpriv === 12;
+        });
     }
 }
