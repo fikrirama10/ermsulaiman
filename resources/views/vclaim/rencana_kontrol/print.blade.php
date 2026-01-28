@@ -6,22 +6,22 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
         }
 
         .header {
             width: 100%;
             border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
         }
 
         .logo {
-            width: 250px;
+            width: 200px;
             margin-right: 20px;
         }
 
@@ -29,21 +29,21 @@
             flex-grow: 1;
             text-align: center;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .surat-no {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
         }
 
         .content {
-            margin-left: 10px;
+            margin-left: 5px;
         }
 
         .row {
             display: flex;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
         .label {
@@ -56,7 +56,7 @@
         }
 
         .footer {
-            margin-top: 50px;
+            margin-top: 30px;
             display: flex;
             justify-content: flex-end;
             margin-right: 50px;
@@ -68,7 +68,7 @@
         }
 
         .meta {
-            margin-top: 50px;
+            margin-top: 30px;
             font-size: 10px;
             font-style: italic;
         }
