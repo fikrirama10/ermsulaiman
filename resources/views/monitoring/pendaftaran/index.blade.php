@@ -240,10 +240,21 @@
                                                     <span class="fw-bold fs-6 text-gray-800" id="det_dokter"></span>
                                                 </div>
                                             </div>
-                                            <div class="row mb-2">
+                                            <div class="row mb-2 align-items-center">
                                                 <label class="col-lg-4 fw-semibold text-muted">Penjamin</label>
-                                                <div class="col-lg-8">
-                                                    <span class="fw-bold fs-6 text-gray-800" id="det_bayar"></span>
+                                                <div class="col-lg-6">
+                                                    <select class="form-select form-select-solid" id="det_bayar">
+                                                        @foreach ($bayars as $bayar)
+                                                            <option value="{{ $bayar->id }}">{{ $bayar->bayar }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <button type="button" class="btn btn-icon btn-sm btn-light-primary"
+                                                        title="Simpan Penjamin" onclick="saveBayar()">
+                                                        <i class="ki-outline ki-check fs-2"></i>
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -444,12 +455,15 @@
                 success: function(data) {
                     $('#det_norm').text(data.no_rm);
                     $('#det_nama').text(data.nama_pasien);
-                    $('#det_tgllahir').text(data.tgl_lahir);
+                    $('#det_tgllahir').text(data.tgllahir);
 
                     $('#det_noantrian').text(data.no_antrian);
                     $('#det_poli').text(data.nama_poli);
                     $('#det_dokter').text(data.nama_dokter);
-                    $('#det_bayar').text(data.nama_bayar);
+
+                    // Set Bayar
+                    $('#det_bayar').val(data.idbayar).trigger(
+                    'change'); // Assuming select2 is not init here, if normal select just val()
 
                     // Set Date input (remove time part if exists)
                     let datePart = data.tglmasuk.split(' ')[0];
@@ -512,6 +526,30 @@
                 },
                 error: function(xhr) {
                     Swal.fire('Error', 'Gagal mengubah tanggal', 'error');
+                }
+            });
+        }
+
+        function saveBayar() {
+            let id = $('#detail_id').val();
+            let newBayar = $('#det_bayar').val();
+
+            $.ajax({
+                url: "{{ route('monitoring.pendaftaran.update') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id,
+                    action: 'edit_bayar',
+                    idbayar: newBayar
+                },
+                success: function(response) {
+                    Swal.fire('Success', response.message, 'success');
+                    refreshTable();
+                    openDetail(id); // Reload modal data
+                },
+                error: function(xhr) {
+                    Swal.fire('Error', 'Gagal mengubah penjamin', 'error');
                 }
             });
         }

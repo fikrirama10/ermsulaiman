@@ -171,6 +171,10 @@ class MonitoringPendaftaranController extends Controller
                 $request->validate(['tglmasuk' => 'required|date']);
                 DB::table('rawat')->where('id', $id)->update(['tglmasuk' => $request->tglmasuk]);
                 return response()->json(['success' => true, 'message' => 'Tanggal berhasil diubah']);
+            } elseif ($action == 'edit_bayar') {
+                $request->validate(['idbayar' => 'required|integer']);
+                DB::table('rawat')->where('id', $id)->update(['idbayar' => $request->idbayar]);
+                return response()->json(['success' => true, 'message' => 'Penjamin berhasil diubah']);
             } elseif ($action == 'cancel') {
                 DB::table('rawat')->where('id', $id)->update(['status' => 0]);
                 return response()->json(['success' => true, 'message' => 'Pendaftaran berhasil dibatalkan']);
