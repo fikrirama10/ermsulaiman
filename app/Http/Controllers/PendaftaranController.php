@@ -39,6 +39,7 @@ class PendaftaranController extends Controller
                 ->leftJoin('rawat_bayar', 'rawat_bayar.id', '=', 'rawat.idbayar')
                 ->select([
                     'rawat.id',
+                    'pasien.id as pasien_id',
                     'rawat.no_rm',
                     'rawat.tglmasuk',
                     'rawat.status',
@@ -86,7 +87,7 @@ class PendaftaranController extends Controller
                     return '<span class="badge ' . $st['class'] . '">' . $st['label'] . '</span>';
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="' . route('pasien.rekammedis_detail', $row->id) . '" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px me-1" title="Lihat Detail"><i class="fas fa-eye"></i></a>';
+                    $btn = '<a href="' . route('pasien.rekammedis_detail', $row->pasien_id) . '" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px me-1" title="Lihat Detail"><i class="fas fa-eye"></i></a>';
                     if ($row->status == 1) { // Only allow cancel if waiting
                         $btn .= '<button onclick="batalkanKunjungan(' . $row->id . ')" class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" title="Batalkan"><i class="fas fa-times"></i></button>';
                     }

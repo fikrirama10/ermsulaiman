@@ -116,17 +116,19 @@
                             </div>
                             <div class="card-body pt-4">
                                 <!-- Alerts -->
-                                @if (isset($cek_finger_print) && $cek_finger_print['metaData']['code'] == 200)
+                                @if (isset($cek_finger_print) && isset($cek_finger_print['metaData']['code']) && $cek_finger_print['metaData']['code'] == 200 && isset($cek_finger_print['response']['kode']))
+                                    @php
+                                        $alertType = ($cek_finger_print['response']['kode'] ?? 0) == 0 ? 'danger' : 'success';
+                                        $alertStatus = $cek_finger_print['response']['status'] ?? 'Status tidak tersedia';
+                                    @endphp
                                     <div id='alert-finger'
-                                        class="alert alert-{{ $cek_finger_print['response']['kode'] == 0 ? 'danger' : 'success' }} d-flex align-items-center p-3 mb-4 rounded border-dashed border-{{ $cek_finger_print['response']['kode'] == 0 ? 'danger' : 'success' }} d-none">
+                                        class="alert alert-{{ $alertType }} d-flex align-items-center p-3 mb-4 rounded border-dashed border-{{ $alertType }} d-none">
                                         <i
-                                            class="ki-outline ki-fingerprint-scanning fs-2hx text-{{ $cek_finger_print['response']['kode'] == 0 ? 'danger' : 'success' }} me-3"></i>
+                                            class="ki-outline ki-fingerprint-scanning fs-2hx text-{{ $alertType }} me-3"></i>
                                         <div class="d-flex flex-column">
-                                            <h5
-                                                class="mb-1 text-{{ $cek_finger_print['response']['kode'] == 0 ? 'danger' : 'success' }} fs-7">
+                                            <h5 class="mb-1 text-{{ $alertType }} fs-7">
                                                 Validasi Finger Print</h5>
-                                            <span
-                                                class="fs-8 text-muted">{{ $cek_finger_print['response']['status'] }}</span>
+                                            <span class="fs-8 text-muted">{{ $alertStatus }}</span>
                                         </div>
                                     </div>
                                 @endif
