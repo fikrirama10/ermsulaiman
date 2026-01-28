@@ -41,7 +41,7 @@ class MonitoringPendaftaranController extends Controller
             'online' => DB::table('rawat')
                 ->whereDate('tglmasuk', '>=', $startDate)
                 ->whereDate('tglmasuk', '<=', $endDate)
-                ->where('online', 1)
+                ->where('antrian_online', 1)
                 ->where('status', '<>', 0)->count(),
             'bpjs' => DB::table('rawat')->join('rawat_bayar', 'rawat_bayar.id', '=', 'rawat.idbayar')
                 ->whereDate('tglmasuk', '>=', $startDate)
