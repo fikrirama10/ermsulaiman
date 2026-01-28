@@ -163,11 +163,126 @@
                                         <th>Penjamin</th>
                                         <th>Tipe</th>
                                         <th>Status</th>
+                                        <th class="min-w-100px text-end">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="fw-semibold text-gray-600">
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Detail -->
+                <div class="modal fade" id="modal_detail" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered mw-650px">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="fw-bold">Detail Pendaftaran</h2>
+                                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                                    <i class="ki-outline ki-cross fs-1"></i>
+                                </div>
+                            </div>
+                            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                                <form id="form_detail" class="form" action="#">
+                                    <input type="hidden" id="detail_id" />
+                                    <div class="d-flex flex-column scroll-y me-n7 pe-7" id="modal_detail_scroll">
+
+                                        <!-- Patient Info -->
+                                        <div class="mb-5">
+                                            <h4 class="mb-3">Data Pasien</h4>
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">No RM</label>
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800" id="det_norm"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">Nama Pasien</label>
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800" id="det_nama"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">Tgl Lahir</label>
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800" id="det_tgllahir"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">Alamat</label>
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800" id="det_alamat"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="separator my-5"></div>
+
+                                        <!-- Registration Info -->
+                                        <div class="mb-5">
+                                            <h4 class="mb-3">Informasi Pendaftaran</h4>
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">No Antrian</label>
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800" id="det_noantrian"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">Poli Tujuan</label>
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800" id="det_poli"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">Dokter</label>
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800" id="det_dokter"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">Penjamin</label>
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800" id="det_bayar"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Editable Date -->
+                                            <div class="row mb-2 align-items-center">
+                                                <label class="col-lg-4 fw-semibold text-muted">Tanggal Masuk</label>
+                                                <div class="col-lg-6">
+                                                    <input type="date" class="form-control form-control-solid"
+                                                        id="det_tglmasuk" />
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <button type="button" class="btn btn-icon btn-sm btn-light-primary"
+                                                        title="Simpan Tanggal" onclick="saveDate()">
+                                                        <i class="ki-outline ki-check fs-2"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-2">
+                                                <label class="col-lg-4 fw-semibold text-muted">Status</label>
+                                                <div class="col-lg-8">
+                                                    <span class="badge badge-light-primary" id="det_status"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="text-center pt-15">
+                                        <button type="button" class="btn btn-light me-3"
+                                            data-bs-dismiss="modal">Tutup</button>
+                                        <button type="button" class="btn btn-danger me-3" onclick="confirmCancel()">
+                                            <i class="ki-outline ki-trash fs-2"></i> Pembatalan
+                                        </button>
+                                        <button type="button" class="btn btn-success" onclick="checkIn()">
+                                            <i class="ki-outline ki-check-circle fs-2"></i> Check In
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -259,6 +374,13 @@
                         orderable: false,
                         searchable: false
                     },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-end'
+                    },
                 ],
                 order: [
                     [0, 'desc']
@@ -307,6 +429,136 @@
             $('#filter_bayar').val('').trigger('change');
             $('#filter_status').val('').trigger('change');
             refreshTable();
+        }
+
+        function openDetail(id) {
+            $('#detail_id').val(id);
+
+            // Show loading or clear previous data
+            $('#det_norm').text('Loading...');
+            $('#det_nama').text('');
+
+            $.ajax({
+                url: "{{ url('monitoring/pendaftaran') }}/" + id,
+                type: "GET",
+                success: function(data) {
+                    $('#det_norm').text(data.no_rm);
+                    $('#det_nama').text(data.nama_pasien);
+                    $('#det_tgllahir').text(data.tgl_lahir); // Format if needed
+                    $('#det_alamat').text(data.alamat);
+
+                    $('#det_noantrian').text(data.no_antrian);
+                    $('#det_poli').text(data.nama_poli);
+                    $('#det_dokter').text(data.nama_dokter);
+                    $('#det_bayar').text(data.nama_bayar);
+
+                    // Set Date input (remove time part if exists)
+                    let datePart = data.tglmasuk.split(' ')[0];
+                    $('#det_tglmasuk').val(datePart);
+
+                    // Set Status Badge
+                    let statusText = 'Unknown';
+                    let statusClass = 'badge-light-secondary';
+                    if (data.status == 1) {
+                        statusText = 'Antrian';
+                        statusClass = 'badge-light-warning';
+                    } else if (data.status == 2) {
+                        statusText = 'Diproses';
+                        statusClass = 'badge-light-info';
+                    } else if (data.status == 3) {
+                        statusText = 'Selesai';
+                        statusClass = 'badge-light-success';
+                    } else if (data.status == 0) {
+                        statusText = 'Batal';
+                        statusClass = 'badge-light-danger';
+                    }
+
+                    $('#det_status')
+                        .removeClass(
+                            'badge-light-warning badge-light-info badge-light-success badge-light-danger badge-light-secondary'
+                            )
+                        .addClass(statusClass)
+                        .text(statusText);
+
+                    $('#modal_detail').modal('show');
+                },
+                error: function() {
+                    Swal.fire('Error', 'Gagal memuat data', 'error');
+                }
+            });
+        }
+
+        function saveDate() {
+            let id = $('#detail_id').val();
+            let newDate = $('#det_tglmasuk').val();
+
+            if (!newDate) {
+                Swal.fire('Warning', 'Tanggal tidak boleh kosong', 'warning');
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('monitoring.pendaftaran.update') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id,
+                    action: 'edit_date',
+                    tglmasuk: newDate
+                },
+                success: function(response) {
+                    Swal.fire('Success', response.message, 'success');
+                    refreshTable();
+                    openDetail(id); // Reload modal data
+                },
+                error: function(xhr) {
+                    Swal.fire('Error', 'Gagal mengubah tanggal', 'error');
+                }
+            });
+        }
+
+        function confirmCancel() {
+            let id = $('#detail_id').val();
+
+            Swal.fire({
+                title: 'Batalkan Pendaftaran?',
+                text: "Status akan berubah menjadi Batal!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Batalkan!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performAction(id, 'cancel');
+                }
+            })
+        }
+
+        function checkIn() {
+            let id = $('#detail_id').val();
+            performAction(id, 'checkin');
+        }
+
+        function performAction(id, action) {
+            $.ajax({
+                url: "{{ route('monitoring.pendaftaran.update') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id,
+                    action: action
+                },
+                success: function(response) {
+                    Swal.fire('Success', response.message, 'success');
+                    $('#modal_detail').modal('hide');
+                    refreshTable();
+                    updateStats();
+                },
+                error: function(xhr) {
+                    Swal.fire('Error', 'Gagal melakukan aksi', 'error');
+                }
+            });
         }
     </script>
 @endsection

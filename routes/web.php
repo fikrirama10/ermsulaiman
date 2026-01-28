@@ -525,6 +525,8 @@ Route::prefix('/monitoring')->middleware('auth')->group(function () {
     // Pendaftaran Monitoring
     Route::get('/pendaftaran', [App\Http\Controllers\Monitoring\MonitoringPendaftaranController::class, 'index'])->name('monitoring.pendaftaran.index');
     Route::get('/pendaftaran/data', [App\Http\Controllers\Monitoring\MonitoringPendaftaranController::class, 'data'])->name('monitoring.pendaftaran.data');
+    Route::get('/pendaftaran/{id}', [App\Http\Controllers\Monitoring\MonitoringPendaftaranController::class, 'show'])->name('monitoring.pendaftaran.show');
+    Route::post('/pendaftaran/update', [App\Http\Controllers\Monitoring\MonitoringPendaftaranController::class, 'update'])->name('monitoring.pendaftaran.update');
 });
 
 Route::prefix('/rawat-jalan')->middleware('auth')->group(function () {

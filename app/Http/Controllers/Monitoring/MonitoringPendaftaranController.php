@@ -121,8 +121,68 @@ class MonitoringPendaftaranController extends Controller
                     $st = $status[$row->status] ?? ['label' => 'Unknown', 'class' => 'badge-light-secondary'];
                     return '<span class="badge ' . $st['class'] . '">' . $st['label'] . '</span>';
                 })
-                ->rawColumns(['online_status', 'status_badge'])
+                ->addColumn('action', function ($row) {
+                    return '<button class="btn btn-sm btn-light btn-active-light-primary" onclick="openDetail(' . $row->id . ')">
+                                <i class="ki-outline ki-eye fs-2"></i> Detail
+                            </button>';
+                })
+                ->rawColumns(['online_status', 'status_badge', 'action'])
                 ->make(true);
+        }
+    }
+
+    public function show($id)
+    {
+        $rawat = DB::table('rawat')
+            ->join('pasien', 'pasien.no_rm', '=', 'rawat.no_rm')
+            ->join('poli', 'poli.id', '=', 'rawat.idpoli')
+            ->leftJoin('dokter', 'dokter.id', '=', 'rawat.iddokter')
+            ->leftJoin('rawat_bayar', 'rawat_bayar.id', '=', 'rawat.idbayar')
+            ->select([
+                'rawat.*',
+                'pasien.nama_pasien',
+                'pasien.alamat',
+                'pasien.tgl_lahir',
+                'poli.poli as nama_poli',
+                'dokter.nama_dokter',
+                'rawat_bayar.bayar as nama_bayar',
+            ])
+            ->where('rawat.id', $id)
+            ->first();
+
+        if (!$rawat) {
+            return response()->json(['error' => 'Data not found'], 404);
+        }
+
+        return response()->json($rawat);
+    }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'action' => 'required|string',
+        ]);
+
+        $id = $request->id;
+        $action = $request->action;
+
+        try {
+            if ($action == 'edit_date') {
+                $request->validate(['tglmasuk' => 'required|date']);
+                DB::table('rawat')->where('id', $id)->update(['tglmasuk' => $request->tglmasuk]);
+                return response()->json(['success' => true, 'message' => 'Tanggal berhasil diubah']);
+            } elseif ($action == 'cancel') {
+                DB::table('rawat')->where('id', $id)->update(['status' => 0]);
+                return response()->json(['success' => true, 'message' => 'Pendaftaran berhasil dibatalkan']);
+            } elseif ($action == 'checkin') {
+                DB::table('rawat')->where('id', $id)->update(['status' => 2]); // 2 = Diproses
+                return response()->json(['success' => true, 'message' => 'Pasien berhasil check-in']);
+            }
+
+            return response()->json(['error' => 'Invalid action'], 400);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }
