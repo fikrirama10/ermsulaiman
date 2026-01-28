@@ -5,11 +5,6 @@
         <!--begin::Logo-->
         <div class=" d-flex flex-stack d-lg-flex bg-white rounded p-5">
             <a href="{{ url('/dashboard') }}" class="app-sidebar-logo">
-                {{-- <img alt="Logo" src="{{ asset('assets/img/ragariksa.png') }}"
-                    class="h-40px d-none d-sm-inline app-sidebar-logo-default theme-light-show me-1" />
-                <img alt="Logo" src="{{ asset('assets/media/logos/demo38-dark.svg') }}"
-                    class="h-20px h-lg-25px theme-dark-show" /> --}}
-
                 <img alt="Logo" src="{{ asset('assets/img/ragariksa-text-tg.png') }}"
                     class="h-40px d-none d-sm-inline" style="width:100%" />
             </a>
@@ -80,618 +75,487 @@
                         @endif
                     @endforeach
                 @else
-                    <!--begin:Menu item-->
+                    <!-- STATIC MENU IMPLEMENTATION -->
+
+                    <!-- Dashboard -->
                     <div class="menu-item">
-                        <!--begin:Menu link-->
-                        <a class="menu-link {{ Request::is('dashboard') || Request::is('dashboard/*') ? 'active' : '' }}"
-                            href="{{ url('dashboard/') }}">
-                            <span class="menu-icon">
-                                <i class="ki-outline ki-element-11 fs-2"></i>
-                            </span>
+                        <a class="menu-link {{ Request::is('dashboard') ? 'active' : '' }}"
+                            href="{{ url('dashboard') }}">
+                            <span class="menu-icon"><i class="ki-outline ki-element-11 fs-2"></i></span>
                             <span class="menu-title">Dashboard</span>
                         </a>
-                        <!--end:Menu link-->
                     </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item">
-                        <!--begin:Menu link-->
-                        <a class="menu-link {{ Request::routeIs('monitoring.integrasi') ? 'active' : '' }}"
-                            href="{{ route('monitoring.integrasi') }}">
-                            <span class="menu-icon">
-                                <i class="ki-outline ki-chart-line-star fs-2"></i>
-                            </span>
-                            <span class="menu-title">Monitoring Integrasi</span>
-                        </a>
-                        <!--end:Menu link-->
+
+                    <!-- Monitoring -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('monitoring*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-chart-line-star fs-2"></i></span>
+                            <span class="menu-title">Monitoring</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('monitoring.integrasi') ? 'active' : '' }}"
+                                    href="{{ route('monitoring.integrasi') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Integrasi</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('monitoring.pendaftaran.index') ? 'active' : '' }}"
+                                    href="{{ route('monitoring.pendaftaran.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Pendaftaran</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
+
+                    <!-- Pendaftaran -->
                     <div class="menu-item">
-                        <!--begin:Menu link-->
-                        <a class="menu-link {{ Request::is('pendaftaran') || Request::is('pendaftaran/*') ? 'active' : '' }}"
+                        <a class="menu-link {{ Request::is('pendaftaran*') ? 'active' : '' }}"
                             href="{{ route('pendaftaran.index') }}">
-                            <span class="menu-icon">
-                                <i class="ki-outline ki-calendar-add fs-2"></i>
-                            </span>
+                            <span class="menu-icon"><i class="ki-outline ki-calendar-add fs-2"></i></span>
                             <span class="menu-title">Pendaftaran</span>
                         </a>
-                        <!--end:Menu link-->
                     </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item">
-                        <!--begin:Menu link-->
-                        <a class="menu-link {{ Request::is('billing') || Request::is('billing/*') ? 'active' : '' }}"
-                            href="{{ route('billing.index') }}">
-                            <span class="menu-icon">
-                                <i class="ki-outline ki-bill fs-2"></i>
-                            </span>
-                            <span class="menu-title">Billing & Journey</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    {{-- @canany(['dokter', 'perawat', 'rekammedis']) --}}
-                    <!--begin:Menu item-->
-                    @can('rekammedis')
-                        <div data-kt-menu-trigger="click"
-                            class="menu-item {{ Request::is('data-master') || Request::is('data-master/*') ? 'show' : '' }} menu-accordion">
-                            <!--begin:Menu link-->
-                            <span class="menu-link">
-                                <span class="menu-icon">
-                                    <i class="ki-outline ki-data fs-2"></i>
-                                </span>
-                                <span class="menu-title">Data Master</span>
-                                <span class="menu-arrow"></span>
-                            </span>
-                            <!--end:Menu link-->
-                            <!--begin:Menu sub-->
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-                                    <a class="menu-link {{ Request::is('data-master') || Request::is('data-master/*') ? 'active' : '' }}"
-                                        href="{{ url('/data-master/ruangan/') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Ruangan</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                            <!--end:Menu sub-->
-                        </div>
-                    @endcan
 
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    @can('rekammedis')
-                        <div data-kt-menu-trigger="click"
-                            class="menu-item {{ Request::is('dokter') || Request::is('dokter/*') ? 'show' : '' }} menu-accordion">
-                            <!--begin:Menu link-->
-                            <span class="menu-link">
-                                <span class="menu-icon">
-                                    <i class="ki-outline ki-user-square fs-2"></i>
-                                </span>
-                                <span class="menu-title">Management Dokter</span>
-                                <span class="menu-arrow"></span>
-                            </span>
-                            <!--end:Menu link-->
-                            <!--begin:Menu sub-->
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-                                    <a class="menu-link {{ Request::is('dokter') && !Request::is('dokter/*/jadwal') && !Request::is('dokter/*/kuota') ? 'active' : '' }}"
-                                        href="{{ route('dokter.index') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Data Dokter</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                            <!--end:Menu sub-->
-                            <!--begin:Menu item-->
-                        </div>
-                    @endcan
+                    <!-- Pasien -->
                     <div data-kt-menu-trigger="click"
-                        class="menu-item {{ Request::is('pasien') || Request::is('pasien/*') ? 'show' : '' }} menu-accordion">
-                        <!--begin:Menu link-->
+                        class="menu-item menu-accordion {{ Request::is('pasien*') && !Request::is('pasien/gizi*') && !Request::is('pasien/operasi*') && !Request::is('pasien/template*') && !Request::is('pasien/bhp*') ? 'show' : '' }}">
                         <span class="menu-link">
-                            <span class="menu-icon">
-                                <i class="ki-outline ki-profile-user fs-2"></i>
-                            </span>
+                            <span class="menu-icon"><i class="ki-outline ki-profile-user fs-2"></i></span>
                             <span class="menu-title">Pasien</span>
                             <span class="menu-arrow"></span>
                         </span>
-                        <!--end:Menu link-->
-                        <!--begin:Menu sub-->
-                        @if (auth()->user()->detail->idpoli == null)
-                            <!--User Lab-->
-                            @if (auth()->user()->idpriv == 16)
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('pasien.index') ? 'active' : '' }}"
+                                    href="{{ route('pasien.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">List Pasien</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('pasien.tambah-pasien') ? 'active' : '' }}"
+                                    href="{{ route('pasien.tambah-pasien') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Register Pasien Baru</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rawat Jalan -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('rawat-jalan*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-stethoscope fs-2"></i></span>
+                            <span class="menu-title">Rawat Jalan</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('poliklinik') ? 'active' : '' }}"
+                                    href="{{ route('poliklinik') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Poliklinik</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('poliklinik-semua') ? 'active' : '' }}"
+                                    href="{{ route('poliklinik-semua') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Semua Pasien Poli</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rawat Inap -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('rawat-inap*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-hospital fs-2"></i></span>
+                            <span class="menu-title">Rawat Inap</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('index.rawat-inap') ? 'active' : '' }}"
+                                    href="{{ route('index.rawat-inap') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Dashboard Ranap</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('index.rawat-bersama') ? 'active' : '' }}"
+                                    href="{{ route('index.rawat-bersama') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Pasien Raber</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('index.rawat-inap-pulang') ? 'active' : '' }}"
+                                    href="{{ route('index.rawat-inap-pulang') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Pasien Pulang</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kamar Operasi -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('operasi*') || Request::is('pasien/operasi*') || Request::is('template*') || Request::is('pasien/template*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-mask fs-2"></i></span>
+                            <span class="menu-title">Kamar Operasi</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('index.operasi') ? 'active' : '' }}"
+                                    href="{{ route('index.operasi') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Jadwal & Laporan</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('index.template') ? 'active' : '' }}"
+                                    href="{{ route('index.template') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Template Operasi</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('index.template-anastesi') ? 'active' : '' }}"
+                                    href="{{ route('index.template-anastesi') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Template Anastesi</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Penunjang -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('penunjang*') || Request::is('laboratorium*') || Request::is('radiologi*') || Request::is('fisio*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-test-tubes fs-2"></i></span>
+                            <span class="menu-title">Penunjang</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <!-- Lab -->
+                            <div data-kt-menu-trigger="click"
+                                class="menu-item menu-accordion {{ Request::is('laboratorium*') || (Request::is('penunjang*') && request('jenis') == 'Lab') ? 'show' : '' }}">
+                                <span class="menu-link">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Laboratorium</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
                                 <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
                                     <div class="menu-item">
-                                        <!--begin:Menu link-->
-                                        <a class="menu-link {{ Request::is('laboratorium') || Request::is('laboratorium/') ? 'active' : '' }}"
+                                        <a class="menu-link {{ Request::routeIs('penunjang.antrian') && request('jenis') == 'Lab' ? 'active' : '' }}"
                                             href="{{ route('penunjang.antrian', 'Lab') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
+                                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                             <span class="menu-title">Antrian Lab</span>
                                         </a>
-                                        <a class="menu-link {{ Request::is('laboratorium') || Request::is('laboratorium/') ? 'active' : '' }}"
+                                    </div>
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ Request::routeIs('laboratorium.list-pemeriksaan') ? 'active' : '' }}"
                                             href="{{ route('laboratorium.list-pemeriksaan') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Pemeriksaan Lab</span>
-                                        </a>
-                                        <a class="menu-link {{ Request::is('laboratorium') || Request::is('laboratorium/') ? 'active' : '' }}"
-                                            href="{{ route('laboratorium.list-pasien', 'Lab') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">List Pasien</span>
+                                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                            <span class="menu-title">Pemeriksaan</span>
                                         </a>
                                     </div>
-                                    <!--end:Menu item-->
                                 </div>
-                            @endif
-                            <!--End User Lab-->
+                            </div>
 
-                            <!--User Fisio-->
-                            @if (auth()->user()->idpriv == 29)
+                            <!-- Radiologi -->
+                            <div data-kt-menu-trigger="click"
+                                class="menu-item menu-accordion {{ Request::is('radiologi*') ? 'show' : '' }}">
+                                <span class="menu-link">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Radiologi</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
                                 <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
                                     <div class="menu-item">
-                                        <!--begin:Menu link-->
-                                        <a class="menu-link {{ Request::is('farmasi') || Request::is('farmasi/') ? 'active' : '' }}"
-                                            href="{{ route('penunjang.antrian', 'Fisio') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Fisio Terapi</span>
-                                        </a>
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                            @endif
-                            <!--End User Fisio-->
-
-                            <!--User Radiologi-->
-                            @if (auth()->user()->idpriv == 15)
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-                                        <a class="menu-link {{ Request::is('farmasi') || Request::is('farmasi/') ? 'active' : '' }}"
+                                        <a class="menu-link {{ Request::routeIs('radiologi.antrian') ? 'active' : '' }}"
                                             href="{{ route('radiologi.antrian') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
+                                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                             <span class="menu-title">Antrian Radiologi</span>
                                         </a>
                                     </div>
                                     <div class="menu-item">
-                                        <!--begin:Menu link-->
-                                        <a class="menu-link {{ Request::is('farmasi') || Request::is('farmasi/') ? 'active' : '' }}"
+                                        <a class="menu-link {{ Request::routeIs('radiologi.index') ? 'active' : '' }}"
                                             href="{{ route('radiologi.index') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">List Hasil Radiologi</span>
+                                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                            <span class="menu-title">Hasil Radiologi</span>
                                         </a>
                                     </div>
-                                    <!--end:Menu item-->
                                 </div>
-                            @endif
-                            <!--End User Radiologi-->
-
-                            <!--User Farmasi-->
-                            @if (auth()->user()->idpriv == 10)
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-                                        <a class="menu-link {{ Request::is('farmasi') || Request::is('farmasi/') ? 'active' : '' }}"
-                                            href="{{ route('farmasi.list-pasien-rawat') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">List Pasien Rawat</span>
-                                        </a>
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                            @endif
-                            <!--End User Farmasi-->
-
-                            <!--User Rekam Medis-->
-                            @if (auth()->user()->idpriv == 8)
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-
-                                        <a class="menu-link {{ Request::is('pasien') || Request::is('pasien/') ? 'active' : '' }}"
-                                            href="{{ url('/pasien') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">List Pasien</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                            @endif
-                            <!--End User Rekam Medis-->
-
-                            <!--User Perawat Ruangan-->
-                            @if (auth()->user()->idpriv == 11)
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-
-                                        <a class="menu-link {{ Request::is('pasien') || Request::is('pasien/') ? 'active' : '' }}"
-                                            href="{{ route('index.rawat-inap') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Keperawatan</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-
-                                        <a class="menu-link {{ Request::is('pasien') || Request::is('pasien/') ? 'active' : '' }}"
-                                            href="{{ route('index.rawat-inap-pulang') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Pasien Pulang</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                            @endif
-                            <!--End User Perawat Ruangan-->
-                            <!--User Bidan-->
-                            @if (auth()->user()->idpriv == 20)
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-
-                                        <a class="menu-link {{ Request::is('rawat-jalan') || Request::is('rawat-jalan/poli') ? 'active' : '' }}"
-                                            href="{{ route('poliklinik') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">List Pasien</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-
-                                        <a class="menu-link {{ Request::is('rawat-jalan') || Request::is('rawat-jalan/poli-semua') ? 'active' : '' }}"
-                                            href="{{ route('poliklinik-semua') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Semua Pasien</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                            @endif
-                            @if (auth()->user()->idpriv == 12)
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-
-                                        <a class="menu-link {{ Request::is('pasien') || Request::is('pasien/') ? 'active' : '' }}"
-                                            href="{{ route('index.rawat-inap') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Kebidanan</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                            @endif
-                            <!--End User Bidan-->
-                        @else
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('rawat-jalan') || Request::is('rawat-jalan/poli') ? 'active' : '' }}"
-                                        href="{{ route('poliklinik') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">List Pasien</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
                             </div>
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
 
-                                    <a class="menu-link {{ Request::is('rawat-jalan') || Request::is('rawat-jalan/poli-semua') ? 'active' : '' }}"
-                                        href="{{ route('poliklinik-semua') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Semua Pasien</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                            @if (auth()->user()->idpriv == 7 && auth()->user()->detail->idpoli != '')
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-
-                                        <a class="menu-link {{ Request::is('rawat-jalan') || Request::is('rawat-jalan/poli-semua') ? 'active' : '' }}"
-                                            href="{{ route('index.rawat-inap') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Pasien Perawatan</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                                <div class="menu-sub menu-sub-accordion">
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-
-                                        <a class="menu-link {{ Request::is('rawat-jalan') || Request::is('rawat-jalan/poli-semua') ? 'active' : '' }}"
-                                            href="{{ route('index.rawat-bersama') }}">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">Pasien Raber</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
-                                    <!--end:Menu item-->
-                                </div>
-                            @endif
-                        @endif
-                        @if (auth()->user()->idpriv == 13)
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('pasien/operasi') || Request::is('pasien/operasi/*') ? 'active' : '' }}"
-                                        href="{{ route('index.operasi') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Antrian Operasi</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('pasien/template') || Request::is('pasien/template') ? 'active' : '' }}"
-                                        href="{{ route('index.template') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Template Operasi</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('pasien/template/template-anastesi') || Request::is('pasien/template/template-anastesi') ? 'active' : '' }}"
-                                        href="{{ route('index.template-anastesi') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Template Anastesi</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('pasien/bhp') || Request::is('pasien/bhp') ? 'active' : '' }}"
-                                        href="{{ route('index.bhp') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Master BHP</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                        @endif
-                        @if (auth()->user()->idpriv == 6)
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('pasien/gizi') || Request::is('pasien/gizi/2') ? 'active' : '' }}"
-                                        href="{{ route('index.gizi', 2) }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Gizi Ranap</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('pasien/gizi') || Request::is('pasien/gizi/1') ? 'active' : '' }}"
-                                        href="{{ route('index.gizi', 1) }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Gizi Rajal</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('pasien/gizi') || Request::is('pasien/gizi/3') ? 'active' : '' }}"
-                                        href="{{ route('index.gizi', 3) }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Gizi UGD</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                        @endif
-                        <!--end:Menu sub-->
-                    </div>
-
-                    @if (auth()->user()->idpriv == 10)
-                        <div data-kt-menu-trigger="click"
-                            class="menu-item {{ Request::is('farmasi') || Request::is('farmasi/*') ? 'show' : '' }} menu-accordion">
-                            <!--begin:Menu link-->
-                            <span class="menu-link">
-                                <span class="menu-icon">
-                                    <i class="ki-outline ki-office-bag fs-2"></i>
+                            <!-- Fisio -->
+                            <div data-kt-menu-trigger="click"
+                                class="menu-item menu-accordion {{ Request::is('fisio*') || (Request::is('penunjang*') && request('jenis') == 'Fisio') ? 'show' : '' }}">
+                                <span class="menu-link">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Fisioterapi</span>
+                                    <span class="menu-arrow"></span>
                                 </span>
-                                <span class="menu-title">Farmasi</span>
-                                <span class="menu-arrow"></span>
-                            </span>
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('farmasi.antrian-resep') || Request::is('farmasi/') ? 'active' : '' }}"
-                                        href="{{ route('farmasi.antrian-resep') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Antrian Resep</span>
-                                    </a>
-                                    <!--end:Menu link-->
+                                <div class="menu-sub menu-sub-accordion">
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ Request::routeIs('penunjang.antrian') && request('jenis') == 'Fisio' ? 'active' : '' }}"
+                                            href="{{ route('penunjang.antrian', 'Fisio') }}">
+                                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                            <span class="menu-title">Antrian Fisio</span>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ Request::routeIs('fisio.index') ? 'active' : '' }}"
+                                            href="{{ route('fisio.index') }}">
+                                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                            <span class="menu-title">Assesmen Fisio</span>
+                                        </a>
+                                    </div>
                                 </div>
-                                <!--end:Menu item-->
-                            </div>
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('farmasi.list-resep') || Request::is('farmasi/') ? 'active' : '' }}"
-                                        href="{{ route('farmasi.list-resep') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">List Resep</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('pasien') || Request::is('pasien/') ? 'active' : '' }}"
-                                        href="{{ route('farmasi.list-obat') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Obat Obatan</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                            <div class="menu-sub menu-sub-accordion">
-                                <!--begin:Menu item-->
-                                <div class="menu-item">
-                                    <!--begin:Menu link-->
-
-                                    <a class="menu-link {{ Request::is('penjualan-obat') || Request::is('penjualan-obat/*') ? 'active' : '' }}"
-                                        href="{{ route('penjualan-obat.index') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Penjualan Obat</span>
-                                    </a>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
                             </div>
                         </div>
-                    @endif
-                    <!--end:Menu item-->
-                    {{-- @endcanany --}}
-                    <!--begin:Menu item-->
-                    {{-- <div class="menu-item">
-                        <!--begin:Menu link-->
-                        <a class="menu-link {{ Request::is('laporan') || Request::is('laporan/*') ? 'active' : '' }}" href="{{ url('laporan/') }}">
-                            <span class="menu-icon">
-                                <i class="ki-outline ki-note-2 fs-2"></i>
-                            </span>
-                            <span class="menu-title">Laporan</span>
+                    </div>
+
+                    <!-- Farmasi -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('farmasi*') || Request::is('penjualan-obat*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-pill fs-2"></i></span>
+                            <span class="menu-title">Farmasi</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('farmasi.antrian-resep') ? 'active' : '' }}"
+                                    href="{{ route('farmasi.antrian-resep') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Antrian Resep</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('farmasi.list-resep') ? 'active' : '' }}"
+                                    href="{{ route('farmasi.list-resep') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">List Resep</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('farmasi.list-obat') ? 'active' : '' }}"
+                                    href="{{ route('farmasi.list-obat') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Data Obat</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('penjualan-obat.index') ? 'active' : '' }}"
+                                    href="{{ route('penjualan-obat.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Penjualan Obat (POS)</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gizi -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('gizi*') || Request::is('pasien/gizi*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-coffee fs-2"></i></span>
+                            <span class="menu-title">Gizi</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::is('pasien/gizi/2') ? 'active' : '' }}"
+                                    href="{{ route('index.gizi', 2) }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Gizi Ranap</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::is('pasien/gizi/1') ? 'active' : '' }}"
+                                    href="{{ route('index.gizi', 1) }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Gizi Rajal</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::is('pasien/gizi/3') ? 'active' : '' }}"
+                                    href="{{ route('index.gizi', 3) }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Gizi UGD</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing -->
+                    <div class="menu-item">
+                        <a class="menu-link {{ Request::is('billing*') ? 'active' : '' }}"
+                            href="{{ route('billing.index') }}">
+                            <span class="menu-icon"><i class="ki-outline ki-bill fs-2"></i></span>
+                            <span class="menu-title">Billing & Journey</span>
                         </a>
-                        <!--end:Menu link-->
-                    </div> --}}
-                    <!--end:Menu item-->
+                    </div>
+
+                    <!-- Rekam Medis -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('rekap-medis*') || Request::is('surat*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-folder-added fs-2"></i></span>
+                            <span class="menu-title">Rekam Medis</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('rekap-medis-index') ? 'active' : '' }}"
+                                    href="{{ route('rekap-medis-index', 0) }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Berkas RM</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('surat.index') ? 'active' : '' }}"
+                                    href="{{ route('surat.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Surat & Dokumen</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VClaim / BPJS -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('vclaim*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-security-check fs-2"></i></span>
+                            <span class="menu-title">VClaim (BPJS)</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('vclaim.rencana-kontrol.index') ? 'active' : '' }}"
+                                    href="{{ route('vclaim.rencana-kontrol.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Rencana Kontrol</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('vclaim.rujukan.index') ? 'active' : '' }}"
+                                    href="{{ route('vclaim.rujukan.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Rujukan Keluar</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Laporan -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('laporan*') || Request::is('partograf*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-chart-pie-simple fs-2"></i></span>
+                            <span class="menu-title">Laporan</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('laporan.index') ? 'active' : '' }}"
+                                    href="{{ route('laporan.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Kunjungan</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('laporan.bor_los_toi') ? 'active' : '' }}"
+                                    href="{{ route('laporan.bor_los_toi') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">RL (Bor/Los/Toi)</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('partograf.index') ? 'active' : '' }}"
+                                    href="{{ route('partograf.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Laporan Partograf</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Master & Settings -->
+                    <div data-kt-menu-trigger="click"
+                        class="menu-item menu-accordion {{ Request::is('data-master*') || Request::is('dokter*') || Request::is('karyawan*') || Request::is('bhp*') || Request::is('admin*') || Request::is('settings*') ? 'show' : '' }}">
+                        <span class="menu-link">
+                            <span class="menu-icon"><i class="ki-outline ki-setting-2 fs-2"></i></span>
+                            <span class="menu-title">Pengaturan & Master</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('index.ruangan') ? 'active' : '' }}"
+                                    href="{{ route('index.ruangan') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Master Ruangan</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('dokter.index') ? 'active' : '' }}"
+                                    href="{{ route('dokter.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Master Dokter</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('dokter.jadwal') ? 'active' : '' }}"
+                                    href="{{ route('dokter.jadwal', 2) }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Jadwal Dokter</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('karyawan.index') ? 'active' : '' }}"
+                                    href="{{ route('karyawan.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Master Karyawan</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('index.bhp') ? 'active' : '' }}"
+                                    href="{{ route('index.bhp') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Tarif & BHP</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('admin.roles.index') ? 'active' : '' }}"
+                                    href="{{ route('admin.roles.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">Role & Menu</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link {{ Request::routeIs('settings.index') ? 'active' : '' }}"
+                                    href="{{ route('settings.index') }}">
+                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                    <span class="menu-title">App Settings</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                 @endif
             </div>
             <!--end::Sidebar menu-->
