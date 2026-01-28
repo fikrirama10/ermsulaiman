@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
 use App\Helpers\Vclaim\VclaimRencanaKontrolHelper;
 use App\Models\Rawat;
+use App\Models\RawatSpri;
 
 class RencanaKontrolController extends Controller
 {
@@ -121,8 +122,15 @@ class RencanaKontrolController extends Controller
         if($surat['response'] == null){
             return redirect()->back()->with('error',$surat['metaData']['message']);
         }
-        $rawat = Rawat::where('no_suratkontrol', $noSurat)->first();
-        // return $rawat->pasien->nama_pasien;
+        // return $surat['response']['jnsKontrol'];
+        if($surat['response']['jnsKontrol'] === '1'){
+            $rawat = RawatSpri::where('spri_bpjs', $noSurat)->first();
+            // return $rawat;
+        }else{
+             $rawat = Rawat::where('no_suratkontrol', $noSurat)->first();
+        }
+       
+        // return $rawat;
         // return $surat;
         // We might need SEP details too for some info not in Surat response, 
         // usually Surat response has enough for the printout shown (Diagnosa, Poli, Dokter, Tgl Lahir etc)
