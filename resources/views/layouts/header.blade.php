@@ -1,4 +1,5 @@
-<div id="kt_app_header" class="app-header" style="background: linear-gradient(to right, #ffffff, #f8f9fa); box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+<div id="kt_app_header" class="app-header"
+    style="background: linear-gradient(to right, #ffffff, #f8f9fa); box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
     <!--begin::Header container-->
     <div class="app-container container-fluid d-flex align-items-stretch flex-stack" id="kt_app_header_container">
         <!--begin::Sidebar toggle-->
@@ -16,10 +17,10 @@
 
         <!--begin::Mobile Logo-->
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-15">
-             <div class="d-none d-lg-flex align-items-center gap-3">
+            <div class="d-none d-lg-flex align-items-center gap-3">
                 <div class="symbol symbol-45px symbol-circle">
-    <img src="{{ asset('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png')}}" alt="Logo RSAU" />
-</div>
+                    <img src="{{ asset('image/LOGO_RUMKIT_SULAIMAN__2_-removebg-preview.png') }}" alt="Logo RSAU" />
+                </div>
                 <div class="d-flex flex-column">
                     <div class="fs-6 fw-bolder text-dark">RS AU dr. Norman T Lubis</div>
                     <div class="fs-8 fw-semibold text-muted">Sistem Informasi Manajemen RS</div>
@@ -34,21 +35,21 @@
             <!-- Global Search Bar -->
             <div class="app-navbar-item d-flex align-items-stretch flex-lg-grow-1">
                 <div class="d-flex align-items-center w-100 mw-lg-400px">
-                     <div class="position-relative w-100">
+                    <div class="position-relative w-100">
                         <span class="position-absolute top-50 translate-middle-y ms-4">
                             <i class="bi bi-search text-gray-500 fs-3"></i>
                         </span>
                         <input type="text" class="form-control form-control-solid ps-12 border-0 bg-light-secondary"
-                               name="search" id="global_search_input" placeholder="Cari Pasien / Menu..."
-                               data-kt-search-element="input" autocomplete="off">
+                            name="search" id="global_search_input" placeholder="Cari Pasien / Menu..."
+                            data-kt-search-element="input" autocomplete="off">
                         <!-- Search Shortcut Hint -->
                         <div class="position-absolute top-50 end-0 translate-middle-y me-2">
-                             <span class="badge badge-light-secondary text-muted border">/</span>
+                            <span class="badge badge-light-secondary text-muted border">/</span>
                         </div>
 
                         <!-- Search Results Dropdown -->
                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-100"
-                             id="global_search_results" style="position: absolute; top: 100%; left: 0; z-index: 105;">
+                            id="global_search_results" style="position: absolute; top: 100%; left: 0; z-index: 105;">
                             <!-- Results will be injected here -->
                         </div>
                     </div>
@@ -57,41 +58,46 @@
 
             <!-- Real-time Clock (Compact) -->
             <div class="app-navbar-item ms-1 ms-md-3">
-                 <div class="d-none d-lg-flex flex-column align-items-end me-5">
+                <div class="d-none d-lg-flex flex-column align-items-end me-5">
                     <span class="fs-7 fw-bold text-gray-800" id="header_clock">00:00:00</span>
                     <span class="fs-8 fw-semibold text-muted" id="header_date">...</span>
-                 </div>
+                </div>
             </div>
 
             <!-- Quick Actions (Grid) -->
             <div class="app-navbar-item ms-1 ms-md-3">
                 <div class="btn btn-icon btn-custom btn-active-light-primary w-35px h-35px w-md-40px h-md-40px"
-                     data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                    data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
                     <i class="bi bi-grid-3x3-gap fs-2"></i>
                 </div>
                 <!-- Quick Menu Dropdown -->
                 <div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px" data-kt-menu="true">
-                     <div class="d-flex flex-column bgi-no-repeat rounded-top" style="background-image:url('{{ asset('assets/media/misc/menu-header-bg.jpg') }}'); background-size: cover;">
+                    <div class="d-flex flex-column bgi-no-repeat rounded-top"
+                        style="background-image:url('{{ asset('assets/media/misc/menu-header-bg.jpg') }}'); background-size: cover;">
                         <h3 class="text-white fw-semibold px-9 mt-10 mb-6">Quick Actions
-                        <span class="fs-8 opacity-75 ps-3">Pintasan Menu</span></h3>
+                            <span class="fs-8 opacity-75 ps-3">Pintasan Menu</span>
+                        </h3>
                     </div>
                     <div class="row g-0">
                         <div class="col-6">
-                            <a href="{{ route('pendaftaran.create') }}" class="d-flex flex-column flex-center h-100 p-6 bg-hover-light border-end border-bottom">
+                            <a href="{{ route('pendaftaran.create') }}"
+                                class="d-flex flex-column flex-center h-100 p-6 bg-hover-light border-end border-bottom">
                                 <i class="bi bi-person-plus fs-3x text-primary mb-2"></i>
                                 <span class="fs-5 fw-semibold text-gray-800 mb-0">Pasien Baru</span>
                                 <span class="fs-7 text-gray-400">Registrasi Pasien</span>
                             </a>
                         </div>
                         <div class="col-6">
-                            <a href="{{ route('pendaftaran.index') }}" class="d-flex flex-column flex-center h-100 p-6 bg-hover-light border-bottom">
+                            <a href="{{ route('pendaftaran.index') }}"
+                                class="d-flex flex-column flex-center h-100 p-6 bg-hover-light border-bottom">
                                 <i class="bi bi-clipboard-pulse fs-3x text-success mb-2"></i>
                                 <span class="fs-5 fw-semibold text-gray-800 mb-0">Kunjungan</span>
                                 <span class="fs-7 text-gray-400">Monitoring Hari Ini</span>
                             </a>
                         </div>
                         <div class="col-6">
-                            <a href="{{ route('dokter.index') }}" class="d-flex flex-column flex-center h-100 p-6 bg-hover-light border-end">
+                            <a href="{{ route('dokter.index') }}"
+                                class="d-flex flex-column flex-center h-100 p-6 bg-hover-light border-end">
                                 <i class="bi bi-people fs-3x text-info mb-2"></i>
                                 <span class="fs-5 fw-semibold text-gray-800 mb-0">Dokter</span>
                                 <span class="fs-7 text-gray-400">Jadwal & Data</span>
@@ -111,18 +117,19 @@
             <!-- Notifications -->
             <div class="app-navbar-item ms-1 ms-md-3">
                 <div class="btn btn-icon btn-custom btn-active-light-primary w-35px h-35px w-md-40px h-md-40px position-relative"
-                     data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                    data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
                     <i class="bi bi-bell fs-2"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge badge-circle badge-danger w-15px h-15px ms-n4 mt-3">3</span>
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle badge badge-circle badge-danger w-15px h-15px ms-n4 mt-3">3</span>
                 </div>
                 <!-- Notif Dropdown (Sample) -->
-                 <div class="menu menu-sub menu-sub-dropdown menu-column w-350px" data-kt-menu="true">
+                <div class="menu menu-sub menu-sub-dropdown menu-column w-350px" data-kt-menu="true">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Notifikasi</h3>
                         </div>
                         <div class="card-body p-0">
-                             <div class="scroll-y mh-325px my-5 px-8">
+                            <div class="scroll-y mh-325px my-5 px-8">
                                 <div class="d-flex flex-stack py-4">
                                     <div class="d-flex align-items-center">
                                         <div class="symbol symbol-35px me-4">
@@ -131,37 +138,54 @@
                                             </span>
                                         </div>
                                         <div class="mb-0 me-2">
-                                            <a href="#" class="fs-6 text-gray-800 text-hover-primary fw-bold">Update Sistem</a>
+                                            <a href="#"
+                                                class="fs-6 text-gray-800 text-hover-primary fw-bold">Update Sistem</a>
                                             <div class="text-gray-400 fs-7">Versi terbaru tersedia</div>
                                         </div>
                                     </div>
                                     <span class="badge badge-light fs-8">1 Jam</span>
                                 </div>
-                             </div>
+                            </div>
                         </div>
                     </div>
-                 </div>
+                </div>
             </div>
 
             <!-- User Menu -->
             <div class="app-navbar-item ms-1 ms-md-3" id="kt_header_user_menu_toggle">
                 <div class="cursor-pointer symbol symbol-35px symbol-md-45px border border-gray-300 border-dashed p-1 bg-light"
-                     data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-                     <!-- Use Auth User Image if available, else generic -->
-                    <img src="{{ asset('assets/media/avatars/blank.png') }}" class="rounded-circle" alt="user" />
+                    data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                    <!-- Use Auth User Image if available, else generic -->
+                    @if (auth()->user()->detail->karyawan_detail)
+                        <img src="{{ asset('storage/' . auth()->user()->detail->karyawan_detail->foto) }}"
+                            class="rounded-circle" alt="user" />
+                    @else
+                        <img src="{{ asset('assets/media/avatars/blank.png') }}" class="rounded-circle"
+                            alt="user" />
+                    @endif
+
                 </div>
 
                 <!-- Use existing User Menu Structure but refined -->
-                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" data-kt-menu="true">
+                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
+                    data-kt-menu="true">
                     <div class="menu-item px-3">
                         <div class="menu-content d-flex align-items-center px-3">
                             <div class="symbol symbol-50px me-5">
-                                <img alt="Logo" src="{{ asset('assets/media/avatars/blank.png') }}" />
+                                @if (auth()->user()->detail->karyawan_detail)
+                                    <img alt="Logo"
+                                        src="{{ asset('storage/' . auth()->user()->detail->karyawan_detail->foto) }}" />
+                                @else
+                                    <img alt="Logo" src="{{ asset('assets/media/avatars/blank.png') }}" />
+                                @endif
                             </div>
                             <div class="d-flex flex-column">
-                                <div class="fw-bold d-flex align-items-center fs-5">{{ auth()->user()->detail->nama ?? 'User' }}</div>
-                                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">{{ auth()->user()->detail->email ?? '-' }}</a>
-                                <span class="badge badge-light-success fw-bold fs-8 mt-1">{{ auth()->user()->detail->poli->poli ?? 'Staff' }}</span>
+                                <div class="fw-bold d-flex align-items-center fs-5">
+                                    {{ auth()->user()->detail->nama ?? 'User' }}</div>
+                                <a href="#"
+                                    class="fw-semibold text-muted text-hover-primary fs-7">{{ auth()->user()->detail->email ?? '-' }}</a>
+                                <span
+                                    class="badge badge-light-success fw-bold fs-8 mt-1">{{ auth()->user()->detail->poli->poli ?? 'Staff' }}</span>
                             </div>
                         </div>
                     </div>
@@ -178,7 +202,7 @@
                                 </i>
                             </span>
                             <span class="menu-text">Two-Factor Authentication</span>
-                            @if(auth()->user()->hasTwoFactorEnabled())
+                            @if (auth()->user()->hasTwoFactorEnabled())
                                 <span class="menu-badge">
                                     <span class="badge badge-success badge-circle fw-bold fs-8">✓</span>
                                 </span>
@@ -195,7 +219,8 @@
                     </div>
                     <div class="separator my-2"></div>
                     <div class="menu-item px-5">
-                         <a class="menu-link px-5 text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <a class="menu-link px-5 text-danger" href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             Sign Out
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -213,14 +238,23 @@
 <script>
     function updateHeaderClock() {
         const now = new Date();
-        const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':');
-        const dateString = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        const timeString = now.toLocaleTimeString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        }).replace(/\./g, ':');
+        const dateString = now.toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
 
         const clockEl = document.getElementById('header_clock');
         const dateEl = document.getElementById('header_date');
 
-        if(clockEl) clockEl.textContent = timeString;
-        if(dateEl) dateEl.textContent = dateString;
+        if (clockEl) clockEl.textContent = timeString;
+        if (dateEl) dateEl.textContent = dateString;
     }
 
     // Update every second
@@ -279,15 +313,19 @@
                                 </div>
                             `;
                         });
-                        html += '<div class="separator my-2"></div><div class="text-center py-2"><small class="text-muted">Tekan Enter untuk melihat semua hasil</small></div>';
+                        html +=
+                            '<div class="separator my-2"></div><div class="text-center py-2"><small class="text-muted">Tekan Enter untuk melihat semua hasil</small></div>';
                     } else {
-                        html = '<div class="px-5 py-3 text-center text-muted">Tidak ditemukan hasil untuk "' + query + '"</div>';
+                        html =
+                            '<div class="px-5 py-3 text-center text-muted">Tidak ditemukan hasil untuk "' +
+                            query + '"</div>';
                     }
                     searchResults.innerHTML = html;
                 })
                 .catch(err => {
                     console.error('Search Error:', err);
-                    searchResults.innerHTML = '<div class="px-5 py-3 text-center text-danger">Error fetching results</div>';
+                    searchResults.innerHTML =
+                        '<div class="px-5 py-3 text-center text-danger">Error fetching results</div>';
                 });
         }, 400); // Debounce 400ms
     });
@@ -304,5 +342,4 @@
             searchResults.classList.add('show');
         }
     });
-
 </script>

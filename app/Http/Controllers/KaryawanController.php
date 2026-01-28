@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Karyawan;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class KaryawanController extends Controller
 {
@@ -82,7 +83,6 @@ class KaryawanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nip' => 'required|unique:karyawan,nip',
             'nama_karyawan' => 'required',
             'kategori' => 'required',
             'jabatan' => 'required',
@@ -90,25 +90,38 @@ class KaryawanController extends Controller
             'status' => 'required|in:0,1',
             'username' => 'required|unique:user,username',
             'password' => 'required|min:6',
-            'email' => 'nullable|email'
+            'email' => 'nullable|email',
         ]);
 
         DB::beginTransaction();
         try {
+            // Auto Generate NIP
+            $lastKaryawan = DB::table('karyawan')->orderBy('id', 'desc')->first();
+            $nextId = $lastKaryawan ? $lastKaryawan->id + 1 : 1;
+            $nip = 'PEG' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+
+            // Handle File Upload
+            $fotoPath = null;
+            if ($request->hasFile('foto')) {
+                // Upload to storage/app/public/karyawan
+                $path = $request->file('foto')->store('karyawan', 'public');
+                $fotoPath = $path; // Store relative path e.g., "karyawan/filename.jpg"
+            }
+
             // Insert karyawan
             $karyawanId = DB::table('karyawan')->insertGetId([
-                'nip' => $request->nip,
+                'nip' => $nip,
                 'nama_karyawan' => $request->nama_karyawan,
                 'kategori' => $request->kategori,
                 'jabatan' => $request->jabatan,
                 'bagian' => $request->bagian,
                 'status' => $request->status,
+                'foto' => $fotoPath,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
 
             // Generate kode_user
-            // Using a prefix KRY for Karyawan + ID padded
             $kodeUser = 'KRY' . str_pad($karyawanId, 6, '0', STR_PAD_LEFT);
 
             // Create user account
@@ -118,7 +131,7 @@ class KaryawanController extends Controller
                 'password_hash' => bcrypt($request->password),
                 'email' => $request->email ?? $request->username . '@rsau.com',
                 'status' => 10,
-                'idpriv' => 8, // Assuming a different privilege ID for general staff
+                'idpriv' => 8,
                 'kode_user' => $kodeUser,
                 'full_name' => $request->nama_karyawan,
                 'is_active' => '1',
@@ -135,7 +148,7 @@ class KaryawanController extends Controller
                 'alamat' => '-',
                 'jenis_kelamin' => '-',
                 'idkaryawan' => $karyawanId,
-                'dokter' => 0 // Not a doctor
+                'dokter' => 0
             ]);
 
             DB::commit();
@@ -155,23 +168,36 @@ class KaryawanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nip' => 'required|unique:karyawan,nip,' . $id,
             'nama_karyawan' => 'required',
             'kategori' => 'required',
             'jabatan' => 'required',
             'bagian' => 'required',
-            'status' => 'required|in:0,1'
+            'status' => 'required|in:0,1',
         ]);
 
-        DB::table('karyawan')->where('id', $id)->update([
-            'nip' => $request->nip,
+        $updateData = [
             'nama_karyawan' => $request->nama_karyawan,
             'kategori' => $request->kategori,
             'jabatan' => $request->jabatan,
             'bagian' => $request->bagian,
             'status' => $request->status,
             'updated_at' => now()
-        ]);
+        ];
+
+        // Handle File Upload
+        if ($request->hasFile('foto')) {
+            // Delete old photo
+            $oldKaryawan = DB::table('karyawan')->where('id', $id)->first();
+            if ($oldKaryawan && $oldKaryawan->foto) {
+                Storage::disk('public')->delete($oldKaryawan->foto);
+            }
+
+            // Upload new photo
+            $path = $request->file('foto')->store('karyawan', 'public');
+            $updateData['foto'] = $path;
+        }
+
+        DB::table('karyawan')->where('id', $id)->update($updateData);
 
         return response()->json(['success' => true, 'message' => 'Data karyawan berhasil diupdate']);
     }
