@@ -209,12 +209,12 @@
                                                     <span class="fw-bold fs-6 text-gray-800" id="det_tgllahir"></span>
                                                 </div>
                                             </div>
-                                            <div class="row mb-2">
+                                            {{-- <div class="row mb-2">
                                                 <label class="col-lg-4 fw-semibold text-muted">Alamat</label>
                                                 <div class="col-lg-8">
                                                     <span class="fw-bold fs-6 text-gray-800" id="det_alamat"></span>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                         </div>
 
                                         <div class="separator my-5"></div>
@@ -444,8 +444,7 @@
                 success: function(data) {
                     $('#det_norm').text(data.no_rm);
                     $('#det_nama').text(data.nama_pasien);
-                    $('#det_tgllahir').text(data.tgl_lahir); // Format if needed
-                    $('#det_alamat').text(data.alamat);
+                    $('#det_tgllahir').text(data.tgl_lahir);
 
                     $('#det_noantrian').text(data.no_antrian);
                     $('#det_poli').text(data.nama_poli);
@@ -476,7 +475,7 @@
                     $('#det_status')
                         .removeClass(
                             'badge-light-warning badge-light-info badge-light-success badge-light-danger badge-light-secondary'
-                            )
+                        )
                         .addClass(statusClass)
                         .text(statusText);
 

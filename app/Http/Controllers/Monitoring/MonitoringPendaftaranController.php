@@ -141,8 +141,7 @@ class MonitoringPendaftaranController extends Controller
             ->select([
                 'rawat.*',
                 'pasien.nama_pasien',
-                'pasien.alamat',
-                'pasien.tgl_lahir',
+                'pasien.tgllahir',
                 'poli.poli as nama_poli',
                 'dokter.nama_dokter',
                 'rawat_bayar.bayar as nama_bayar',
